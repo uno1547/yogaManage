@@ -10,6 +10,9 @@ const app = initializeApp({
   appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
 //여기다가 두니깐 달력출력안됌
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('loaded')
+})
 const db = getFirestore(app)
 let q = query(collection(db, "payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
 q = query(collection(db, "payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
@@ -21,7 +24,7 @@ const event = getEvents(sales)
 console.log(event)
 
 //페이지 로드시 현재 날짜를 따서, 이번달 달력에 현재 날짜까지 표시
-document.addEventListener('DOMContentLoaded', function () {
+// document.addEventListener('DOMContentLoaded', function () {
   console.log('loaded')
   const calendarEl = document.querySelector('.calender')
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     events : event
   })
   calendar.render()
-})
+// })
 
 //현재 날짜에대한 [년, 월, 일]을 반환
 function getDate() {
@@ -45,7 +48,7 @@ function getDate() {
   let month = date.getMonth() + 1
   // month = String(month).padStart(2, '0')
   let day = date.getDate()
-  console.log(year, month, day)
+  // console.log(year, month, day)
   return [year, month, day]
 }
 //쿼리를 받아 일별누적매출 담긴 일반객체배열로 반환
@@ -95,8 +98,8 @@ function getEvents(daySale) {
 }
 
 //현재날짜까지의 매출을 일별로 종합(년도일치&&월일치&&일이하 인데이터들을 추출)
+//이위치에서는 달력나옴
 /*
-이위치에서는 달력나옴
 const db = getFirestore(app)
 let q = query(collection(db, "payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
 q = query(collection(db, "payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
@@ -104,21 +107,5 @@ q = query(collection(db, "payments"), where("pay_day", "<=", getDate()[2])) //�
 const querySnapshot = await getDocs(q)
 const sales = getDaySales(querySnapshot)
 console.log(sales)
-var event = getEvents(sales)
+const event = getEvents(sales)
 */
-/*
-async function getFsMember() {
-  const db = getFirestore(app)
-  const q = query(collection(db, "payments"), where("pay_date", ">=", 20));
-  let sum = 0
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, " => ", doc.data());
-    console.log(doc.data().fee)
-    sum += doc.data().fee
-  });
-  return sum
-}
-*/
-//결제내역 배열을 받아 날짜별로 일매출을 저장후 반환
