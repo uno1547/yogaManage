@@ -3,43 +3,39 @@ a {
   color: black;
   cursor: pointer;
 }
-
-.flex-container {
+.header a {
+  padding: 30px 10px;
+}
+.header {
   width: 900px;
   margin: auto;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
-
-ul {
+.header ul {
   display: flex;
   list-style-type: none;
 }
 
-ul li {
-  padding: 0px 30px;
+.header ul li {
+  /* padding: 0 30px; */
+  margin: 0 25px;
 }
-
-ul li a,
-ul li span {
+.header ul li a,
+.header ul li span {
   font-weight: bold;
   font-size: 20px;
   line-height: 50px;
   vertical-align: middle;
 }
 
-ul li:hover a,
-ul li:hover span {
+.header ul li:hover a,
+.header ul li:hover span {
   color: rgb(167, 167, 167);
 }
 
 .calender {
-  /* display: flex; */
   width: 1500px;
-  margin: auto;
-}
-.calender .day {
-  width: 50px;
-  height: 50px;
-  border: 1px solid black;
+  margin: 30px auto;
 }

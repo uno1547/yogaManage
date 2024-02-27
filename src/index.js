@@ -23,22 +23,22 @@ console.log(sales)
 const event = getEvents(sales)
 console.log(event)
 
-//페이지 로드시 현재 날짜를 따서, 이번달 달력에 현재 날짜까지 표시
-// document.addEventListener('DOMContentLoaded', function () {
-  console.log('loaded')
-  const calendarEl = document.querySelector('.calender')
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView : 'dayGridMonth',
-    buttonText : {
-      today : '오늘'
-    },
-    headerToolbar : {
-      start : '',
-      center : 'title'
-    },
-    events : event
-  })
-  calendar.render()
+//캘린더에 일일매출을 표시해서 출력
+const calendarEl = document.querySelector('.calender')
+const calendar = new FullCalendar.Calendar(calendarEl, {
+  initialView : 'dayGridMonth',
+  buttonText : {
+    today : '오늘'
+  },
+  headerToolbar : {
+    start : '',
+    center : 'title'
+  },
+  events : event,
+  eventColor : 'rgb(167, 167, 167)',
+  eventTextColor : 'black'
+})
+calendar.render()
 // })
 
 //현재 날짜에대한 [년, 월, 일]을 반환
@@ -96,16 +96,3 @@ function getEvents(daySale) {
   }
   return events
 }
-
-//현재날짜까지의 매출을 일별로 종합(년도일치&&월일치&&일이하 인데이터들을 추출)
-//이위치에서는 달력나옴
-/*
-const db = getFirestore(app)
-let q = query(collection(db, "payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
-q = query(collection(db, "payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
-q = query(collection(db, "payments"), where("pay_day", "<=", getDate()[2])) //현재날짜의'일'이전 일치하는쿼리
-const querySnapshot = await getDocs(q)
-const sales = getDaySales(querySnapshot)
-console.log(sales)
-const event = getEvents(sales)
-*/
