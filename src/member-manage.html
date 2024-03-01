@@ -6,7 +6,6 @@
   <title>회원관리바로가기</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet" href="../member.css">
-  <script></script>
 </head>
 <body>
   <div class="header">
@@ -16,7 +15,7 @@
     <ul>
       <li><span class="material-symbols-outlined">
         group
-        </span><a href="member-manage.html">회원관리바로가기</a></li>
+      </span><a href="member-manage.html">회원관리바로가기</a></li>
       <li><span class="material-symbols-outlined">
         search
       </span><a href="search.html">회원통합검색</a></li>
@@ -42,14 +41,14 @@
             <li>수강정보</li>
           </ul>
           <ul id = 'info-val'>
-            <li>김윤오</li>
-            <li>1547</li>
-            <li>010-9928-1547</li>
-            <li>2001.02.10</li>
-            <li>2024.02.13</li>
-            <li>그룹레슨</li>
-            <li>김영원</li>
-            <li>요가 주3회 [1개월]</li>
+            <li class = "name gender"></li>
+            <li class = "user_id"></li>
+            <li class = "phone_number"></li>
+            <li class = "birth_date"></li>
+            <li class = "sign_in_date"></li>
+            <li class = "group"></li>
+            <li class = "teacher"></li>
+            <li class = "class"></li>
           </ul>
         </div>
         <div id = "attend-calender">
@@ -93,5 +92,8 @@
     <li>hi</li>
     <li>hi</li>
   </ul>
+  <button class="addMember"></button>
+  <button class="addPayment"></button>
+  <script type= "module" src = "member.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 //firebase app객체 만들고 실행
 const app = initializeApp({
   apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
@@ -9,12 +9,11 @@ const app = initializeApp({
   messagingSenderId: "256248240983",
   appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
-//여기다가 두니깐 달력출력안됌
-document.addEventListener('DOMContentLoaded', function () {
-  console.log('loaded')
-})
+
+
 const db = getFirestore(app)
 let q = query(collection(db, "payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
+console.log(getDate())
 q = query(collection(db, "payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
 q = query(collection(db, "payments"), where("pay_day", "<=", getDate()[2])) //현재날짜의'일'이전 일치하는쿼리
 const querySnapshot = await getDocs(q)
