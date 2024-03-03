@@ -51,10 +51,46 @@ members.push(doc.data())
 })
 //member의 프로퍼티 값에 따라 정렬 기본 : 이름(사전순)
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다 순 첫번째 member
-const firstMember = members[0]
-console.log(firstMember)
-for (let prop in firstMember) {
-  let liEl = document.querySelector(`.${prop}`)
-  liEl.textContent = firstMember[prop]
-  //name이랑 gender가 같은칸에 위치해서 '이름/성별'순으로 넣어야함!!
+console.log(members) // [{}, {}, {}, {}, {}]
+let currentMember = members[0] //먼저 첫번째 회원
+getMemeberInfo(currentMember)
+//해당 멤버의 기본정보를 표시, 수강정보는 별도의 getClassInfo로 표시
+function getMemeberInfo(member) {
+  // console.log(firstMember)
+  for (let prop in member) {
+    let liEl = document.querySelector(`li.${prop}`)
+    if ((liEl.classList.contains('name')) || (liEl.classList.contains('gender'))) {
+      let span = liEl.querySelector(`span#${prop}`)
+      prop == "gender" ? span.textContent = `[${member[prop]}]` : span.textContent = member[prop]
+    } else {
+      liEl.textContent = member[prop]
+    }
+  }
+  const userID = member.user_id
+  // getMemberClass(firstMember.user_id) 함수로 해결하고싶은데, await때문에 전역에일단함
+  // getClassInfo(userID)
 }
+const q = query(collection(db, "test_payments"), where("user_id", "==", 9928));
+const queries = await getDocs(q);
+// function getClassInfo(userId) {
+  let classInfo = []
+  queries.forEach((doc) => {
+    classInfo.push(doc.data())
+  })
+  classInfo.sort((a, b) => {
+    a.pay_year - b.pay_year
+  })
+  classInfo.sort((a, b) => {
+    a.pay_month - b.pay_month
+  })
+  classInfo.sort((a, b) => {
+    a.pay_day - b.pay_day
+  })
+  console.log(classInfo)
+  console.log(classInfo[0])
+  const classLi = document.querySelector("ul#info-val li.class")
+  console.log(classLi)
+  classLi.innerHTML = `
+  `
+// }
+
