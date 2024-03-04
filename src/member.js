@@ -44,19 +44,26 @@ await setDoc(doc(db, "test_payments", 'new_payment9'), {
 const db = getFirestore(app)
 //멤버 컬렉션에서 한명 불러오기(어떤순으로 정렬되있는거지?) 해도 나중에 버튼클릭으로 다음회원불러올려면 이벤트리스너로
 //실행해야하는데 await 때문에 안될듯 그냥 한번에 불러와서 배열에 담아두고 써야할듯 
-const querySnapshot = await getDocs(collection(db, "test_members"))
+
+const memberQueries = await getDocs(collection(db, "test_members"))
 const members = []
-querySnapshot.forEach((doc) => {
+memberQueries.forEach((doc) => {
 members.push(doc.data())
 })
-//member의 프로퍼티 값에 따라 정렬 기본 : 이름(사전순)
+//member의 '이름' 키값 에 따라 정렬 [기본 : 이름(사전순)]
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다 순 첫번째 member
-console.log(members) // [{}, {}, {}, {}, {}]
+// console.log(members) // [{}, {}, {}, {}, {}]
 let currentMember = members[0] //먼저 첫번째 회원
+let currentUserID = 0
+let currentMemberPayments = []
 getMemeberInfo(currentMember)
-//해당 멤버의 기본정보를 표시, 수강정보는 별도의 getClassInfo로 표시
+const userPayments = query(collection(db, "test_payments"), where("user_id", "==", currentUserID))
+const paymentQueries = await getDocs(userPayments)
+paymentQueries.forEach((doc) => currentMemberPayments.push(doc.data()))
+console.log(currentMemberPayments)
+showMemberClassInfo(currentMemberPayments)
+// member객체를받아 순회하며, 기본 정보띄움
 function getMemeberInfo(member) {
-  // console.log(firstMember)
   for (let prop in member) {
     let liEl = document.querySelector(`li.${prop}`)
     if ((liEl.classList.contains('name')) || (liEl.classList.contains('gender'))) {
@@ -66,31 +73,34 @@ function getMemeberInfo(member) {
       liEl.textContent = member[prop]
     }
   }
-  const userID = member.user_id
-  // getMemberClass(firstMember.user_id) 함수로 해결하고싶은데, await때문에 전역에일단함
-  // getClassInfo(userID)
+  currentUserID = member.user_id
 }
-const q = query(collection(db, "test_payments"), where("user_id", "==", 9928));
-const queries = await getDocs(q);
-// function getClassInfo(userId) {
-  let classInfo = []
-  queries.forEach((doc) => {
-    classInfo.push(doc.data())
+//  결제내역중 가장최근 결제에대한 pay_class표시
+function showMemberClassInfo(payments) {
+  payments.sort(function(a, b) { // 음수 > 
+    if (a.pay_year > b.pay_year) { // 24년 ~ >= 23년 ~
+      return -1
+    } else if (a.pay_year == b.pay_year) { //24년 ~ == 24년 ~
+      if (a.pay_month > b.pay_month) { //24년9월~ > 24년7월~
+        return -1
+      } else if (a.pay_month == b.pay_month) { //24년9월 == 24년9월
+        if (a.pay_day > b.pay_day) {// 24년9월20일 > 24년9월10일
+          return -1
+        } else if(a.pay_day == b.pay_day) {//24년9월10일 == 24년9월10일
+          return -1
+        } else { // 24년9월10일 < 24년9월20일
+          return 1
+        }
+      } else { //24년9월 <24년10월
+        return 1
+      }
+    } else {//23년~ < 24년~
+      return 1
+    }
   })
-  classInfo.sort((a, b) => {
-    a.pay_year - b.pay_year
-  })
-  classInfo.sort((a, b) => {
-    a.pay_month - b.pay_month
-  })
-  classInfo.sort((a, b) => {
-    a.pay_day - b.pay_day
-  })
-  console.log(classInfo)
-  console.log(classInfo[0])
+  let recentPay = payments[0]
+  console.log(recentPay)
   const classLi = document.querySelector("ul#info-val li.class")
-  console.log(classLi)
-  classLi.innerHTML = `
-  `
-// }
+  classLi.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span>주${recentPay.pay_class.times_a_week}회</span><span>[${recentPay.pay_class.class_term}개월]</span>`
+}
 
