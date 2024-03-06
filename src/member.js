@@ -41,34 +41,51 @@ await setDoc(doc(db, "test_payments", 'new_payment9'), {
   }
 });
 */
+//테스트출석 넣는코드
+/*
+await setDoc(doc(db, "test_attendance", 'new_attendance4'), {
+  user_id : 9928,
+  attend_year : 2024,
+  attend_month : 2,
+  attend_day : 28,
+  attend_time : "19:55:12",
+});
+*/
+
 const db = getFirestore(app)
-//멤버 컬렉션에서 한명 불러오기(어떤순으로 정렬되있는거지?) 해도 나중에 버튼클릭으로 다음회원불러올려면 이벤트리스너로
-//실행해야하는데 await 때문에 안될듯 그냥 한번에 불러와서 배열에 담아두고 써야할듯 
-// firestore에서 멤버정보받아와 전역배열에담음
+// firestore에서 (test_members)멤버정보받아와 전역배열에담음
 const memberQueries = await getDocs(collection(db, "test_members"))
-const members = []
+const members = [] 
 memberQueries.forEach((doc) => {
 members.push(doc.data())
 })
-// member-manage의 흐름 : member중 첫번째 회원설정
-// 이회원 정보에 따라,1)기본정보 2)결제정보 3)달력에출석현황표시
-// 화살표 버튼을 누르면, 다음회원에대한 위세가지 정보가 갱신되어야함
-members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다 순 첫번째 member
-// memberlist에서 불러온 첫번째 회원설정, 이회원의 id로 payment데이터불러오고,
-// userpayments 배열에 추가
-let currentMember = members[0] //먼저 첫번째 회원
-let currentUserID = 0
+members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
+// members = [{김윤오}, {성주휘}, {이지영}]
+
+let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
+let currentMemberID = currentMember.user_id 
+
 let currentMemberPayments = []
-getMemeberInfo(currentMember)
-const userPayments = query(collection(db, "test_payments"), where("user_id", "==", currentUserID))
-const paymentQueries = await getDocs(userPayments)
-paymentQueries.forEach((doc) => currentMemberPayments.push(doc.data()))
-console.log(...currentMemberPayments)
-showMemberClassInfo(currentMemberPayments)
-// console.log(currentMemberPayments)
-showMemberPayments(currentMemberPayments)
-// member객체를받아 순회하며, 기본 정보띄움, currentuserid 갱신
-function getMemeberInfo(member) {
+let currentMemberAttendance = []
+//현재회원의 userid로 조회한 결제내역들 불러옴
+const payQueries = query(collection(db, "test_payments"), where("user_id", "==", currentMemberID))
+const payDocs = await getDocs(payQueries)
+payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
+console.log(currentMemberPayments)
+//현재회원의 userid로 조회한 출석내역들 불러옴
+const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", currentMemberID))
+const attendDocs = await getDocs(attendQueries)
+attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
+console.log(currentMemberAttendance)
+
+Viewer(currentMember, currentMemberID)
+function Viewer(member, id) {
+  showMemberInfo(member)
+  showMemberClass(currentMemberPayments)
+  showMemberPayments(currentMemberPayments)
+  showMemberAttendane(currentMemberAttendance)
+}
+function showMemberInfo(member) { //얘도 그냥 innerText += 로 바꾸자
   for (let prop in member) {
     let liEl = document.querySelector(`li.${prop}`)
     if ((liEl.classList.contains('name')) || (liEl.classList.contains('gender'))) {
@@ -78,10 +95,9 @@ function getMemeberInfo(member) {
       liEl.textContent = member[prop]
     }
   }
-  currentUserID = member.user_id
 }
 //  결제내역중 가장최근 결제에대한 pay_class표시
-function showMemberClassInfo(payments) {
+function showMemberClass(payments) {
   payments.sort(function(a, b) { // 음수 > 
     if (a.pay_year > b.pay_year) { // 24년 ~ >= 23년 ~
       return -1
@@ -103,9 +119,9 @@ function showMemberClassInfo(payments) {
       return 1
     }
   })
-  console.log(payments)
+  // console.log(payments)
   let recentPay = payments[0]
-  console.log(recentPay)
+  // console.log(recentPay)
   const classLi = document.querySelector("ul#info-val li.class")
   classLi.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span>주${recentPay.pay_class.times_a_week}회</span><span>[${recentPay.pay_class.class_term}개월]</span>`
 }
@@ -114,30 +130,55 @@ function showMemberPayments(payments) {
   const listArea = document.querySelector('#payment-vals')
   const ulEl = document.createElement('ul')
   ulEl.classList.add("payment")
-  let liTags = ''
+  let innerHtml = ''
   for (let i = 0; i < payments.length; i++) {
     let payment = payments[i]
-    //결제일이 24/1/1이면 payDate는 24,2,1로 저장됨! 하나빼줌
     let payDate = new Date(payment.pay_year, payment.pay_month-1, payment.pay_day)
     let expireDate = payDate
     payDate = payDate.toLocaleDateString()
-    console.log(payDate)
+    // console.log(payDate)
     expireDate.setMonth(expireDate.getMonth() + payment.pay_class.class_term)
     expireDate = expireDate.toLocaleDateString()
-    console.log(expireDate)
+    // console.log(expireDate)
     let liEls = `
     <ul class = "payment">
-      <li>${i+1}</li>
-      <li>${payment.pay_year}. ${payment.pay_month}. ${payment.pay_day}</li>
-      <li>${payment.pay_class.class_type} 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월]</li>
-      <li>${payment.pay_class.status}</li>
-      <li>${payDate} ~ ${expireDate}</li>
-      <li>${payment.pay_fee}</li>
+    <li>${i+1}</li>
+    <li>${payment.pay_year}. ${payment.pay_month}. ${payment.pay_day}</li>
+    <li>${payment.pay_class.class_type} 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월]</li>
+    <li>${payment.pay_class.status}</li>
+    <li>${payDate} ~ ${expireDate}</li>
+    <li>${payment.pay_fee}</li>
     </ul>
     `
-    liTags += liEls
-    listArea.innerHTML = liTags
-    // const liEl = document.createElement('li')
-    // ulEl.appendChild(liEl)
+    innerHtml += liEls
+    listArea.innerHTML = innerHtml
   }
+}
+function showMemberAttendane(attendances) { //attendance객체 배열 매개변수로 받아서 
+  let attendEvents = []
+  attendances.forEach((attendance) => {
+    let event = {}
+    let atMonth = String(attendance.attend_month).padStart(2, "0")
+    let atDay = String(attendance.attend_day).padStart(2, "0")
+    let date = `${attendance.attend_year}-${atMonth}-${atDay}`
+    event.start = date
+    event.end = date
+    event.display = 'background'
+    event.color = '#8fdf82'
+    attendEvents.push(event)
+  })
+  const calendarEl = document.querySelector('#attend-calender')
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView : 'dayGridMonth',
+    buttonText : {
+      today : '오늘'
+    },
+    headerToolbar : {
+      start : 'today',
+      center : 'title',
+      end : 'prev,next'
+    },
+    events : attendEvents,
+  })
+  calendar.render()
 }

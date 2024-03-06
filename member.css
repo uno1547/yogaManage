@@ -48,14 +48,14 @@ li {
 #member-info .row {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
 }
 /*.row > #personal-data*/
 #personal-data {
   display: flex;
 }
 #personal-data #photo {
-  width: 170px;
+  width: 195px;
   border: 1px solid black;
 }
 #personal-data ul {
@@ -83,9 +83,9 @@ li {
 }
 /*.row > #attend-calender */
 #attend-calender {
-  border: 1px solid red;
-  width: 490px;
-  height: 420px;
+  /* border: 1px solid red; */
+  width: 518px;
+  height: 455px;
 } 
 /* #payment-list */
 #payment-list {
