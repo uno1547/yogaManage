@@ -51,7 +51,27 @@ await setDoc(doc(db, "test_attendance", 'new_attendance4'), {
   attend_time : "19:55:12",
 });
 */
-
+const buttons = document.querySelector("#personal-data .buttons")
+const prevBtn = buttons.querySelector("#addMember")
+const nextBtn = buttons.querySelector("#addPayment")
+prevBtn.addEventListener('click', function () {
+  console.log(members);
+  if (currentMemberIndex == 0) {
+    currentMemberIndex = members.length - 1
+  } else {
+    currentMemberIndex -= 1
+  }
+  currentMember = members[currentMemberIndex]
+  currentMemberID = currentMember.user_id
+  getQueries(currentMemberID)
+})
+nextBtn.addEventListener('click', function () {
+  console.log(members);
+  currentMemberIndex = Math.abs((currentMemberIndex + 1) % members.length)
+  currentMember = members[currentMemberIndex]
+  currentMemberID = currentMember.user_id
+  getQueries(currentMemberID)
+})
 const db = getFirestore(app)
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
 const memberQueries = await getDocs(collection(db, "test_members"))
@@ -63,6 +83,7 @@ members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
 // members = [{김윤오}, {성주휘}, {이지영}]
 
 let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
+let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
 
 let currentMemberPayments = []
@@ -71,19 +92,31 @@ let currentMemberAttendance = []
 const payQueries = query(collection(db, "test_payments"), where("user_id", "==", currentMemberID))
 const payDocs = await getDocs(payQueries)
 payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
-console.log(currentMemberPayments)
+
 //현재회원의 userid로 조회한 출석내역들 불러옴
 const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", currentMemberID))
 const attendDocs = await getDocs(attendQueries)
 attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
-console.log(currentMemberAttendance)
 
-Viewer(currentMember, currentMemberID)
-function Viewer(member, id) {
+
+viewer(currentMember, currentMemberPayments, currentMemberAttendance)
+function getQueries(userid) {
+  const payQueries = query(collection(db, "test_payments"), where("user_id", "==", userid))
+  const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", userid))
+  const payDocs = getDocs(payQueries)
+  payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
+  const attendDocs = getDocs(attendQueries)
+  attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
+  viewer(currentMember, currentMemberPayments, currentMemberAttendance)
+}
+function getMemberQueries(userID) {
+
+}
+function viewer(member, payments, attendances) {
   showMemberInfo(member)
-  showMemberClass(currentMemberPayments)
-  showMemberPayments(currentMemberPayments)
-  showMemberAttendane(currentMemberAttendance)
+  showMemberClass(payments)
+  showMemberPayments(payments)
+  showMemberAttendane(attendances)
 }
 function showMemberInfo(member) { //얘도 그냥 innerText += 로 바꾸자
   for (let prop in member) {
@@ -182,3 +215,6 @@ function showMemberAttendane(attendances) { //attendance객체 배열 매개변�
   })
   calendar.render()
 }
+//클릭할때마다 줄어든index의 회원에대해, 결제정보, 출경정ㅇ보를 받아와야함
+//근데 이벤ㄴ트리스터 내부에는 받아오는 코드사용불가
+//클릭에따라서 매번 새롭게 불러올순없는건가
