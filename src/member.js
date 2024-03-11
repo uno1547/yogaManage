@@ -160,31 +160,40 @@ function showMemberClass(payments) {
 }
 //해당회원의 모든결제정보불러와서 내역목록표시
 function showMemberPayments(payments) {
-  const listArea = document.querySelector('#payment-vals')
-  const ulEl = document.createElement('ul')
-  ulEl.classList.add("payment")
-  let innerHtml = ''
+//payments = [{}, {}, {}, {}]
+  let tableArea = document.querySelector('table.val')
   for (let i = 0; i < payments.length; i++) {
     let payment = payments[i]
-    let payDate = new Date(payment.pay_year, payment.pay_month-1, payment.pay_day)
+    let [classType, classPerWeek, classTerm] = [payment.pay_class.class_type, payment.pay_class.times_a_week, payment.pay_class.class_term]
+    let payDate = new Date(payment.pay_year, payment.pay_month - 1, payment.pay_day)
     let expireDate = payDate
-    payDate = payDate.toLocaleDateString()
-    // console.log(payDate)
+    payDate = payDate.toLocaleDateString().slice(0, -1)
     expireDate.setMonth(expireDate.getMonth() + payment.pay_class.class_term)
-    expireDate = expireDate.toLocaleDateString()
-    // console.log(expireDate)
-    let liEls = `
-    <ul class = "payment">
-    <li>${i+1}</li>
-    <li>${payment.pay_year}. ${payment.pay_month}. ${payment.pay_day}</li>
-    <li>${payment.pay_class.class_type} 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월]</li>
-    <li>${payment.pay_class.status}</li>
-    <li>${payDate} ~ ${expireDate}</li>
-    <li>${payment.pay_fee}</li>
-    </ul>
+    expireDate = expireDate.toLocaleDateString().slice(0, -1)
+    let fee = String(payment.pay_fee)
+    let charArr = []
+    for (let j = fee.length - 1; j >= 0; j--) {
+      charArr.push(fee[j]) 
+      if (fee.length % 3 == 0) {
+        if (j != 0) {
+          j % 3 == 0 ? charArr.push(',') : 0
+        }
+      } else {
+        (j - (fee.length % 3)) % 3 == 0 ? charArr.push(',') : 0
+      }
+    }
+    fee = charArr.reverse().join('')
+    const trEls = `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${payDate}</td>
+      <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
+      <td>${payDate} ~ ${expireDate}</td>
+      <td>${payment.pay_class.status}</td>
+      <td>${fee} 원</td>
+    </tr>
     `
-    innerHtml += liEls
-    listArea.innerHTML = innerHtml
+    tableArea.innerHTML += trEls
   }
 }
 function showMemberAttendane(attendances) { //attendance객체 배열 매개변수로 받아서 
@@ -215,6 +224,30 @@ function showMemberAttendane(attendances) { //attendance객체 배열 매개변�
   })
   calendar.render()
 }
-//클릭할때마다 줄어든index의 회원에대해, 결제정보, 출경정ㅇ보를 받아와야함
+// 6 5 4 , 3 2 1 , 0
+let fee = String(300000000000)
+let nor = []
+for (let j = fee.length - 1; j >= 0; j--) {
+  console.log(`${j}번째 문자`);
+  nor.push(fee[j]) 
+  if (fee.length % 3 == 0) { //길이가 3의 배수
+    if (j != 0) {
+      j % 3 == 0 ? nor.push(',') : 0
+    }
+  } else { // 이외
+    // j == 3n + (l % 3)
+    (j - (fee.length % 3)) % 3 == 0 ? nor.push(',') : 0
+  }
+}
+fee = nor.reverse().join('')
+console.log(fee);
+//클릭할때마다 줄어든index의 회원에대해, 결제정보, 출경정보를 받아와야함
 //근데 이벤ㄴ트리스터 내부에는 받아오는 코드사용불가
 //클릭에따라서 매번 새롭게 불러올순없는건가
+// 0 1 2, 3 4 5  l : 6
+// 0, 1 2 3, 4 5 6   l : 7
+// 0 1, 2 3 4, 5 6 7   l : 8
+// 0 1 2, 3 4 5, 6 7 8  l : 9
+// 0, 1 2 3, 4 5 6, 7 8 9   l : 10
+// 0 1, 2 3 4, 5 6 7, 8 9 10  l : 11
+// 0 1 2, 3 4 5, 6 7 8, 9 10 11  l : 12
