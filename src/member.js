@@ -98,7 +98,6 @@ const attendQueries = query(collection(db, "test_attendance"), where("user_id", 
 const attendDocs = await getDocs(attendQueries)
 attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
 
-
 viewer(currentMember, currentMemberPayments, currentMemberAttendance)
 function getQueries(userid) {
   const payQueries = query(collection(db, "test_payments"), where("user_id", "==", userid))
@@ -129,7 +128,7 @@ function showMemberInfo(member) { //얘도 그냥 innerText += 로 바꾸자
     }
   }
 }
-//  결제내역중 가장최근 결제에대한 pay_class표시
+//결제내역중 가장최근 결제에대한 pay_class표시
 function showMemberClass(payments) {
   payments.sort(function(a, b) { // 음수 > 
     if (a.pay_year > b.pay_year) { // 24년 ~ >= 23년 ~
@@ -171,18 +170,7 @@ function showMemberPayments(payments) {
     expireDate.setMonth(expireDate.getMonth() + payment.pay_class.class_term)
     expireDate = expireDate.toLocaleDateString().slice(0, -1)
     let fee = String(payment.pay_fee)
-    let charArr = []
-    for (let j = fee.length - 1; j >= 0; j--) {
-      charArr.push(fee[j]) 
-      if (fee.length % 3 == 0) {
-        if (j != 0) {
-          j % 3 == 0 ? charArr.push(',') : 0
-        }
-      } else {
-        (j - (fee.length % 3)) % 3 == 0 ? charArr.push(',') : 0
-      }
-    }
-    fee = charArr.reverse().join('')
+    let commaFormattedFee = getCommaFormattedNumbers(fee)
     const trEls = `
     <tr>
       <td>${i + 1}</td>
@@ -190,7 +178,7 @@ function showMemberPayments(payments) {
       <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
       <td>${payDate} ~ ${expireDate}</td>
       <td>${payment.pay_class.status}</td>
-      <td>${fee} 원</td>
+      <td>${commaFormattedFee} 원</td>
     </tr>
     `
     tableArea.innerHTML += trEls
@@ -224,30 +212,66 @@ function showMemberAttendane(attendances) { //attendance객체 배열 매개변�
   })
   calendar.render()
 }
-// 6 5 4 , 3 2 1 , 0
-let fee = String(300000000000)
-let nor = []
-for (let j = fee.length - 1; j >= 0; j--) {
-  console.log(`${j}번째 문자`);
-  nor.push(fee[j]) 
-  if (fee.length % 3 == 0) { //길이가 3의 배수
-    if (j != 0) {
-      j % 3 == 0 ? nor.push(',') : 0
+function getCommaFormattedNumbers(fee) {
+  const characters = []
+  for (let i = 0; i < fee.length; i++) {
+    const curIndex = fee.length - 1 - i
+    const remainder = i % 3
+    if (remainder === 0) {
+      if (i !== 0) {
+        characters.push(",")
+      }
     }
-  } else { // 이외
-    // j == 3n + (l % 3)
-    (j - (fee.length % 3)) % 3 == 0 ? nor.push(',') : 0
+    characters.push(fee[curIndex])
   }
+  return characters.reverse().join('')
 }
-fee = nor.reverse().join('')
-console.log(fee);
+// console.log(fee);
 //클릭할때마다 줄어든index의 회원에대해, 결제정보, 출경정보를 받아와야함
 //근데 이벤ㄴ트리스터 내부에는 받아오는 코드사용불가
 //클릭에따라서 매번 새롭게 불러올순없는건가
-// 0 1 2, 3 4 5  l : 6
-// 0, 1 2 3, 4 5 6   l : 7
-// 0 1, 2 3 4, 5 6 7   l : 8
-// 0 1 2, 3 4 5, 6 7 8  l : 9
-// 0, 1 2 3, 4 5 6, 7 8 9   l : 10
-// 0 1, 2 3 4, 5 6 7, 8 9 10  l : 11
-// 0 1 2, 3 4 5, 6 7 8, 9 10 11  l : 12
+function getComma(fee) {
+  const characters = []
+  for (let i = 0; i < fee.length; i++) {
+    const curIndex = fee.length - 1 - i
+    const remainder = i % 3
+    if (remainder === 0) {
+      if (curIndex !== fee.length - 1) {
+        characters.push(',')
+      }
+    }
+    characters.push(fee[curIndex])
+    console.log(characters);
+  }
+  console.log(characters.reverse().join(''));
+}
+function getComma1(fee) {
+  const characters = []
+  let cnt = 0
+  for (let j = fee.length - 1; j >= 0; j--) {
+    cnt++
+    characters.push(fee[j])
+    if (cnt == 3 && j != 0) {
+      characters.push(",")
+      cnt = 0
+    }
+  }
+  console.log(characters.reverse().join(''));
+}
+function getComma2() {
+  let fee = String(300000000000)
+  let nor = []
+  for (let j = fee.length - 1; j >= 0; j--) {
+    // console.log(`${j}번째 문자`);
+    nor.push(fee[j]) 
+    if (fee.length % 3 == 0) { //길이가 3의 배수
+      if (j != 0) {
+        j % 3 == 0 ? nor.push(',') : 0
+      }
+    } else { // 이외
+      // j == 3n + (l % 3)
+      (j - (fee.length % 3)) % 3 == 0 ? nor.push(',') : 0
+    }
+  }
+  fee = nor.reverse().join('')
+}
