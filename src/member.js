@@ -24,18 +24,18 @@ await setDoc(doc(db, "test_members", "new_member6"), {
 */
 // 테스트결제 넣는 코드
 /*
-await setDoc(doc(db, "test_payments", 'new_payment9'), {
-  user_id : 2546,
+await setDoc(doc(db, "test_payments", 'new_payment12'), {
+  user_id : 5510,
   pay_year : 2024,
-  pay_month : 1,
-  pay_day : 1,
+  pay_month : 4,
+  pay_day : 19,
   pay_fee : 300000,
   pay_method : "cash",
   pay_teacher : "김영원",
   pay_class : {
     class_type : "그룹레슨",
-    times_a_week : 3,
-    class_term : 3,
+    times_a_week : 1,
+    class_term : 1,
     class_fee : 300000,
     status : "valid"
   }
@@ -43,19 +43,18 @@ await setDoc(doc(db, "test_payments", 'new_payment9'), {
 */
 //테스트출석 넣는코드
 /*
-await setDoc(doc(db, "test_attendance", 'new_attendance4'), {
-  user_id : 9928,
+await setDoc(doc(db, "test_attendance", 'new_attendance11'), {
+  user_id : 5510,
   attend_year : 2024,
   attend_month : 2,
-  attend_day : 28,
-  attend_time : "19:55:12",
+  attend_day : 10,
+  attend_time : "08:15:13",
 });
 */
 const buttons = document.querySelector("#personal-data .buttons")
 const prevBtn = buttons.querySelector("#addMember")
 const nextBtn = buttons.querySelector("#addPayment")
 prevBtn.addEventListener('click', function () {
-  console.log(members);
   if (currentMemberIndex == 0) {
     currentMemberIndex = members.length - 1
   } else {
@@ -63,28 +62,32 @@ prevBtn.addEventListener('click', function () {
   }
   currentMember = members[currentMemberIndex]
   currentMemberID = currentMember.user_id
+  // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
 nextBtn.addEventListener('click', function () {
-  console.log(members);
+  // console.log(members);
   currentMemberIndex = Math.abs((currentMemberIndex + 1) % members.length)
   currentMember = members[currentMemberIndex]
   currentMemberID = currentMember.user_id
+  // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
 const db = getFirestore(app)
+
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
 const memberQueries = await getDocs(collection(db, "test_members"))
 const members = [] 
 memberQueries.forEach((doc) => {
-members.push(doc.data())
+  members.push(doc.data())
 })
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
-// members = [{김윤오}, {성주휘}, {이지영}]
+// console.log(members);
 
 let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
 let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
+console.log(currentMember,`멤버의index ${currentMemberIndex} 멤버id${currentMemberID}`);
 
 let currentMemberPayments = []
 let currentMemberAttendance = []
@@ -99,32 +102,40 @@ const attendDocs = await getDocs(attendQueries)
 attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
 
 viewer(currentMember, currentMemberPayments, currentMemberAttendance)
-function getQueries(userid) {
+
+async function getQueries(userid) {
+  currentMemberPayments = []
+  currentMemberAttendance = []
+  console.log('결제 :', currentMemberPayments);
+  console.log('출석 :', currentMemberAttendance);
   const payQueries = query(collection(db, "test_payments"), where("user_id", "==", userid))
   const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", userid))
-  const payDocs = getDocs(payQueries)
+  const payDocs = await getDocs(payQueries)
   payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
-  const attendDocs = getDocs(attendQueries)
+  const attendDocs = await getDocs(attendQueries)
   attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
+  console.log('결제 :', currentMemberPayments);
+  console.log('출석 :', currentMemberAttendance);
   viewer(currentMember, currentMemberPayments, currentMemberAttendance)
 }
-function getMemberQueries(userID) {
-
-}
 function viewer(member, payments, attendances) {
+  // console.log(member);
   showMemberInfo(member)
   showMemberClass(payments)
+  // console.log(payments); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   showMemberPayments(payments)
   showMemberAttendane(attendances)
 }
-function showMemberInfo(member) { //얘도 그냥 innerText += 로 바꾸자
+function showMemberInfo(member) {
   for (let prop in member) {
-    let liEl = document.querySelector(`li.${prop}`)
-    if ((liEl.classList.contains('name')) || (liEl.classList.contains('gender'))) {
-      let span = liEl.querySelector(`span#${prop}`)
-      prop == "gender" ? span.textContent = `[${member[prop]}]` : span.textContent = member[prop]
+    let tdEl = document.querySelector(`td.${prop}`)
+    // console.log(tdEl)
+    if (prop == "gender") {
+      document.querySelector(".gender-span").textContent = `[${member[prop]}]`
+    } else if (prop == "name"){
+      document.querySelector(".name-span").textContent = member[prop]
     } else {
-      liEl.textContent = member[prop]
+      tdEl.textContent = member[prop]
     }
   }
 }
@@ -153,14 +164,15 @@ function showMemberClass(payments) {
   })
   // console.log(payments)
   let recentPay = payments[0]
-  // console.log(recentPay)
-  const classLi = document.querySelector("ul#info-val li.class")
-  classLi.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span>주${recentPay.pay_class.times_a_week}회</span><span>[${recentPay.pay_class.class_term}개월]</span>`
+  console.log(recentPay)
+  const classTd = document.querySelector("table.info td.class")
+  classTd.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
 }
 //해당회원의 모든결제정보불러와서 내역목록표시
 function showMemberPayments(payments) {
 //payments = [{}, {}, {}, {}]
   let tableArea = document.querySelector('table.val')
+  tableArea.innerHTML = ""
   for (let i = 0; i < payments.length; i++) {
     let payment = payments[i]
     let [classType, classPerWeek, classTerm] = [payment.pay_class.class_type, payment.pay_class.times_a_week, payment.pay_class.class_term]
@@ -226,10 +238,6 @@ function getCommaFormattedNumbers(fee) {
   }
   return characters.reverse().join('')
 }
-// console.log(fee);
-//클릭할때마다 줄어든index의 회원에대해, 결제정보, 출경정보를 받아와야함
-//근데 이벤ㄴ트리스터 내부에는 받아오는 코드사용불가
-//클릭에따라서 매번 새롭게 불러올순없는건가
 function getComma(fee) {
   const characters = []
   for (let i = 0; i < fee.length; i++) {
