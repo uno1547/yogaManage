@@ -55,6 +55,22 @@ li {
   display: flex;
   position: relative;
 }
+
+#personal-data .update{
+  border: 1px solid black;
+  width: 200px; 
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  position: absolute; 
+  left: -210px;
+}
+#personal-data .update button{
+  width: 160px;
+  height: 40px;
+}
 #personal-data .buttons {
   position: absolute;
   top: -50px;
