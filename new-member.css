@@ -1,0 +1,96 @@
+a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+/* header */
+.header a {
+  padding: 30px 10px;
+}
+.header {
+  width: 900px;
+  margin: auto;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.header ul {
+  display: flex;
+  list-style-type: none;
+}
+
+.header ul li {
+  /* padding: 0 30px; */
+  margin: 0 25px;
+}
+.header ul li a,
+.header ul li span {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+
+.header ul li:hover a,
+.header ul li:hover span {
+  color: rgb(167, 167, 167);
+}
+/* inner */
+.inner {
+  width: 890px;
+  margin: 50px auto;
+}
+/* form-area */
+form {
+  border: 1px solid black;
+  background-color: #f5f5f5;
+  position: relative;
+}
+form .wrap { /*각 input전체블록*/
+  display: flex;
+  /* margin: 0px 0px; */
+  padding: 20px 0px ;
+  font-size: 20px;
+  border: 1px solid #a8a5a5;
+}
+.wrap div[id *= text] { /*input key*/
+  width: 90px;
+  text-align: center;
+  padding: 15px 45px;
+  border-right: 1px solid rgb(192, 192, 192);
+  font-size: 20px;
+  font-weight: bold;
+}
+.wrap #group-text, 
+.wrap #teacher-text { /*input keys*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrap #group-radio,
+.wrap #teacher-radio { /*radio div*/
+  display: flex;
+  flex-direction: column;
+}
+.wrap label:not(label[for]){ /*radio li*/
+  padding: 15px 30px;
+}
+
+.wrap input[id] {
+  width: 250px;
+  font-size: 18px;
+  padding: 3px;
+  margin-left: 30px;
+}
+.number.wrap button#rep-check {
+  margin-left: 20px;
+  font-size: 20px;
+}
+form input[type = "submit"] {
+  width: 200px;
+  position: absolute;
+  right: 0px;
+  bottom: -80px;
+  font-size: 20px;
+  padding: 15px 20px;
+}

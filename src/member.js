@@ -73,14 +73,19 @@ nextBtn.addEventListener('click', function () {
   // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
-const db = getFirestore(app)
+const signUpBtn = document.querySelector(".update .sign-up")
+const newPayBtn = document.querySelector(".update .new-pay")
+const atdBtn = document.querySelector(".update .attendance-update")
+signUpBtn.addEventListener('click', function() {
+  location.href = "/src/new-member.html"
+})
 
+
+const db = getFirestore(app)
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
 const memberQueries = await getDocs(collection(db, "test_members"))
 const members = [] 
-memberQueries.forEach((doc) => {
-  members.push(doc.data())
-})
+memberQueries.forEach(doc => members.push(doc.data()))
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
 // console.log(members);
 
