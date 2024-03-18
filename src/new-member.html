@@ -31,9 +31,9 @@
       <div class ="group wrap">
         <div id="group-text">회원그룹</div>
         <div id="group-radio">
-          <label>개인레슨<input type="radio" name="group-type" required></label>
-          <label>그룹레슨<input type="radio" name="group-type" required></label>
-          <label>마이솔<input type="radio" name="group-type" required></label>
+          <label>개인레슨<input type="radio" name="group-type" value = "pt" required></label>
+          <label>그룹레슨<input type="radio" name="group-type" value = "group" required></label>
+          <label>마이솔<input type="radio" name="group-type" value = "mis" required></label>
           <!-- <label for="type-pt">개인레슨</label>
           <input id="type-pt" type="radio" name="group-type">
           <label for="type-gp">그룹레슨</label>
@@ -45,9 +45,9 @@
       <div class ="teacher wrap">
         <div id="teacher-text">담당강사</div>
         <div id="teacher-radio">
-          <label>김영원<input type="radio" name="teacher" required></label>
-          <label>최수경<input type="radio" name="teacher" required></label>
-          <label>김예림<input type="radio" name="teacher" required></label>
+          <label>김영원<input type="radio" name="teacher" value = "kyw" requiredrequired></label>
+          <label>최수경<input type="radio" name="teacher" value = "csk" requiredrequired></label>
+          <label>김예림<input type="radio" name="teacher" value = "kyl" requiredrequired></label>
           <!-- <label for="kwo">김영원</label>
           <input id="kwo" type="radio" name="teacher">
           <label for="kyl">김예림</label>
@@ -56,16 +56,16 @@
           <input id="csk" type="radio" name="teacher"> -->
         </div>
       </div>
-      <div class ="number wrap">
-        <label for="number"><div id="number-text">회원번호</div></label>
-        <input id="number" type="text" placeholder="4자리숫자입력" required>
+      <div class ="user-id wrap">
+        <label for="user-id"><div id="user-id-text">회원번호</div></label>
+        <input id="user-id" type="text" placeholder="4자리숫자입력" required>
         <button id="rep-check">중복확인</button>
       </div>
       <div class ="name wrap">
         <label for="name"><div id="name-text">회원이름</div></label>
         <input id="name" type="text" required>
-        <label>남<input type="radio" name="gender" required></label>
-        <label>여<input type="radio" name="gender" required></label>
+        <label>남<input type="radio" name="gender" value="남" required></label>
+        <label>여<input type="radio" name="gender" value="여" required></label>
       </div>
       <div class ="tel wrap">
         <label for="tel"><div id="tel-text">연락처</div></label>
@@ -75,9 +75,9 @@
         <label for="bthday"><div id="bthday-text">생년월일</div></label>
         <input id="bthday" type="date" placeholder="YYYYMMDD" required>  
       </div>
-      <div class ="zipcode wrap">
-        <label for="zcde"><div id="zcde-text">우편번호</div></label>
-        <input id="zcde" type="text" required>
+      <!-- <div class ="zipcode wrap">
+        <label for="zcode"><div id="zcode-text">우편번호</div></label>
+        <input id="zcode" type="text" required>
       </div>
       <div class ="address wrap">
         <label for="ads"><div id="ads-text">주소</div></label>
@@ -86,9 +86,10 @@
       <div class ="spec-adress wrap">
         <label for="spad"><div id="spad-text">상세주소</div></label>
         <input id="spad" type="text" required>
-      </div>    
+      </div>     -->
       <input type="submit" value="등록">
     </form>
   </div>
+  <script src="new-member.js"></script>
 </body>
 </html>
