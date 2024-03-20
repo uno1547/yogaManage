@@ -58,22 +58,22 @@
       </div>
       <div class ="user-id wrap">
         <label for="user-id"><div id="user-id-text">회원번호</div></label>
-        <input id="user-id" type="text" placeholder="4자리숫자입력" required>
+        <input id="user-id" type="text" placeholder="4자리숫자입력" required maxlength="4" autocomplete="off">
         <button id="rep-check">중복확인</button>
       </div>
       <div class ="name wrap">
         <label for="name"><div id="name-text">회원이름</div></label>
-        <input id="name" type="text" required>
+        <input id="name" type="text" required autocomplete="off">
         <label>남<input type="radio" name="gender" value="남" required></label>
         <label>여<input type="radio" name="gender" value="여" required></label>
       </div>
       <div class ="tel wrap">
         <label for="tel"><div id="tel-text">연락처</div></label>
-        <input id="tel" type="tel" placeholder="010-1234-5678" required>
+        <input id="tel" type="tel" placeholder="010-1234-5678" required maxlength="13" autocomplete="off">
       </div>
       <div class ="bthday wrap">
         <label for="bthday"><div id="bthday-text">생년월일</div></label>
-        <input id="bthday" type="date" placeholder="YYYYMMDD" required>  
+        <input id="bthday" type="date" placeholder="YYYYMMDD" required autocomplete="off">  
       </div>
       <!-- <div class ="zipcode wrap">
         <label for="zcode"><div id="zcode-text">우편번호</div></label>

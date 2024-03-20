@@ -94,3 +94,31 @@ form input[type = "submit"] {
   font-size: 20px;
   padding: 15px 20px;
 }
+/* 팝업창 style */
+form .user-id.wrap,
+form .tel.wrap {
+  position: relative;
+}
+
+.user-id.wrap #id-pop-up,
+.tel.wrap #tel-pop-up {
+  font-weight: bold;
+  /* background-color: #d5c4ff; */
+  /* background-color: #f6f3ff; */
+  border-radius: 5px;
+  position: absolute;
+  width: 200px;
+  height: 40px;
+  padding: 10px;
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+.tel.wrap #tel-pop-up {
+  right: 185px;
+}
+.user-id.wrap #id-pop-up {
+  right: 75px;
+}

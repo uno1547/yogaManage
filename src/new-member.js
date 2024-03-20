@@ -6,6 +6,7 @@ const formEl = document.querySelector("form").addEventListener("submit", functio
   getMemInfo()
 })
 const telInput = document.querySelector("input#tel")
+const userIdInput = document.querySelector("input#user-id")
 telInput.addEventListener("input", function(evt) {
   const curInput = telInput.value
   const length = curInput.length
@@ -18,33 +19,39 @@ telInput.addEventListener("input", function(evt) {
       evt.data !== null ? telInput.value += "-" : 0
     }
   }
-  console.log(curInput);
-  // popUpHandler(isNotNumber)
-  popUpHandler2()
+  // console.log(curInput);
+  telPopUpHandler()
 })
-// const telval = telInput.value
-
-function popUpHandler(isNaN) {
-  const popUp = document.querySelector("#tel-pop-up")
-  if (isNaN) { //입력값이 NaN이면
-    if (popUp) { //이미popup떠있으면 pass
-      return
-    } else { //없다면 추가
-      const popUpEl = document.createElement('div')
-      const telDiv = document.querySelector(".wrap.tel")
-      popUpEl.id = "tel-pop-up"
-      popUpEl.textContent = "숫자를입력해주세요!"
-      telDiv.appendChild(popUpEl)
-    }
-  } else { //정상값이면
-    if (popUp) { // popup떠있으면 삭제
-      popUp.remove()
-    } else { // 삭제된상태면 pass
-      return
+userIdInput.addEventListener("input", function() {
+  idPopUpHandler()
+})
+function idPopUpHandler() {
+  let haveChar = false
+  const curId = userIdInput.value
+  for (let i = 0; i < curId.length; i++) {
+    if (isNaN(Number(curId[i]))) {
+      haveChar = true
+      break
     }
   }
+  const idPopUp = document.querySelector("#id-pop-up")
+  if (haveChar) {
+    if (idPopUp) { //문자가지면서 idpopup 도 있을경우
+      return
+    } else { //문자가지고 idpopup은 없을경우
+      const popUpEl = document.createElement('div')
+      const idDiv = document.querySelector(".wrap.user-id")
+      popUpEl.id = "id-pop-up"
+      popUpEl.textContent = "숫자를입력해주세요!"
+      idDiv.appendChild(popUpEl)
+    }
+  } else {
+    idPopUp ? idPopUp.remove() : 0
+  }
 }
-function popUpHandler2() {
+
+
+function telPopUpHandler() {
   let haveChar = false
   const curTel = telInput.value
   // console.log(curTel)
@@ -58,11 +65,11 @@ function popUpHandler2() {
       }
     }
   }
-  const popUp = document.querySelector("#tel-pop-up")
-  if (haveChar) { // 문자가포함된경우 팝업띄움
-    if (popUp) {
+  const telPopUp = document.querySelector("#tel-pop-up")
+  if (haveChar) { // 문자가포함된경우
+    if (telPopUp) { //이미 telpopup이있으면 유지
       return
-    } else {
+    } else { //telpopup이 없다면 생성후 추가
       const popUpEl = document.createElement('div')
       const telDiv = document.querySelector(".wrap.tel")
       popUpEl.id = "tel-pop-up"
@@ -70,9 +77,10 @@ function popUpHandler2() {
       telDiv.appendChild(popUpEl)
     }
   } else { //문자가 포함되지않은경우
-    popUp ? popUp.remove() : 0
+    telPopUp ? telPopUp.remove() : 0
   }
 }
+
 function isValid() {
   const userID = Number(document.querySelector("#user-id").value)
   console.log(userID);
@@ -115,4 +123,24 @@ function getRadioValue(info) {
     el.checked ? info["gender"] = el.value : 0
   })
   console.log(info)
+}
+function popUpHandler(isNaN) {
+  const popUp = document.querySelector("#tel-pop-up")
+  if (isNaN) { //입력값이 NaN이면
+    if (popUp) { //이미popup떠있으면 pass
+      return
+    } else { //없다면 추가
+      const popUpEl = document.createElement('div')
+      const telDiv = document.querySelector(".wrap.tel")
+      popUpEl.id = "tel-pop-up"
+      popUpEl.textContent = "숫자를입력해주세요!"
+      telDiv.appendChild(popUpEl)
+    }
+  } else { //정상값이면
+    if (popUp) { // popup떠있으면 삭제
+      popUp.remove()
+    } else { // 삭제된상태면 pass
+      return
+    }
+  }
 }
