@@ -105,7 +105,7 @@ form .tel.wrap {
   font-weight: bold;
   /* background-color: #d5c4ff; */
   /* background-color: #f6f3ff; */
-  border-radius: 5px;
+  /* border-radius: 5px; */
   position: absolute;
   width: 200px;
   height: 40px;
@@ -121,4 +121,26 @@ form .tel.wrap {
 }
 .user-id.wrap #id-pop-up {
   right: 75px;
+}
+.user-id.wrap #id-val-pop-up {
+  width: 200px;
+  height: 40px;
+  padding: 10px;
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
+  font-weight: bold;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  right: 70px;
+}
+.user-id.wrap #id-pop-up.red {
+  color: red;
+}
+.user-id.wrap #id-val-pop-up.green {
+  color: rgb(0, 214, 107);
+}
+.user-id.wrap #id-val-pop-up.red {
+  color: rgb(247, 7, 7);
 }
