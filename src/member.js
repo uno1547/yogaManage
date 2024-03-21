@@ -94,6 +94,7 @@ let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
 console.log(currentMember,`멤버의index ${currentMemberIndex} 멤버id${currentMemberID}`);
 
+
 let currentMemberPayments = []
 let currentMemberAttendance = []
 //현재회원의 userid로 조회한 결제내역들 불러옴

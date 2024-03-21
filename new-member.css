@@ -95,12 +95,12 @@ form input[type = "submit"] {
   padding: 15px 20px;
 }
 /* 팝업창 style */
-form .user-id.wrap,
+/* form .user-id.wrap, */
 form .tel.wrap {
   position: relative;
 }
 
-.user-id.wrap #id-pop-up,
+/* .user-id.wrap #id-pop-up, */
 .tel.wrap #tel-pop-up {
   font-weight: bold;
   /* background-color: #d5c4ff; */
@@ -119,6 +119,7 @@ form .tel.wrap {
 .tel.wrap #tel-pop-up {
   right: 185px;
 }
+/*
 .user-id.wrap #id-pop-up {
   right: 75px;
 }
@@ -144,3 +145,4 @@ form .tel.wrap {
 .user-id.wrap #id-val-pop-up.red {
   color: rgb(247, 7, 7);
 }
+*/
