@@ -54,6 +54,7 @@ await setDoc(doc(db, "test_attendance", 'new_attendance11'), {
 const buttons = document.querySelector("#personal-data .buttons")
 const prevBtn = buttons.querySelector("#addMember")
 const nextBtn = buttons.querySelector("#addPayment")
+const toUpdateBtn = buttons.querySelector("#update-info")
 prevBtn.addEventListener('click', function () {
   if (currentMemberIndex == 0) {
     currentMemberIndex = members.length - 1
@@ -73,6 +74,12 @@ nextBtn.addEventListener('click', function () {
   // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
+toUpdateBtn.addEventListener('click', function () {
+  console.log(currentMemberID);
+  const want = prompt('이동할래?')
+  want ? location.href = `/src/update-info.html?user_id=${currentMemberID}` : 0
+})
+
 const signUpBtn = document.querySelector(".update .sign-up")
 const newPayBtn = document.querySelector(".update .new-pay")
 const atdBtn = document.querySelector(".update .attendance-update")
@@ -83,7 +90,21 @@ signUpBtn.addEventListener('click', function() {
 
 const db = getFirestore(app)
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
+/* async 함수 내부에서도 쓸수있는것같은데 아직 어떻게 쓰는건지 감이 안옴
+async function getMemQueries() {
+  const memQ = await getDocs(collection(db, "test_members"))
+  const members = []
+  memQ.forEach((doc) => members.push(doc.data()))
+  return members
+}
+const pr = getMemQueries()
+console.log(pr);
+pr.then((data) => console.log(data))
+console.log(33333);
+*/
+//
 const memberQueries = await getDocs(collection(db, "test_members"))
+// 전역에 멤버 배열 !!!
 const members = [] 
 memberQueries.forEach(doc => members.push(doc.data()))
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
@@ -93,7 +114,6 @@ let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출�
 let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
 console.log(currentMember,`멤버의index ${currentMemberIndex} 멤버id${currentMemberID}`);
-
 
 let currentMemberPayments = []
 let currentMemberAttendance = []
@@ -108,7 +128,7 @@ const attendDocs = await getDocs(attendQueries)
 attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
 
 viewer(currentMember, currentMemberPayments, currentMemberAttendance)
-
+// async 함수 이건 그냥 반복호출을위해 함수가 필요해서 한느낌 promise then을 가독성 좋게 하기위함은 아닌듯 이제보니
 async function getQueries(userid) {
   currentMemberPayments = []
   currentMemberAttendance = []
@@ -140,6 +160,18 @@ function showMemberInfo(member) {
       document.querySelector(".gender-span").textContent = `[${member[prop]}]`
     } else if (prop == "name"){
       document.querySelector(".name-span").textContent = member[prop]
+    } else if(prop == "group") {
+      switch(member[prop]) {
+        case "group":
+          tdEl.textContent = "그룹레슨"
+          break
+        case "misole":
+          tdEl.textContent = "마이솔"
+          break
+        case "pt":
+          tdEl.textContent = "개인레슨"
+          break
+      }
     } else {
       tdEl.textContent = member[prop]
     }
@@ -172,7 +204,11 @@ function showMemberClass(payments) {
   let recentPay = payments[0]
   console.log(recentPay)
   const classTd = document.querySelector("table.info td.class")
-  classTd.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
+  if (recentPay) {
+    classTd.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
+  } else {
+    classTd.innerHTML = `등록된 수업이없습니다`
+  }
 }
 //해당회원의 모든결제정보불러와서 내역목록표시
 function showMemberPayments(payments) {

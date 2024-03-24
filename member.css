@@ -83,6 +83,15 @@ li {
   font-size: 25px;
   padding: 6px 15px;
 }
+#personal-data .buttons #update-info {
+  width: 110px;
+  height: 45px;
+  position: absolute;
+  font-size: 18px;
+  font-weight: bold;
+  left: 719px ;
+  /* top: 0px; */
+}
 #personal-data #photo {
   width: 200px;
   border: 1px solid black;
