@@ -16,6 +16,7 @@ const formEl = document.querySelector("form").addEventListener("submit", functio
   e.preventDefault()
   const formData = new FormData(e.target)
   const memberObj = Object.fromEntries(formData)
+  console.log(memberObj);
   // let valid = isValid(memberObj)
   setSignDate(memberObj)
   setUserId(memberObj) //얘 비동기함수임!!!
