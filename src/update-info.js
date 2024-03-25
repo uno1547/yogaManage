@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc, writeBatch} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
@@ -114,14 +114,21 @@ async function deleteMember(id) {
   const docRef = doc(db, "test_members", `member-${id}`)
   await deleteDoc(docRef)
   alert("멤버가 삭제되었습니다!!!")
-  await deleteMemberAttendence(id)
-  await deleteMemberPayments(id)
+  await deleteDocs("attendance", id)
+  await deleteDocs("payments", id)
+  // await deleteMemberAttendence(id)
+  // await deleteMemberPayments(id)
   //해당멤버의 결제, 출석 정보도 모두 삭제해야할듯
   location.href = "/src/member-manage.html"
 }
-async function deleteMemberAttendence(id) {
-  
-}
-async function deleteMemberPayments(id) {
-  
+async function deleteDocs(type, id) {
+  const collectionRef = collection(db, `test_${type}`)
+  const q = query(collectionRef, where("user_id", "==", Number(id)))
+  const batch = writeBatch(db)
+  const querySnapshots = await getDocs(q)
+  querySnapshots.forEach((doc) => {
+    batch.delete(doc.ref)
+  })
+  await batch.commit()
+  console.log(`모든 ${type} 삭제`);
 }

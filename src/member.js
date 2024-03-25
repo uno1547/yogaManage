@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, addDoc} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
@@ -25,7 +25,7 @@ await setDoc(doc(db, "test_members", "new_member6"), {
 // 테스트결제 넣는 코드
 /*
 await setDoc(doc(db, "test_payments", 'new_payment12'), {
-  user_id : 5510,
+  user_id : 7381,
   pay_year : 2024,
   pay_month : 4,
   pay_day : 19,
@@ -43,11 +43,11 @@ await setDoc(doc(db, "test_payments", 'new_payment12'), {
 */
 //테스트출석 넣는코드
 /*
-await setDoc(doc(db, "test_attendance", 'new_attendance11'), {
-  user_id : 5510,
+await setDoc(doc(db, "test_attendance", 'new_attendance12'), {
+  user_id : 7381,
   attend_year : 2024,
-  attend_month : 2,
-  attend_day : 10,
+  attend_month : 3,
+  attend_day : 26,
   attend_time : "08:15:13",
 });
 */
@@ -90,6 +90,32 @@ signUpBtn.addEventListener('click', function() {
 
 
 const db = getFirestore(app)
+/*
+await addDoc(collection(db, "test_payments"), {
+  user_id : 4385,
+  pay_year : 2024,
+  pay_month : 3,
+  pay_day : 14,
+  pay_fee : 100000,
+  pay_method : "cash",
+  pay_teacher : "김영원",
+  pay_class : {
+    class_type : "그룹레슨",
+    times_a_week : 1,
+    class_term : 1,
+    class_fee : 100000,
+    status : "valid"
+  }
+});
+
+await addDoc(collection(db, "test_attendance"), {
+  user_id : 4385,
+  attend_year : 2024,
+  attend_month : 3,
+  attend_day : 14,
+  attend_time : "08:15:13",
+});
+*/
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
 /* async 함수 내부에서도 쓸수있는것같은데 아직 어떻게 쓰는건지 감이 안옴
 async function getMemQueries() {
