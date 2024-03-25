@@ -1,13 +1,13 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 const app = initializeApp({
-    apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
-    authDomain: "yoga-663cb.firebaseapp.com",
-    projectId: "yoga-663cb",
-    storageBucket: "yoga-663cb.appspot.com",
-    messagingSenderId: "256248240983",
-    appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
+  apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
+  authDomain: "yoga-663cb.firebaseapp.com",
+  projectId: "yoga-663cb",
+  storageBucket: "yoga-663cb.appspot.com",
+  messagingSenderId: "256248240983",
+  appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
 // 연락처 input checker
 const telInput = document.querySelector("input#tel")
@@ -60,6 +60,7 @@ console.log(receivedId)
 
 const db = getFirestore(app)
 getMemInfo(receivedId)
+console.log(3);
 async function getMemInfo(id) {
   const q = query(collection(db, "test_members"), where("user_id", "==", id))
   const memberQuery = await getDocs(q)
@@ -91,11 +92,36 @@ function showLastInfo(info) { //해당회원의 지난 입력을 보여줌
 }
 const formEl = document.querySelector('form').addEventListener("submit", function(e){
   e.preventDefault()
-  console.log('submit!!');
+  console.log('submit!!')
   const formData = new FormData(e.target)
   const memberObj = Object.fromEntries(formData)
-
+  console.log(memberObj);
+  updateMember(memberObj)
 })
-async function updateMember() {
+async function updateMember(obj) { // 여기서 firestore추가할때 doc이름이 무작위 id로 들어가는데 따로 지정해줘야하나?
+  const docRef = doc(db, "test_members", `member-${receivedId}`)
+  await updateDoc(docRef, obj)
+  console.log('수정함!!')
+  alert("정보가 수정되었습니다!!")
+  location.href = "/src/member-manage.html"
+}
+const deleteBtn = document.querySelector('form input[type = "button"]')
+deleteBtn.addEventListener("click", function() {
+  deleteMember(receivedId)
+})
+async function deleteMember(id) {
+  console.log(id);
+  const docRef = doc(db, "test_members", `member-${id}`)
+  await deleteDoc(docRef)
+  alert("멤버가 삭제되었습니다!!!")
+  await deleteMemberAttendence(id)
+  await deleteMemberPayments(id)
+  //해당멤버의 결제, 출석 정보도 모두 삭제해야할듯
+  location.href = "/src/member-manage.html"
+}
+async function deleteMemberAttendence(id) {
+  
+}
+async function deleteMemberPayments(id) {
   
 }

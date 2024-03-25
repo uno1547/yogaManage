@@ -76,8 +76,9 @@ nextBtn.addEventListener('click', function () {
 })
 toUpdateBtn.addEventListener('click', function () {
   console.log(currentMemberID);
-  const want = prompt('이동할래?')
-  want ? location.href = `/src/update-info.html?user_id=${currentMemberID}` : 0
+  // const want = prompt('이동할래?')
+  // want ? location.href = `/src/update-info.html?user_id=${currentMemberID}` : 0
+  location.href = `/src/update-info.html?user_id=${currentMemberID}`
 })
 
 const signUpBtn = document.querySelector(".update .sign-up")

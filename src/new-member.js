@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs, addDoc} from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, doc, setDoc} from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 
 const app = initializeApp({
   apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
@@ -63,7 +63,10 @@ function isValid(vals) {
   }
 }
 async function createNewMember(obj) {
-  await addDoc(collection(db, "test_members"), obj);
+  const name = obj.name
+  const id = obj.user_id
+  console.log(name, id);
+  await setDoc(doc(db, "test_members", `member-${id}`), obj);
   console.log("새멤버가추가!!");
   alert("새멤버가 추가되었습니다")
   location.href = "/src/member-manage.html"
