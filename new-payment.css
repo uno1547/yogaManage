@@ -70,15 +70,39 @@ form .radio-input label {
   font-size: 20px;
 }
 /* .class.wrap */
+.class.wrap {
+  height: 116px;
+  position: relative; 
+}
 .class.wrap table#drop-down {
   margin: 0px 25px;
+  display: block; /*table의 display 가 table이라 강제로 바꿈*/
+  height: 116px;
+  overflow-y: hidden;
+  /* position: absolute; */
 }
+.class.wrap table#drop-down:hover {
+  box-shadow :rgba(0, 0, 0, 0.56) 0px -12px 23px -7px;
+  box-shadow: rgba(0, 0, 0, 0.56) 0px -7px 19px -8px;
+  border-radius: 9px;
+  /* box-shadow: ; */
+  height: 230px;
+  overflow-y: scroll;
+  position: absolute;
+  
+  top: 8px;
+  left: 78px;
+  z-index: 1;
+}
+
 table#drop-down tr {
   width: 640px;
   /* padding: 0px 10px 15px 10px; */
   /* margin: 0px 10px 15px 10px; */
   padding: 15px;
   border: 1px solid black;
+  border-radius: 5px;
+  background-color: #d9d9d9;
   display: flex;
 }
 table#drop-down tr td {
@@ -132,11 +156,11 @@ table#drop-down tr td:nth-child(6) {
 
 }
 #payment-info #payment-content .wrap {
-
+  justify-content: center;
 }
 #payment-info #payment-content .text {
-  display: flex;
-  align-items: center;
+  /* display: flex;
+  align-items: center; */
 }
 #payment-info #payment-content .val {
   margin: 0px 20px;
@@ -152,7 +176,7 @@ form button {
   width: 140px;
   padding: 10px;
   position: absolute;
-  right: 50px;
+  right: 20px;
   bottom: 20px;
   /* text-align: right; */
 }
