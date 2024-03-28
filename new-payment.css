@@ -1,0 +1,158 @@
+a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+.header a {
+  padding: 30px 10px;
+}
+.header {
+  width: 900px;
+  margin: auto;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.header ul {
+  display: flex;
+  list-style-type: none;
+}
+
+.header ul li {
+  /* padding: 0 30px; */
+  margin: 0 25px;
+}
+.header ul li a,
+.header ul li span {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+
+.header ul li:hover a,
+.header ul li:hover span {
+  color: rgb(167, 167, 167);
+}
+.inner {
+  width: 820px;
+  border: 1px solid black;
+  margin: 30px auto;
+}
+/* form common*/
+form .head-text-wrap {
+  padding: 15px;
+}
+form .head-text {
+  font-weight: bold;
+  font-size: 20px;
+}
+form .wrap {
+  display: flex;
+  align-items:center;
+  padding: 8px 15px;
+}
+form .text {
+  font-size: 18px;
+  font-weight: 500;
+  padding: 0px 0px;
+  /* display: flex;
+  align-items: center; */
+}
+form input[type="radio"] {
+  margin-top: 0px;
+}
+form .radio-input {
+  margin: 0px 15px;
+}
+form .radio-input label {
+  margin: 10px;
+  font-size: 20px;
+}
+/* .class.wrap */
+.class.wrap table#drop-down {
+  margin: 0px 25px;
+}
+table#drop-down tr {
+  width: 640px;
+  /* padding: 0px 10px 15px 10px; */
+  /* margin: 0px 10px 15px 10px; */
+  padding: 15px;
+  border: 1px solid black;
+  display: flex;
+}
+table#drop-down tr td {
+  text-align: center;
+  font-size: 19px;
+  /* display: flex;
+  align-items: center; */
+}
+table#drop-down tr td:nth-child(1) {
+  /* radio임 */
+}
+table#drop-down tr td:nth-child(2) {
+  /* 개인레슨, 그룹레슨, 요가주3회 */
+  width: 150px;
+}
+table#drop-down tr td:nth-child(3) {
+  /* 총 10회 */
+  width: 100px;
+}
+table#drop-down tr td:nth-child(4) {
+  /* 3개워 */
+  width: 100px;
+}
+table#drop-down tr td:nth-child(5) {
+  /* 현금가 */
+  width: 150px;
+}
+table#drop-down tr td:nth-child(6) {
+  /* 카드가 */
+  width: 150px;
+}
+/* .payment-method.wrap .radio-input {
+
+}
+.payment-method.wrap .radio-input label {
+
+}
+.payment-teacher.wrap .radio-input {
+
+
+}
+.payment-teacher.wrap .radio-input label {
+
+} */
+/* payment-content */
+#payment-info {
+  height: 340px;
+  position: relative;
+}
+#payment-info #payment-content {
+
+}
+#payment-info #payment-content .wrap {
+
+}
+#payment-info #payment-content .text {
+  display: flex;
+  align-items: center;
+}
+#payment-info #payment-content .val {
+  margin: 0px 20px;
+  width: 280px;
+  text-align: center;
+}
+#payment-info #payment-content .val span {
+  font-size: 20px;
+}
+/* submit button */
+form button {
+  font-size: 18px;
+  width: 140px;
+  padding: 10px;
+  position: absolute;
+  right: 50px;
+  bottom: 20px;
+  /* text-align: right; */
+}
