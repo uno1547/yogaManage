@@ -78,20 +78,22 @@ form .radio-input label {
   margin: 0px 25px;
   display: block; /*table의 display 가 table이라 강제로 바꿈*/
   height: 116px;
+  height: 113px; /*얘됨1*/
+  height: 115px; /*얘됨2*/
   overflow-y: hidden;
   /* position: absolute; */
 }
 .class.wrap table#drop-down:hover {
-  box-shadow :rgba(0, 0, 0, 0.56) 0px -12px 23px -7px;
-  box-shadow: rgba(0, 0, 0, 0.56) 0px -7px 19px -8px;
+  /* box-shadow :rgba(0, 0, 0, 0.56) 0px -12px 23px -7px;
+  box-shadow: rgba(0, 0, 0, 0.56) 0px -7px 19px -8px; */
   border-radius: 9px;
-  /* box-shadow: ; */
   height: 230px;
+  height: 225px; /*얘됨1*/
+  height: 226px; /*얘됨2*/
   overflow-y: scroll;
   position: absolute;
-  
-  top: 8px;
-  left: 78px;
+  top: 9px;
+  left: 77px;
   z-index: 1;
 }
 
