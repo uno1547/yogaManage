@@ -24,7 +24,7 @@ await setDoc(doc(db, "test_members", "new_member6"), {
 */
 // 테스트결제 넣는 코드
 /*
-await setDoc(doc(db, "test_payments", 'new_payment12'), {
+await setDoc(doc(db, "test_payments", 'new_payment12'), { // id 명시해줘야함
   user_id : 7381,
   pay_year : 2024,
   pay_month : 4,
@@ -52,8 +52,8 @@ await setDoc(doc(db, "test_attendance", 'new_attendance12'), {
 });
 */
 const buttons = document.querySelector("#personal-data .buttons")
-const prevBtn = buttons.querySelector("#addMember")
-const nextBtn = buttons.querySelector("#addPayment")
+const prevBtn = buttons.querySelector("#prevMember")
+const nextBtn = buttons.querySelector("#nextMember")
 const toUpdateBtn = buttons.querySelector("#update-info")
 prevBtn.addEventListener('click', function () {
   if (currentMemberIndex == 0) {
@@ -81,13 +81,15 @@ toUpdateBtn.addEventListener('click', function () {
   location.href = `/src/update-info.html?user_id=${currentMemberID}`
 })
 
-const signUpBtn = document.querySelector(".update .sign-up")
-const newPayBtn = document.querySelector(".update .new-pay")
-const atdBtn = document.querySelector(".update .attendance-update")
+const signUpBtn = document.querySelector(".update #sign-up")
+const newPayBtn = document.querySelector(".update #new-pay")
+const atdBtn = document.querySelector(".update #attendance-update")
 signUpBtn.addEventListener('click', function() {
   location.href = "/src/new-member.html"
 })
-
+newPayBtn.addEventListener('click', function() {
+  location.href = `/src/new-payment.html?user_id=${currentMemberID}`
+})
 
 const db = getFirestore(app)
 /*
