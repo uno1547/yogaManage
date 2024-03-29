@@ -28,13 +28,12 @@ table.addEventListener("mouseleave", function() {
     const checkedRowIndex = Array.from(table.querySelectorAll('tr')).indexOf(checkedRow)
     const rowHeight = checkedRow.offsetHeight
     const rowScrollVal = rowHeight * checkedRowIndex + 1
-    table.scrollTo(0, rowScrollVal)
     table.scrollTo({
       top : rowScrollVal,
       behavior : 'smooth'
     })
+    // table.scrollTo(0, rowScrollVal)
   } else { // 체크된요소존재안함
-    table.scrollTo(0, 0)
     table.scrollTo({
       top : 0,
       behavior : 'smooth'
