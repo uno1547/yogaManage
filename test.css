@@ -1,66 +1,27 @@
-#drop-down {
-  border: 1px solid;
-  position: relative;
-  width: 700px;
-}
-#drop-down #drop-down-btn {
-  background-color: #b5b5b5;
-  height: 30px;
-}
-#drop-down #drop-down-content {
-  display: none;
-  width: 100%;
-}
-#drop-down #drop-down-content a {
-  background-color: #ff8b8b;
-  display: block;
-}
-#drop-down #drop-down-content label{
-  background-color: #ff8b8b;
-  display: block;
-}
-#drop-down:hover #drop-down-content {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  /* width: 500px; */
-}
-#drop-down2 {
-  border: 3px solid rgb(255, 92, 92);
-  position: relative;
-  width: 700px;
-  /* overflow-y: scroll; */
-}
-#drop-down2 div,
-#drop-down2:hover div{
-  display: flex;
-  flex-direction: column;
-}
-#drop-down2 #drop-down-hover {
-  background-color: #b5b5b5;
-}
-#drop-down2 #drop-down-hide {
-  display: none;
-  width: 100%;
-}
-#drop-down2 #drop-down-hide label {
-  background-color: #ff8b8b;
-  /* display: block; */
-}
-#drop-down2:hover #drop-down-hide {
-  display: flex;
-  position: absolute;
-}
-
-#drop-down3 {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid black;
-  height: 42px;
-  width: 300px;
-  overflow: hidden;
-}
-#drop-down3:hover {
+div {
+  width: 500px;
+  height: 200px;
   overflow-y: scroll;
-  height: 70px;
+}
+table#first-table {
+  border: 1px solid black;
+  height: 100px;
+  width: 500px;
+  display: block;
+  overflow-y: scroll;
+}
+table#second-table {
+  border: 1px solid black;
+  display: block;
+  height: 100px;
+  width: 500px;
+  overflow-y: scroll;
+  transition: .5s;
+}
+table#second-table:hover {
+  top: 30px;
+  left: 19px;
+  position: absolute;
+  height: 200px;
+  overflow-y: scroll;
 }
