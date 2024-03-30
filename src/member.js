@@ -248,7 +248,7 @@ function showMemberPayments(payments) {
     let payment = payments[i]
     let [classType, classPerWeek, classTerm] = [payment.pay_class.class_type, payment.pay_class.times_a_week, payment.pay_class.class_term]
     let payDate = new Date(payment.pay_year, payment.pay_month - 1, payment.pay_day)
-    let expireDate = payDate
+    let expireDate = payDate //??? 이거 paydate도 바뀌는거 아닌가 어차피 아래에서 payDate 에 값할당하기때문에 음 그러면 expire에 들어가있던 참조는 어캐된는거지 
     payDate = payDate.toLocaleDateString().slice(0, -1)
     expireDate.setMonth(expireDate.getMonth() + payment.pay_class.class_term)
     expireDate = expireDate.toLocaleDateString().slice(0, -1)
