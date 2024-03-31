@@ -13,7 +13,7 @@ const app = initializeApp({
 
 const db = getFirestore(app)
 let q = query(collection(db, "payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
-console.log(getDate())
+console.log(q);
 q = query(collection(db, "payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
 q = query(collection(db, "payments"), where("pay_day", "<=", getDate()[2])) //현재날짜의'일'이전 일치하는쿼리
 const querySnapshot = await getDocs(q)
@@ -45,9 +45,7 @@ function getDate() {
   let date = new Date()
   let year = date.getFullYear()
   let month = date.getMonth() + 1
-  // month = String(month).padStart(2, '0')
   let day = date.getDate()
-  // console.log(year, month, day)
   return [year, month, day]
 }
 //쿼리를 받아 일별누적매출 담긴 일반객체배열로 반환

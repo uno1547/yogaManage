@@ -1,39 +1,3 @@
-a {
-  text-decoration: none;
-  color: black;
-  cursor: pointer;
-}
-.header a {
-  padding: 30px 10px;
-}
-.header {
-  width: 900px;
-  margin: auto;
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-.header ul {
-  display: flex;
-  list-style-type: none;
-}
-
-.header ul li {
-  /* padding: 0 30px; */
-  margin: 0 25px;
-}
-.header ul li a,
-.header ul li span {
-  font-weight: bold;
-  font-size: 20px;
-  line-height: 50px;
-  vertical-align: middle;
-}
-
-.header ul li:hover a,
-.header ul li:hover span {
-  color: rgb(167, 167, 167);
-}
 .inner {
   width: 820px;
   border: 1px solid black;

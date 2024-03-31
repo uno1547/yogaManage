@@ -1,41 +1,3 @@
-/* COMMON */
-a {
-  text-decoration: none;
-  color: black;
-  cursor: pointer;
-}
-li {
-  list-style-type: none;
-}
-/* header */
-.header a {
-  padding: 30px 10px;
-}
-.header {
-  width: 900px;
-  margin: auto;
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-.header ul {
-  display: flex;
-  list-style-type: none;
-}
-.header ul li {
-  margin: 0 25px;
-}
-.header ul li a,
-.header ul li span {
-  font-weight: bold;
-  font-size: 20px;
-  line-height: 50px;
-  vertical-align: middle;
-}
-.header ul li:hover a,
-.header ul li:hover span {
-  color: rgb(167, 167, 167);
-}
 /* main */
 .inner {
   width: 1570px;
@@ -57,16 +19,16 @@ li {
 }
 
 #personal-data .update{
-  /* border: 1px solid black; */
   width: 200px; 
   height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  /* margin-right: 10px; */
-  /* position: absolute;  */
+  /* 
+  position: absolute;  
   left: -210px;
+  */
 }
 #personal-data .update button{
   width: 180px;
@@ -90,7 +52,6 @@ li {
   font-size: 18px;
   font-weight: bold;
   left: 719px ;
-  /* top: 0px; */
 }
 #personal-data #photo {
   width: 200px;
@@ -117,10 +78,12 @@ table.info td {
 
 /*.row > #attend-calender */
 #attend-calender {
-  /* border: 1px solid red; */
   width: 518px;
   height: 465px;
 } 
+#attend-calender div:first-child{
+  /* margin-bottom: 0px; */
+}
 /* #payment-list */
 #payment-list {
   margin-top: 15px;
@@ -186,6 +149,7 @@ table.val td:nth-child(4) {
 }
 table.val td:nth-child(5) {
   width: 0px;
+  /* 얘네는 뭐지 ㅋㅋ */
 }
 table.val td:nth-child(6) {
   width: 0px;

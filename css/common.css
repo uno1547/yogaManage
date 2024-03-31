@@ -8,6 +8,7 @@ a {
 }
 .header {
   width: 900px;
+  width: 1500px;
   margin: auto;
   margin-top: 10px;
   display: flex;
@@ -33,9 +34,4 @@ a {
 .header ul li:hover a,
 .header ul li:hover span {
   color: rgb(167, 167, 167);
-}
-
-.calender {
-  width: 1500px;
-  margin: 30px auto;
 }

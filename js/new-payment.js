@@ -48,31 +48,23 @@ const classDic = {
 // table 및 하위요소에서 click 발생시 해당줄의 radio활성화
 const table = document.querySelector("table#drop-down")
 table.addEventListener("click", function(evt) {
-  // console.log(evt.target);
   const target = evt.target
-  // console.log(target.parentElement.tagName);
   let radio
   if (target.parentElement.tagName == "TR") {
     radio = target.parentElement.querySelector("input[type='radio']")
-    // console.log(radio);
   } else if (target.parentElement.tagName == "TBODY"){
     radio = target.querySelector("input[type='radio']")
-    // console.log(radio);
   } else {
     return
   }
-  // console.log(radio);
   radio.checked = "true" //이건 change이벤트 발생안하는듯 
-  // console.log(radio);
   const event = new Event("change", {bubbles : true}) //bubbles : true를 줘야 동작하는건 
-  // 아마도 radio(input) 이 "change" 이벤트를 발생한거라서
+  // 아마도 radio(input) 이 "change" 이벤트를 발생한거라서 form에달린 change 이벤트를 트리거하려면 버블시켜야함
   radio.dispatchEvent(event)
-  // dispatchEvent
 })
 // 드롭다운밖으로 마우스 이동시 top 아니면 선택요소로 스크롤
 table.addEventListener("mouseleave", function() {
   const isRadioChecked = table.querySelector("input[type='radio']:checked")
-  // console.log(`현재 스크롤바의 value ${table.scrollTop}`)
   if (isRadioChecked) { //체크된요소가존재
     const checkedRow = isRadioChecked.closest('tr')
     const checkedRowIndex = Array.from(table.querySelectorAll('tr')).indexOf(checkedRow)
@@ -80,13 +72,11 @@ table.addEventListener("mouseleave", function() {
     //이걸로하면 56.53 이 올려져서 57이할당됨
     // 이렇게 되면 조금씩 오차가 커져서 나중에 스크롤된 위치가 안맞게됨
     const rowHeight = 56.57000006
-    // const rowHeight = 56.77000006
     const rowScrollVal = rowHeight * checkedRowIndex
     table.scrollTo({
       top : rowScrollVal,
       behavior : 'smooth'
     })
-    // table.scrollTo(0, rowScrollVal)
   } else { // 체크된요소존재안함
     table.scrollTo({
       top : 0,
@@ -106,10 +96,8 @@ form.addEventListener("change", function(evt) {
 //입력후 '결제등록'누르면 formData로 객체데이터 생성
 form.addEventListener("submit", function(evt) {
   evt.preventDefault()
-  // console.log('submit!!');
   const formData = new FormData(evt.target)
   const memberObj = Object.fromEntries(formData)
-  // console.log('form으로얻은 formdata :',memberObj)
   // // { class : 'group', method : 'credit' , teacher : '김영원' }
   setPaymentObj(memberObj) 
 })
@@ -117,23 +105,18 @@ form.addEventListener("submit", function(evt) {
 function showPaymentDiv() {
   const formData = new FormData(document.querySelector('form'))
   const memberObj = Object.fromEntries(formData)
-  console.log(memberObj);
+  // // { class : 'group', method : 'credit' , teacher : '김영원' }
   let [classKey, payMethod, payTeacher] = [memberObj.class, memberObj.method, memberObj.teacher]
-  console.log(payMethod);
   let [type, timesaweek, term] = [classDic[classKey].class_type, classDic[classKey].times_a_week, classDic[classKey].class_term]
   type = (type == 'group') ? '그룹레슨' : '개인레슨'
   let payDate = new Date()
   let expireDate = payDate
   payDate = payDate.toLocaleDateString().slice(0, -1)
-  console.log(payDate);
-  console.log(expireDate);
   expireDate.setMonth(expireDate.getMonth() + term)
   expireDate = expireDate.toLocaleDateString().slice(0, -1)
   const fee = classDic[classKey][`${payMethod}_price`]
   payMethod = (payMethod == 'credit' ? '카드' : '현금')
-  console.log(fee);
   const commaFormattedFee = getCommaFormattedNumbers(String(fee))
-  console.log(commaFormattedFee);
 
   const paymentDiv = document.querySelector('#payment-info')
   if (paymentDiv) { //있다면 텍스트만 교체
@@ -142,8 +125,6 @@ function showPaymentDiv() {
     paymentDiv.querySelector("#text-pay-date").textContent = payDate
     paymentDiv.querySelector("#text-pay-teacher").textContent = payTeacher 
     paymentDiv.querySelector("#text-pay-fee").textContent = `${commaFormattedFee}원 [${payMethod}]`
-    // const [payYear, payMonth, payDay] = [payDate.getFullYear(), payDate.getMonth() + 1, payDate.getDate()]
-    // const [endYear, endMonth, endDay] = [payYear]
   } else { //없다면 추가
     const paymentDiv = `
     <div id="payment-info">
@@ -204,13 +185,10 @@ function setPaymentObj(obj) {
   payment.pay_teacher = obj.teacher
   payment.pay_method = obj.method
   const payKey = obj.class
-  // console.log(payment);
-  // console.log(payKey);
   setPaymentClassInfo(payment, payKey)
 }
 // 넘어온 obj.class 속성으로 pay_fee 및 class_type, times_a_week, class_term 담긴 pay_class 프로퍼티(추가)
 function setPaymentClassInfo(obj, key) { //이거 원본 수정될수도있는건가?
-  // console.log(obj, key)
   const payClass = {
     class_type : classDic[key].class_type,
     times_a_week : classDic[key].times_a_week,
@@ -218,16 +196,14 @@ function setPaymentClassInfo(obj, key) { //이거 원본 수정될수도있는�
   } //여기서 classDic의 참조가 넘어와서 망가질수있는건가
   obj.pay_class = payClass
   obj.pay_fee = classDic[key][`${obj.pay_method}_price`]
-  console.log(obj);
-  // uploadPayment(obj)
+  uploadPayment(obj)
 }
 
 // setpaymentclassinfo에서 넘어온 obj를 firestore에 등록
-/*
+
 async function uploadPayment(obj) {
   const docRef = await addDoc(collection(db, "test_payments"), obj)
   console.log('upload!!')
   alert("새결제가 등록되었습니다")
   location.href = "/src/member-manage.html"
 }
-*/

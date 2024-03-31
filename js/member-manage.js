@@ -63,15 +63,12 @@ prevBtn.addEventListener('click', function () {
   }
   currentMember = members[currentMemberIndex]
   currentMemberID = currentMember.user_id
-  // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
 nextBtn.addEventListener('click', function () {
-  // console.log(members);
   currentMemberIndex = Math.abs((currentMemberIndex + 1) % members.length)
   currentMember = members[currentMemberIndex]
   currentMemberID = currentMember.user_id
-  // console.log(`현재멤버 : 멤버의 index${currentMemberIndex} 멤버의 ID${currentMemberID}`);
   getQueries(currentMemberID)
 })
 toUpdateBtn.addEventListener('click', function () {
@@ -137,13 +134,14 @@ const memberQueries = await getDocs(collection(db, "test_members"))
 const members = [] 
 memberQueries.forEach(doc => members.push(doc.data()))
 members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
-// console.log(members);
+// [{}, {}, {}, {}]
 
 let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
 let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
 console.log(currentMember,`멤버의index ${currentMemberIndex} 멤버id${currentMemberID}`);
 
+// getQueries()
 let currentMemberPayments = []
 let currentMemberAttendance = []
 //현재회원의 userid로 조회한 결제내역들 불러옴
