@@ -10,6 +10,23 @@ const app = initializeApp({
 })
 const db = getFirestore(app)
 
+//임의날짜의 결제를 추가하기 위한 코드
+/* 무작위 id로 생성이기 때문에 아마도 로딩될때마다 중복결제 생길듯 ㅋ
+await addDoc(collection(db, "open_payments"), {
+  user_id : 2212,
+  pay_year : 2023, 
+  pay_month : 12, 
+  pay_day : 25, 
+  pay_fee : 300000, 
+  pay_method : "cash", 
+  pay_teacher : "김영원", 
+  pay_class : { 
+    class_type : "group", 
+    times_a_week : 2, 
+    class_term : 1, 
+  }
+});
+*/
 const searchParams = new URLSearchParams(window.location.search)
 const receivedId = Number(searchParams.get('user_id'))
 console.log(receivedId)
@@ -202,7 +219,7 @@ function setPaymentClassInfo(obj, key) { //이거 원본 수정될수도있는�
 // setpaymentclassinfo에서 넘어온 obj를 firestore에 등록
 
 async function uploadPayment(obj) {
-  const docRef = await addDoc(collection(db, "test_payments"), obj)
+  const docRef = await addDoc(collection(db, "open_payments"), obj)
   console.log('upload!!')
   alert("새결제가 등록되었습니다")
   location.href = "/src/member-manage.html"

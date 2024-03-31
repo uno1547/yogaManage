@@ -121,10 +121,10 @@ table.key th:nth-child(4) {
   width: 110px;
 }
 table.key th:nth-child(5) {
-  width: 20px;
+  width: 40px;
 }
 table.key th:nth-child(6) {
-  width: 60px;
+  width: 90px;
 }
 /* 결제내역 */
 #payment-list table.val {
@@ -136,21 +136,21 @@ table.key th:nth-child(6) {
   background-color: rgb(223, 223, 223);
 }
 table.val td:nth-child(1) {
-  width: 40px;
+  width: 30px;
 }
 table.val td:nth-child(2) {
-  width: 120px;  
+  width: 80px;  
 }
 table.val td:nth-child(3) {
-  width: 130px;
+  width: 110px;
 }
 table.val td:nth-child(4) {
-  width: 150px;
+  width: 110px;
 }
 table.val td:nth-child(5) {
-  width: 0px;
+  width: 40px;
   /* 얘네는 뭐지 ㅋㅋ */
 }
 table.val td:nth-child(6) {
-  width: 0px;
+  width: 90px;
 }

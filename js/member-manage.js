@@ -51,6 +51,33 @@ await setDoc(doc(db, "test_attendance", 'new_attendance12'), {
   attend_time : "08:15:13",
 });
 */
+/*
+//무작위 id의 결제추가
+await addDoc(collection(db, "test_payments"), {
+  user_id : 4385,
+  pay_year : 2024,
+  pay_month : 3,
+  pay_day : 14,
+  pay_fee : 100000,
+  pay_method : "cash",
+  pay_teacher : "김영원",
+  pay_class : {
+    class_type : "그룹레슨",
+    times_a_week : 1,
+    class_term : 1,
+    class_fee : 100000,
+    status : "valid"
+  }
+});
+//무작위 id의 출석추가
+await addDoc(collection(db, "test_attendance"), {
+  user_id : 4385,
+  attend_year : 2024,
+  attend_month : 3,
+  attend_day : 14,
+  attend_time : "08:15:13",
+});
+*/
 const buttons = document.querySelector("#personal-data .buttons")
 const prevBtn = buttons.querySelector("#prevMember")
 const nextBtn = buttons.querySelector("#nextMember")
@@ -72,9 +99,6 @@ nextBtn.addEventListener('click', function () {
   getQueries(currentMemberID)
 })
 toUpdateBtn.addEventListener('click', function () {
-  console.log(currentMemberID);
-  // const want = prompt('이동할래?')
-  // want ? location.href = `/src/update-info.html?user_id=${currentMemberID}` : 0
   location.href = `/src/update-info.html?user_id=${currentMemberID}`
 })
 
@@ -89,46 +113,7 @@ newPayBtn.addEventListener('click', function() {
 })
 
 const db = getFirestore(app)
-/*
-await addDoc(collection(db, "test_payments"), {
-  user_id : 4385,
-  pay_year : 2024,
-  pay_month : 3,
-  pay_day : 14,
-  pay_fee : 100000,
-  pay_method : "cash",
-  pay_teacher : "김영원",
-  pay_class : {
-    class_type : "그룹레슨",
-    times_a_week : 1,
-    class_term : 1,
-    class_fee : 100000,
-    status : "valid"
-  }
-});
-
-await addDoc(collection(db, "test_attendance"), {
-  user_id : 4385,
-  attend_year : 2024,
-  attend_month : 3,
-  attend_day : 14,
-  attend_time : "08:15:13",
-});
-*/
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
-/* async 함수 내부에서도 쓸수있는것같은데 아직 어떻게 쓰는건지 감이 안옴
-async function getMemQueries() {
-  const memQ = await getDocs(collection(db, "test_members"))
-  const members = []
-  memQ.forEach((doc) => members.push(doc.data()))
-  return members
-}
-const pr = getMemQueries()
-console.log(pr);
-pr.then((data) => console.log(data))
-console.log(33333);
-*/
-//
 const memberQueries = await getDocs(collection(db, "test_members"))
 // 전역에 멤버 배열 !!!
 const members = [] 
@@ -139,50 +124,29 @@ members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
 let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
 let currentMemberIndex = members.indexOf(currentMember)
 let currentMemberID = currentMember.user_id 
-console.log(currentMember,`멤버의index ${currentMemberIndex} 멤버id${currentMemberID}`);
-
-// getQueries()
-let currentMemberPayments = []
-let currentMemberAttendance = []
-//현재회원의 userid로 조회한 결제내역들 불러옴
-const payQueries = query(collection(db, "test_payments"), where("user_id", "==", currentMemberID))
-const payDocs = await getDocs(payQueries)
-payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
-
-//현재회원의 userid로 조회한 출석내역들 불러옴
-const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", currentMemberID))
-const attendDocs = await getDocs(attendQueries)
-attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
-
-viewer(currentMember, currentMemberPayments, currentMemberAttendance)
+getQueries(currentMemberID)
 // async 함수 이건 그냥 반복호출을위해 함수가 필요해서 한느낌 promise then을 가독성 좋게 하기위함은 아닌듯 이제보니
 async function getQueries(userid) {
-  currentMemberPayments = []
-  currentMemberAttendance = []
-  console.log('결제 :', currentMemberPayments);
-  console.log('출석 :', currentMemberAttendance);
-  const payQueries = query(collection(db, "test_payments"), where("user_id", "==", userid))
-  const attendQueries = query(collection(db, "test_attendance"), where("user_id", "==", userid))
+  const currentMemberPayments = []
+  const currentMemberAttendance = []
+  const payQueries = query(collection(db, "open_payments"), where("user_id", "==", userid))
+  const attendQueries = query(collection(db, "open_attendances"), where("user_id", "==", userid))
   const payDocs = await getDocs(payQueries)
   payDocs.forEach((doc) => currentMemberPayments.push(doc.data()))
   const attendDocs = await getDocs(attendQueries)
   attendDocs.forEach((doc) => currentMemberAttendance.push(doc.data()))
-  console.log('결제 :', currentMemberPayments);
-  console.log('출석 :', currentMemberAttendance);
   viewer(currentMember, currentMemberPayments, currentMemberAttendance)
 }
 function viewer(member, payments, attendances) {
-  // console.log(member);
   showMemberInfo(member)
   showMemberClass(payments)
   // console.log(payments); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   showMemberPayments(payments)
-  showMemberAttendane(attendances)
+  showMemberAttendance(attendances)
 }
 function showMemberInfo(member) {
   for (let prop in member) {
     let tdEl = document.querySelector(`td.${prop}`)
-    // console.log(tdEl)
     if (prop == "gender") {
       document.querySelector(".gender-span").textContent = `[${member[prop]}]`
     } else if (prop == "name"){
@@ -232,7 +196,13 @@ function showMemberClass(payments) {
   console.log(recentPay)
   const classTd = document.querySelector("table.info td.class")
   if (recentPay) {
-    classTd.innerHTML = `<span>${recentPay.pay_class.class_type}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
+    let typeStr
+    if (recentPay.pay_class.class_type == "group") {
+      typeStr = "요가"
+    } else { //멤버의 그룹이랑 요가랑 무슨상관인지 모르겠음 
+      typeStr = "개인레슨"
+    }
+    classTd.innerHTML = `<span>${typeStr}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
   } else {
     classTd.innerHTML = `등록된 수업이없습니다`
   }
@@ -245,6 +215,11 @@ function showMemberPayments(payments) {
   for (let i = 0; i < payments.length; i++) {
     let payment = payments[i]
     let [classType, classPerWeek, classTerm] = [payment.pay_class.class_type, payment.pay_class.times_a_week, payment.pay_class.class_term]
+    if (classType == 'group') {
+      classType = '요가'
+    } else {
+      classType = '개인레슨'
+    }
     let payDate = new Date(payment.pay_year, payment.pay_month - 1, payment.pay_day)
     let expireDate = payDate //??? 이거 paydate도 바뀌는거 아닌가 어차피 아래에서 payDate 에 값할당하기때문에 음 그러면 expire에 들어가있던 참조는 어캐된는거지 
     payDate = payDate.toLocaleDateString().slice(0, -1)
@@ -252,20 +227,27 @@ function showMemberPayments(payments) {
     expireDate = expireDate.toLocaleDateString().slice(0, -1)
     let fee = String(payment.pay_fee)
     let commaFormattedFee = getCommaFormattedNumbers(fee)
+    let status 
+    if (payment.pay_class.status == 'valid') {
+      status = 'valid'
+    } else {
+      status = '미정'
+    }
     const trEls = `
     <tr>
       <td>${i + 1}</td>
       <td>${payDate}</td>
       <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
       <td>${payDate} ~ ${expireDate}</td>
-      <td>${payment.pay_class.status}</td>
+      <td>${status}</td>
       <td>${commaFormattedFee} 원</td>
     </tr>
     `
     tableArea.innerHTML += trEls
   }
 }
-function showMemberAttendane(attendances) { //attendance객체 배열 매개변수로 받아서 
+//attendance객체 배열 매개변수로 받아서 
+function showMemberAttendance(attendances) { 
   let attendEvents = []
   attendances.forEach((attendance) => {
     let event = {}
