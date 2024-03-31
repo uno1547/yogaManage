@@ -193,7 +193,7 @@ function showMemberClass(payments) {
   })
   // console.log(payments)
   let recentPay = payments[0]
-  console.log(recentPay)
+  // console.log(recentPay)
   const classTd = document.querySelector("table.info td.class")
   if (recentPay) {
     let typeStr

@@ -24,29 +24,19 @@ console.log(sales)
 const event = getEvents(sales)
 console.log(event)
 */
- /*
- const yearQueries = query(collection(db, "open_payments"), where("pay_year", "==", getDate()[0])) //현재날짜의 '년도' 일치하는쿼리
- const yearSnapshot = await getDocs(yearQueries)
- yearSnapshot.forEach((doc) => {
-   console.log(doc.data());
-  })
-  const monthQueries = query(collection(db, "open_payments"), where("pay_month", "==", getDate()[1])) //현재날짜의 '월' 일치하는쿼리
-  const monthSnapshot = await getDocs(monthQueries)
-  monthSnapshot.forEach((doc) => {
-    console.log(doc.data());
-  })
-  const dayQueries = query(collection(db, "open_payments"), where("pay_day", "<=", getDate()[2])) //현재날짜의'일'이전 일치하는쿼리
-  const daySnapshot = await getDocs(dayQueries)
-  daySnapshot.forEach((doc) => {
-    console.log(doc.data());
-  })
-  */
+//전체 결제내역을 불러옴 
 const q = query(collection(db, "open_payments"))
 const snapShots = await getDocs(q)
-console.log('hi')
+const paymentsArr = getPaymentsArr(snapShots) //결제객체 배열
+// 객체배열을 통해서 먼저 카드결제 표시하는 이벤트, 다음 현금결제 표시하는 이벤트, 마지막으로 누적매출표시하는 이벤트 추가 
+const sortedPayments = getSortedPayments(paymentsArr)
+const sortedEvents = getSortedEvents(sortedPayments)
+
+/*
 const paymentsByDate = getPaymentsByDate(snapShots)
 const daySales = getDaySales(paymentsByDate)
 const saleEvents = getEvents(daySales)
+*/
 //캘린더에 일일매출을 표시해서 출력
 const calendarEl = document.querySelector('.calender')
 const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -58,14 +48,77 @@ const calendar = new FullCalendar.Calendar(calendarEl, {
     start : '',
     center : 'title'
   },
-  events : saleEvents,
-  eventColor : 'transparent',
-  eventTextColor : 'black'
-  // eventDisplay : 'block'
+  events : sortedEvents,
+  // eventColor : 'transparent',
+  eventColor : 'rgb(256, 256, 256)',
+  eventTextColor : 'rgb(0, 0, 0)'
 })
 calendar.render()
 
+function getPaymentsArr(snapShots) {
+  const paymentsArr = []
+  snapShots.forEach((snapshot) => {
+    paymentsArr.push(snapshot.data())
+  })
+  // console.log(paymentsArr);
+  return paymentsArr
+}
+function getSortedPayments(arr) {
+  const sortedPayments = []
+  for (let payment of arr) {
+    const prevSale = sortedPayments.find((sale) => {
+      return (sale.pay_year == payment.pay_year) && (sale.pay_month == payment.pay_month) && (sale.pay_day == payment.pay_day)
+    })
+    if (prevSale) { //동일한 날짜에 해당하는 결제 존재!!
+      // ex) {pay_year : 2024, pay_month : 3, pay_day : 31, credit : 300000, cash : 0} 존재한다고 가정
+      prevSale[`${payment.pay_method}`] += payment.pay_fee
+    } else { //존재하지않는다면 {pay_year : 2024, pay_month : 03, pay_day : 31, credit : 30000, cash : 0} 이런식으로 추가!!
+      const sortedPay = {
+        pay_year : payment.pay_year,
+        pay_month : payment.pay_month,
+        pay_day : payment.pay_day,
+        credit : 0,
+        cash : 0
+      }
+      sortedPay[`${payment.pay_method}`] += payment.pay_fee
+      sortedPayments.push(sortedPay)
+    }
+  }
+  return sortedPayments
+}
+function getSortedEvents(arr) {
+  const sortedEvents = []
+  for (let pay of arr) {
+    const year = pay.pay_year
+    const month = String(pay.pay_month).padStart(2, '0')
+    const day = String(pay.pay_day).padStart(2, '0')
+    const creditEvt = {
+      title : `카드: ${getCommaFormattedNumbers(String(pay.credit))}원`,
+      start : `${year}-${month}-${day}`,
+      end : `${year}-${month}-${day}`,
+    }
+    const cashEvt = {
+      title : `현금: ${getCommaFormattedNumbers(String(pay.cash))}원`,
+      start : `${year}-${month}-${day}`,
+      end : `${year}-${month}-${day}`,
+    }
+    const totalEvt = {
+      title : `현재: ${getCommaFormattedNumbers(String(pay.credit+pay.cash))}원`,
+      start : `${year}-${month}-${day}`,
+      end : `${year}-${month}-${day}`,
+    }
+    sortedEvents.push(creditEvt) // push 순서에 상관없이 이벤트가 사전순으로 정렬되는듯하다
+    sortedEvents.push(cashEvt)
+    sortedEvents.push(totalEvt)
+  }
+  return sortedEvents
+}
+
+
+
+
 //현재 날짜에대한 [년, 월, 일]을 반환
+
 function getDate() {
   let date = new Date()
   let year = date.getFullYear()
@@ -74,6 +127,7 @@ function getDate() {
   console.log(year, month, day);
   return [year, month, day]
 }
+
 //스냅샷을 받아 일반객체배열로 반환
 function getPaymentsByDate(snapShots) {
   const paymentsByDate = []
@@ -110,7 +164,7 @@ function getDaySales(arr) {
 }
 //날짜별로 이벤트객체배열 반환
 function getEvents(daySales) {
-  console.log(daySales);
+  // console.log(daySales);
   let events = []
   for (let daySale of daySales) {
     const year = daySale.pay_year
@@ -125,6 +179,11 @@ function getEvents(daySales) {
     }
     events.push(evt)
   }
+  events.push({
+    title : '카드 : 100원',
+    start : '2024-03-14',
+    end : '2024-03-14',
+  })
   return events
 }
 function getCommaFormattedNumbers(feeStr) {
