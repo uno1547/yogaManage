@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실시간 방문현황</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/live-attendance.css">
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <h1><a href="/src">UNO YOGA</a></h1>
+    </div>
+    <ul>
+      <li><span class="material-symbols-outlined">
+        group
+      </span><a href="member-manage.html">회원관리바로가기</a></li>
+      <li><span class="material-symbols-outlined">
+        search
+      </span><a href="search.html">회원통합검색</a></li>
+      <li><span class="material-symbols-outlined">
+        analytics
+      </span><a href="statis.html">통계</a></li>
+    </ul>
+  </div>
+  <hr>
+  <div class="inner">
+    <button id="add">방문추가</button>
+    <button id="delete">방문삭제</button>
+    <div id = "class-info">
+      <span>현재수업의 실시간 방문현황이에요</span>
+    </div>
+    <div id = "attend-pallette">
+      <div class="attend"></div>
+      <div class="attend"></div>
+      <div class="attend"></div>
+      <div class="attend"></div>
+    </div>
+  </div>
+  <script type="module" src="../js/live-attendance.js"></script>
+</body>
+</html>
