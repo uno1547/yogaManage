@@ -25,7 +25,7 @@ await addDoc(collection(db, "open_attendances"), {
 
 */
 //현재 날짜에 해당하는 출석들 모두 조회(음 하루를 시간대별로 분리해서 수업대별로 출석현황 불러올수도있을듯)
-const q = query(collection(db, "open_attendances"), where("attend_day", "==", 6));
+const q = query(collection(db, "open_attendances"), where("attend_day", "==", new Date().getDate()));
 const querySnapshot = await getDocs(q);
 const todayVisits = []
 querySnapshot.forEach((doc) => {
@@ -36,27 +36,11 @@ const container = document.querySelector('#attend-pallette')
 const sortedVisits = sortVisits(todayVisits)
 const visitInfoArr = await getVisitInfo(sortedVisits)
 showVisits(visitInfoArr)
-showDate() //현재 날짜 표시
-showCurrentTime() //시각표시 interval시작
+showDate() 
+showCurrentTime() 
+//5초마다 새로방문있는지 체크하는 interval등록
+setInterval(waitForVisit, 2000);
 
-function showDate() {
-  const dateEl = document.querySelector("#class-info .text #date span")
-  const today = new Date()
-  const [year, month, date, day] = [today.getFullYear(), today.getMonth(), today.getDate(), today.getDay()]
-  const dayArr = ['일', '월', '화', '수', '목', '금', '토']
-  const dayStr = dayArr[day]
-  dateEl.textContent = `${year}/${month + 1}/${date} ${dayStr}요일`
-}
-function showCurrentTime() {
-  const clockEl = document.querySelector("#class-info .text #clock span")
-  const now = new Date()
-  clockEl.textContent = `현재시각 : ${String(now.getHours()).padStart(2, '0')} : ${String(now.getMinutes()).padStart(2, '0')} : ${String(now.getSeconds()).padStart(2, '0')}`
-  setInterval(() => {
-    const now = new Date()
-    const [hour, minute, second] = [String(now.getHours()).padStart(2, '0'), String(now.getMinutes()).padStart(2, '0'), String(now.getSeconds()).padStart(2, '0')]
-    clockEl.textContent = `현재시각 : ${hour} : ${minute} : ${second}`
-  }, 1000);
-}
 // 불러온 출석들에 대해 시간순으로 정렬
 function sortVisits(visits) {
   // console.log(visits)
@@ -141,6 +125,7 @@ async function getName(userId) {
 //visitInfoArr배열 받아서 html추가
 function showVisits(arr) {
   const container = document.querySelector('#attend-pallette')
+  container.innerHTML = ``
   for (let visit of arr) {
     const attendCardEl = `
     <div class="attend">
@@ -164,14 +149,45 @@ function showVisits(arr) {
   const visitNumText = document.querySelector('#class-info .text #visit-num span')
   visitNumText.textContent = `현재 방문자 수는 ${curVisitors}명 입니다.`
 }
-
-async function addVisit() {
-  const date = new Date()
-  const [attend_year, attend_month, attend_day] = [date.getFullYear(),date.getMonth() + 1, date.getDate()]
-  // const attend_time = date.toLocaleTimeString()
-  console.log(attend_year, attend_month, attend_day, attend_time);
-  const attend_time = [date.getHours(), date.getMinutes(), date.getSeconds()]
-
+//현재 날짜 표시
+function showDate() {
+  const dateEl = document.querySelector("#class-info .text #date span")
+  const today = new Date()
+  const [year, month, date, day] = [today.getFullYear(), today.getMonth(), today.getDate(), today.getDay()]
+  const dayArr = ['일', '월', '화', '수', '목', '금', '토']
+  const dayStr = dayArr[day]
+  dateEl.textContent = `${year}/${month + 1}/${date} ${dayStr}요일`
+}
+//시각표시 interval시작
+function showCurrentTime() {
+  const clockEl = document.querySelector("#class-info .text #clock span")
+  const now = new Date()
+  clockEl.textContent = `현재시각 : ${String(now.getHours()).padStart(2, '0')} : ${String(now.getMinutes()).padStart(2, '0')} : ${String(now.getSeconds()).padStart(2, '0')}`
+  setInterval(() => {
+    const now = new Date()
+    const [hour, minute, second] = [String(now.getHours()).padStart(2, '0'), String(now.getMinutes()).padStart(2, '0'), String(now.getSeconds()).padStart(2, '0')]
+    clockEl.textContent = `현재시각 : ${hour} : ${minute} : ${second}`
+  }, 1000);
+}
+//새로운 방문 갱신,처리,표시하는 interval함수
+async function waitForVisit() {
+  const newVisits = await checkVisit()
+  const sortedVisits = sortVisits(newVisits)
+  console.log(newVisits);
+  console.log(sortedVisits);
+  const visitInfoArr = await getVisitInfo(sortedVisits)
+  showVisits(visitInfoArr)
+}
+//현재 날짜에 대한 출석 불러오는 함수
+//현재 시간대에 대한걸 불러오는게 맞는건가 일단 날짜 일치부터 해결
+async function checkVisit() {
+  const q = query(collection(db, "open_attendances"), where("attend_day", "==", new Date().getDate()));
+  const querySnapshot = await getDocs(q);
+  const todayVisits = []
+  querySnapshot.forEach((doc) => {
+    todayVisits.push(doc.data())
+  })
+  return todayVisits
 }
 
 // 현재 총 방문자 수

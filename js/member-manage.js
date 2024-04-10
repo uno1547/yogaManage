@@ -111,7 +111,9 @@ signUpBtn.addEventListener('click', function() {
 newPayBtn.addEventListener('click', function() {
   location.href = `/src/new-payment.html?user_id=${currentMemberID}`
 })
-
+atdBtn.addEventListener('click', function() {
+  location.href = `/src/live-attendance.html`
+})
 const db = getFirestore(app)
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
 const memberQueries = await getDocs(collection(db, "test_members"))
