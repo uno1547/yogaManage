@@ -2,7 +2,7 @@
 .inner {
   /* width: 1120px; */
   width: 1320px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   margin: 50px auto;
 }
 /* .inner #class-info */
@@ -13,8 +13,15 @@
   font-size: 40px;
   padding: 20px;
 }
-#class-info .text span {
-
+#class-info .text #date {
+  padding: 10px 0px;
+}
+#class-info .text #clock {
+  font-size: 20px;
+}
+#class-info .text #visit-num {
+  padding: 10px 0px;
+  font-size: 30px;
 }
 /* .inner #attend-pallette */
 .inner #attend-pallette {

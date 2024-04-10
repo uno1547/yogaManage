@@ -36,7 +36,27 @@ const container = document.querySelector('#attend-pallette')
 const sortedVisits = sortVisits(todayVisits)
 const visitInfoArr = await getVisitInfo(sortedVisits)
 showVisits(visitInfoArr)
+showDate() //현재 날짜 표시
+showCurrentTime() //시각표시 interval시작
 
+function showDate() {
+  const dateEl = document.querySelector("#class-info .text #date span")
+  const today = new Date()
+  const [year, month, date, day] = [today.getFullYear(), today.getMonth(), today.getDate(), today.getDay()]
+  const dayArr = ['일', '월', '화', '수', '목', '금', '토']
+  const dayStr = dayArr[day]
+  dateEl.textContent = `${year}/${month + 1}/${date} ${dayStr}요일`
+}
+function showCurrentTime() {
+  const clockEl = document.querySelector("#class-info .text #clock span")
+  const now = new Date()
+  clockEl.textContent = `현재시각 : ${String(now.getHours()).padStart(2, '0')} : ${String(now.getMinutes()).padStart(2, '0')} : ${String(now.getSeconds()).padStart(2, '0')}`
+  setInterval(() => {
+    const now = new Date()
+    const [hour, minute, second] = [String(now.getHours()).padStart(2, '0'), String(now.getMinutes()).padStart(2, '0'), String(now.getSeconds()).padStart(2, '0')]
+    clockEl.textContent = `현재시각 : ${hour} : ${minute} : ${second}`
+  }, 1000);
+}
 // 불러온 출석들에 대해 시간순으로 정렬
 function sortVisits(visits) {
   // console.log(visits)
@@ -141,8 +161,8 @@ function showVisits(arr) {
   }
   //방문자들 카드 표시후 방문자수 표시
   let curVisitors = document.querySelectorAll('.attend').length
-  const visitNumText = document.querySelector('#class-info .text span')
-  visitNumText.textContent = `현재수업의 방문자 수는 ${curVisitors} 명 이에요`
+  const visitNumText = document.querySelector('#class-info .text #visit-num span')
+  visitNumText.textContent = `현재 방문자 수는 ${curVisitors}명 입니다.`
 }
 
 async function addVisit() {
