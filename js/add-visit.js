@@ -19,16 +19,22 @@ await addDoc(collection(db, "open_attendances"), {
 });
 */
 const formEl = document.querySelector('form')
-formEl.addEventListener("submit", function(e) {
-  e.preventDefault()
-  alert('출석완료!!')
-  const userId = Number(formEl.querySelector('input#user-id').value)
-  addVisit(userId)
+const numEl = formEl.querySelector('input[type = "number"]')
+numEl.addEventListener("input", function(e) {
+  if (this.value.length > 4) { //현재 input의 길이
+    this.value = this.value.slice(0, this.maxLength)
+  }
 })
-// console.log(new Date().getHours());
-// console.log(new Date().getMinutes());
-// console.log(new Date().getSeconds());
+formEl.addEventListener("submit", async function(e) {
+  e.preventDefault()
+  const userId = Number(formEl.querySelector('input#user-id').value)
+  if (userId) {
+    await addVisit(userId)
+    alert('출석완료!!')
+  }
+})
 async function addVisit(userId) {
+  console.log(userId);
   const today = new Date()
   await addDoc(collection(db, "open_attendances"), {
     user_id : userId,
@@ -37,4 +43,6 @@ async function addVisit(userId) {
     attend_day : today.getDate(),
     attend_time : [today.getHours(), today.getMinutes(), today.getSeconds()],
   });
+  /*
+  */
 }
