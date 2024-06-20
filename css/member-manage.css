@@ -75,6 +75,15 @@ table.info td {
   font-weight: bold;
   background-color: rgb(223, 223, 223)
 }
+table.info .small-date {
+  font-size: 14px;
+  color: dimgray;
+}
+
+.alert,
+table.info .alert {
+  color: red;
+}
 
 /*.row > #attend-calender */
 #attend-calender {

@@ -39,6 +39,7 @@ class Class {
     this.credit_price = creditPrice  
   }
 }
+// ㅋㅋㅋㅋ 내가짰던건지 기억이안남 
 const classDic = {
   pt : new Class('pt', 10, 3, 600000, 600000),
   group_try : new Class('group', 30, 3, 0, 0),

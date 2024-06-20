@@ -124,7 +124,7 @@ members.sort((a, b) => a.name.localeCompare(b.name)) // 가나다순 정렬
 // [{}, {}, {}, {}]
 
 let currentMember = members[0] //먼저 첫번째 회원담고 기본정보,출결현황,결제내역을 표시!!
-let currentMemberIndex = members.indexOf(currentMember)
+let currentMemberIndex = members.indexOf(currentMember) //****이거 선언을 여기서했는데 맨위에 addEventlistener에서 사용가능한 이유가 뭐임? 이벤트 루프의 그 콜스택말고 큐로 들어가서 처리되서 그런건가!!
 let currentMemberID = currentMember.user_id 
 getQueries(currentMemberID)
 // async 함수 이건 그냥 반복호출을위해 함수가 필요해서 한느낌 promise then을 가독성 좋게 하기위함은 아닌듯 이제보니
@@ -140,6 +140,7 @@ async function getQueries(userid) {
   viewer(currentMember, currentMemberPayments, currentMemberAttendance)
 }
 function viewer(member, payments, attendances) {
+  console.log(payments);
   showMemberInfo(member)
   showMemberClass(payments)
   // console.log(payments); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -153,7 +154,7 @@ function showMemberInfo(member) {
       document.querySelector(".gender-span").textContent = `[${member[prop]}]`
     } else if (prop == "name"){
       document.querySelector(".name-span").textContent = member[prop]
-    } else if(prop == "group") {
+    } else if(prop == "group") { // 이것도 사실 한글로 해도 상관없을듯 
       switch(member[prop]) {
         case "group":
           tdEl.textContent = "그룹레슨"
@@ -204,11 +205,43 @@ function showMemberClass(payments) {
     } else { //멤버의 그룹이랑 요가랑 무슨상관인지 모르겠음 
       typeStr = "개인레슨"
     }
-    classTd.innerHTML = `<span>${typeStr}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span>`
+    // classTd.innerHTML = `<span>${typeStr}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span> \n <span></span>`
+    let payDate = getExpireDate(recentPay)[0]
+    let expireDate = getExpireDate(recentPay)[1]
+    if(checkExpireCome(expireDate)) { //만기일이 다가올경우
+      classTd.innerHTML = `${typeStr} 주 ${recentPay.pay_class.times_a_week}회 [${recentPay.pay_class.class_term}개월] <br> <span class = "small-date alert">${payDate} ~ ${expireDate} [만기 ${checkExpireCome(expireDate)[1]}일전]</span>`
+    } else { //여유있을경우
+      classTd.innerHTML = `${typeStr} 주 ${recentPay.pay_class.times_a_week}회 [${recentPay.pay_class.class_term}개월] <br> <span class = "small-date">${payDate} ~ ${expireDate}</span>`
+    }
   } else {
     classTd.innerHTML = `등록된 수업이없습니다`
   }
 }
+// 특정 결제에 대해 '결제날짜', '수강기간'으로 '수강 만료 날짜'를 반환
+function getExpireDate(payment) {
+  //setMonth 는 Date객체에 대해 사용하면, 초과한 월에 대해 년도 에도 반영이된다.
+  const payDate = new Date(payment.pay_year, payment.pay_month - 1, payment.pay_day)
+  const payDateStr = payDate.toLocaleDateString().slice(0, -1)
+  let expireDate = payDate
+  expireDate.setMonth(payDate.getMonth() + payment.pay_class.class_term)
+  const expireDateStr = expireDate.toLocaleDateString().slice(0, -1)
+
+  return [payDateStr, expireDateStr]
+}
+// 현재 회원이 수강중인 항목(결제) 에대해 만료일이 다가오면 만기예정 알수있게 표현
+function checkExpireCome(expireDateStr) { //expireDate = "2024. 7. 9"
+  // 두 날짜의 일수 차이를 구함
+  const expireDateEls = expireDateStr.split('. ').map((val) => val.padStart(2, '0'))
+  const expireTime = new Date(expireDateEls.join('-')).getTime()
+  // const expireTime = new Date('2024-06-22').getTime()
+  const todayTime = new Date().getTime()
+  const diffSec = expireTime - todayTime
+  const diffDate = Math.floor(Math.abs(diffSec / (1000 * 60 * 60 * 24)))
+  // 만기일이 일주일 이내면 true반환
+  console.log(diffDate);
+  return diffDate <= 20 ? [true, diffDate] : false
+}
+
 //해당회원의 모든결제정보불러와서 내역목록표시
 function showMemberPayments(payments) {
 //payments = [{}, {}, {}, {}]
@@ -222,11 +255,9 @@ function showMemberPayments(payments) {
     } else {
       classType = '개인레슨'
     }
-    let payDate = new Date(payment.pay_year, payment.pay_month - 1, payment.pay_day)
-    let expireDate = payDate //??? 이거 paydate도 바뀌는거 아닌가 어차피 아래에서 payDate 에 값할당하기때문에 음 그러면 expire에 들어가있던 참조는 어캐된는거지 
-    payDate = payDate.toLocaleDateString().slice(0, -1)
-    expireDate.setMonth(expireDate.getMonth() + payment.pay_class.class_term)
-    expireDate = expireDate.toLocaleDateString().slice(0, -1)
+    let payDate = getExpireDate(payment)[0]
+    let expireDate = getExpireDate(payment)[1]
+    console.log(expireDate);
     let fee = String(payment.pay_fee)
     let commaFormattedFee = getCommaFormattedNumbers(fee)
     let status 
@@ -235,7 +266,21 @@ function showMemberPayments(payments) {
     } else {
       status = '미정'
     }
-    const trEls = `
+    let trEls
+    if(checkExpireCome(expireDate)) {
+      console.log('만기');
+      trEls = `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${payDate}</td>
+      <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
+      <td class = "alert">${payDate} ~ ${expireDate}</td>
+      <td>${status}</td>
+      <td>${commaFormattedFee} 원</td>
+    </tr>
+    `
+    } else {
+      trEls = `
     <tr>
       <td>${i + 1}</td>
       <td>${payDate}</td>
@@ -245,6 +290,7 @@ function showMemberPayments(payments) {
       <td>${commaFormattedFee} 원</td>
     </tr>
     `
+    }
     tableArea.innerHTML += trEls
   }
 }
