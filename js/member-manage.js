@@ -105,6 +105,7 @@ toUpdateBtn.addEventListener('click', function () {
 const signUpBtn = document.querySelector(".update #sign-up")
 const newPayBtn = document.querySelector(".update #new-pay")
 const atdBtn = document.querySelector(".update #attendance-update")
+const expireBtn = document.querySelector(".update #show-expire")
 signUpBtn.addEventListener('click', function() {
   location.href = "/src/new-member.html"
 })
@@ -113,6 +114,12 @@ newPayBtn.addEventListener('click', function() {
 })
 atdBtn.addEventListener('click', function() {
   location.href = `/src/live-attendance.html`
+})
+expireBtn.addEventListener('click', function() {
+  window.open('/src/expire-members.html', 'expire-popup' ,'popup, width=1000, height=1000, top=200, left=200')
+  // window.open("https://www.mozilla.org/", "mozillaTab");
+  // window.open("https://www.mozilla.org/", "mozillaWindow", "popup");
+
 })
 const db = getFirestore(app)
 // firestore에서 (test_members)멤버정보받아와 전역배열에담음
