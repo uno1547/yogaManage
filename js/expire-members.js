@@ -43,7 +43,18 @@ async function getExpireClasses() {
   const expireClasses = allPayments.filter((payment) => checkExpireCome(payment))
   console.log(expireClasses);
 
-  showExpireClasses(expireClasses)
+  ////////
+  const memberInfo = []
+  for(let i = 0; i < expireClasses.length; i++) {
+    const q = query(collection(db, "test_members"), where("user_id", "==", expireClasses[i].user_id))
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach(element => {
+      memberInfo.push(element.data())
+    });
+  }
+  console.log(memberInfo);
+  /////////
+  showExpireClasses(expireClasses, memberInfo)
 }
 
 // 만료기간 다가오는 결제들을 반환하기위한 filter함수
@@ -74,7 +85,7 @@ function getTerm(expireDateStr) {
 }
 
 //받아온 expireClass배열을 토대로 tableEl 생성후 표시
-async function showExpireClasses(expireClasses) {
+async function showExpireClasses(expireClasses, memberInfos) {
   // 만기일 가장 가까운것 순으로 정렬
   expireClasses.sort(function(a, b) {
     const aExpireDateStr = getDateString(a)[1]
@@ -87,8 +98,13 @@ async function showExpireClasses(expireClasses) {
   // 읽으며 배열 생성
   for(let i = 0; i < expireClasses.length; i++) {
     let expireClass = expireClasses[i]
+    let memberInfo = memberInfos[i]
     // console.log(expireClass);
-    const memberInfo = await getMemberInfo(expireClass.user_id) 
+    // ****************************** 아마 이 await땜에 버벅이는듯
+    // const memberInfo = await getMemberInfo(expireClass.user_id) 
+    // const memberInfo = await getMemberInfo(expireClass.user_id) // 안기다려주고 실행되니 아래에는 undefined 들어감
+    // const memberInfo = getMemberInfo(expireClass.user_id) // 안기다려주고 실행되니 아래에는 undefined 들어감
+    console.log(memberInfo);
     // console.log(memberInfo);
     let [memberName, memberNum, memberGender] = [memberInfo.name, expireClass.user_id, memberInfo.gender]
 
@@ -133,6 +149,7 @@ async function getMemberInfo(userId) {
     member.push(element.data())
   });
   // async function 은 프로미스 반환하는거 아니였나?
+  console.log(member);
   return member[0]
 }
 
