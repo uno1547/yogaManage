@@ -205,6 +205,14 @@ function showMemberClass(payments) {
       return 1
     }
   })
+  /////////////////////////////////////////////////////
+  // 결제일이 같다면 수강 만료기간이 가까운거 먼저
+  // payments.sort(function(a, b) {
+    
+  // })
+
+
+  /////////////////////////////////////////////////////
   // console.log(payments)
   let recentPay = payments[0]
   // console.log(recentPay)
@@ -217,8 +225,8 @@ function showMemberClass(payments) {
       typeStr = "개인레슨"
     }
     // classTd.innerHTML = `<span>${typeStr}</span><span> 주${recentPay.pay_class.times_a_week}회</span><span> [${recentPay.pay_class.class_term}개월]</span> \n <span></span>`
-
-    // 존재하는 최근 결제내역(수업)의 만료여부에 따라 표시 변경
+    // 여기서 만료여부 표시는 가장최근 결제에 대해서만 수행하면된다. 그래도 문제가 없음
+    // 존재하는 제일 최근 결제내역(수업)의 만료여부에 따라 표시 변경
     let payDate = getDateString(recentPay)[0]
     let expireDate = getDateString(recentPay)[1]
     if(checkExpireCome(expireDate)) { //만기일이 다가올경우
@@ -262,6 +270,8 @@ function showMemberPayments(payments) {
   let tableArea = document.querySelector('table.val')
   tableArea.innerHTML = ""
   for (let i = 0; i < payments.length; i++) {
+    //모든 결제에 대하여 순회하면서 정보 표시후 추가
+    // 결제일 순으로 정렬되어있으므로, 제일 최근 결제에 대해서만 만료검사
     let payment = payments[i]
     let [classType, classPerWeek, classTerm] = [payment.pay_class.class_type, payment.pay_class.times_a_week, payment.pay_class.class_term]
     if (classType == 'group') {
@@ -281,20 +291,22 @@ function showMemberPayments(payments) {
       status = '미정'
     }
     let trEls
-    if(checkExpireCome(expireDate)) {
-      console.log('만기');
+    if(i == 0 && checkExpireCome(expireDate)) { //제일 최근의 결제에 대해서만 만기 검사 실행후 빨강표시
       trEls = `
-    <tr>
-      <td>${i + 1}</td>
-      <td>${payDate}</td>
-      <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
-      <td class = "alert">${payDate} ~ ${expireDate}</td>
-      <td>${status}</td>
-      <td>${commaFormattedFee} 원</td>
-    </tr>
-    `
-    } else {
-      trEls = `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${payDate}</td>
+        <td>${classType} 주 ${classPerWeek}회 [${classTerm}개월]</td>
+        <td class = "alert">${payDate} ~ ${expireDate}</td>
+        <td>${status}</td>
+        <td>${commaFormattedFee} 원</td>
+      </tr>
+      `
+      // console.log('첫번째 결제가 만기!!');
+      tableArea.innerHTML += trEls
+      continue
+    }
+    trEls = `
     <tr>
       <td>${i + 1}</td>
       <td>${payDate}</td>
@@ -304,7 +316,6 @@ function showMemberPayments(payments) {
       <td>${commaFormattedFee} 원</td>
     </tr>
     `
-    }
     tableArea.innerHTML += trEls
   }
 }

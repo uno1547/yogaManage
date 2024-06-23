@@ -32,7 +32,7 @@ async function getExpireClasses() {
   /*
   복합쿼리(너무 복잡할듯)같은거 아니면 문자열 비교 같은거 생각해봐도 예외케이스가많음
   */
-  // 쿼리보단 그냥 불러오고 임의로 판별해야할듯
+  // 일단 전체 결제를 불러옴
   const allPayments = []
   const querySnapshot2 = await getDocs(collection(db, "open_payments"))
   querySnapshot2.forEach(element => {
@@ -44,22 +44,47 @@ async function getExpireClasses() {
   console.log(expireClasses);
 
   ////////
-  const memberInfo = []
+  expireClasses.sort(function(a, b) {
+    // 원래는 가나다순 정렬후 만기일 가까이오는것에대해 한번 더 정렬 해야함 
+    // 근데 현재 expireClass에 name키가 없기에 불가, 추가해주면될듯
+    const aExpireDateStr = getDateString(a)[1]
+    const bExpireDateStr = getDateString(b)[1]
+    return getTerm(aExpireDateStr) - getTerm(bExpireDateStr)
+    // return getTerm(bExpireDateStr) - getTerm(aExpireDateStr)
+  })
+  
+  // 여기에서 만기일 다가온 결제들에 대해서, 해당 결제 이후에 신규 결제가 있다면, 제거해줘야함
+  // 아니면 처음부터 제일 최근 결제들에 대해서만 만기검사를 하던지 일관되게 하는게 좋을듯 제일 최근 결제들에대해서 하자
+  // 멤버 id에 대해서 제일 최근 결제들을 불러와야함(각 멤버들의 제일 최근 결제)
+  // 멤버가 50명인데 멤버별로 100개의 결제가있다고 치면, 이결제를 다 검사하는건 비효율적일듯함 > 그냥 매번 결제가 추가될때마다 recent키를 추가해주자 
+  /*{
+    pay_class : {class_type: 'group', times_a_week: 3, class_term: 6}
+    pay_day : 31
+    pay_fee : 677000
+    pay_method : "cash"
+    pay_month : 3
+    pay_teacher : "김영원"
+    pay_year : 2024
+    user_id : 1100}
+  } 
+  */
+  const memberInfos = []
   for(let i = 0; i < expireClasses.length; i++) {
     const q = query(collection(db, "test_members"), where("user_id", "==", expireClasses[i].user_id))
     const querySnapshot = await getDocs(q)
     querySnapshot.forEach(element => {
-      memberInfo.push(element.data())
+      memberInfos.push(element.data())
     });
   }
-  console.log(memberInfo);
+  console.log(memberInfos);
   /////////
-  showExpireClasses(expireClasses, memberInfo)
+  showExpireClasses(expireClasses, memberInfos)
 }
 
 // 만료기간 다가오는 결제들을 반환하기위한 filter함수
 function checkExpireCome(payment) {
   const expireDateStr = getDateString(payment)[1] // "2024-6-9"
+  console.log(expireDateStr);
   return getTerm(expireDateStr) <= 30
 }
 
@@ -85,20 +110,14 @@ function getTerm(expireDateStr) {
 }
 
 //받아온 expireClass배열을 토대로 tableEl 생성후 표시
-async function showExpireClasses(expireClasses, memberInfos) {
-  // 만기일 가장 가까운것 순으로 정렬
-  expireClasses.sort(function(a, b) {
-    const aExpireDateStr = getDateString(a)[1]
-    const bExpireDateStr = getDateString(b)[1]
-    return getTerm(aExpireDateStr) - getTerm(bExpireDateStr)
-    // return getTerm(bExpireDateStr) - getTerm(aExpireDateStr)
-  })
-
+function showExpireClasses(expireClasses, memberInfos) {
+  console.log(expireClasses, memberInfos);
   const listEl = document.querySelector("table.list-val")
   // 읽으며 배열 생성
   for(let i = 0; i < expireClasses.length; i++) {
     let expireClass = expireClasses[i]
     let memberInfo = memberInfos[i]
+    // console.log(expireClass, memberInfo);
     // console.log(expireClass);
     // ****************************** 아마 이 await땜에 버벅이는듯
     // const memberInfo = await getMemberInfo(expireClass.user_id) 
