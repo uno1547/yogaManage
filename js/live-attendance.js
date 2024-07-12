@@ -19,8 +19,6 @@ await addDoc(collection(db, "open_attendances"), {
   attend_day : 12,
   attend_time : [1, 10, 10],
 });
-*/
-
 async function upDoc() {
   const docRef = doc(db, "open_attendances", "6viSuQlJ1gyLKPafWna7")
   await updateDoc(docRef, {
@@ -36,6 +34,8 @@ async function newDoc() {
     attend_time : [1, 54, 10],
   });
 }
+*/
+
 /*
 아래코드는 5초 settimeout 설정해서 데이터 변경하면 실시간으로 반영됨
 setTimeout(() => {
@@ -62,7 +62,11 @@ async function showTodayVisits() {
   showVisits(visitsArr)
 }
 async function getTodayVisits() {
-  const todayQueries = query(collection(db, "open_attendances"), where("attend_day", "==", new Date().getDate())) 
+  const todayDate = new Date()
+  const [todayYear, todayMonth, todayDay] = [todayDate.getFullYear(), todayDate.getMonth() + 1, todayDate.getDate()]
+  console.log(todayYear, todayMonth, todayDay);
+  // const q1 = query(citiesRef, where("state", ">=", "CA"), where("state", "<=", "IN"));
+  const todayQueries = query(collection(db, "open_attendances"), where("attend_year", "==", todayYear), where("attend_month", "==", todayMonth), where("attend_date", "==", todayDay)) 
   const querySnapshot = await getDocs(todayQueries);
   const todayVisits = []
   querySnapshot.forEach((doc) => {

@@ -89,7 +89,8 @@ function sortExpires(expires) {
     else if(aDiff > bDiff) return 1
     else return 0
   })
-  showExpires(expires)
+  // showExpires(expires)
+  getExpireInfo(expires)
   console.log(expires);
 }
 /*
@@ -100,18 +101,28 @@ querySnapshot.forEach((doc) => {
   console.log(doc.data())
 })
 */
-async function showExpires(expires) {
+async function getExpireInfo(expires) {
+  const userArr = []
+  for(let i = 0; i < expires.length; i++) {
+    const payUser = await getInfo(expires[i].user_id)
+    userArr.push(payUser)
+  }
+  // return userArr
+  showExpires(userArr, expires)
+}
+
+function showExpires(userArr, expires) {
   const tableDiv = document.querySelector("#table-div table.list-val")
   tableDiv.innerHTML = ''
   /*
   expires를 순회하면서, user_id를 통해 이름, 성별 조회
   
   */
-  const userArr = []
-  for(let i = 0; i < expires.length; i++) {
-    const payUser = await getInfo(expires[i].user_id)
-    userArr.push(payUser)
-  }
+  // const userArr = []
+  // for(let i = 0; i < expires.length; i++) {
+  //   const payUser = await getInfo(expires[i].user_id)
+  //   userArr.push(payUser)
+  // }
   for(let i = 0; i < expires.length; i++) {
     const curExpire = expires[i]
     const payUser = userArr[i]
@@ -132,35 +143,18 @@ async function showExpires(expires) {
       <td>${i + 1}</td>
       <td>${payUser.name} (${payUser.user_id}) [${payUser.gender}]</td>
       <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-      <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays} )</td>
+      <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
       </tr>`
     } else {
       tableElStr = `<tr>
       <td>${i + 1}</td>
       <td>${payUser.name} (${payUser.user_id}) [${payUser.gender}]</td>
       <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-      <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays} )</td>
+      <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
       </tr>`
     }
     tableDiv.innerHTML += tableElStr
   }
-  /*
-  expires.forEach((pay, index) => {
-    console.log(pay.user_id);
-    const payUser = getInfo(pay.user_id) // 이상태면 프로미스를 반환받음
-    console.log(payUser);
-    let userName, userGender
-    payUser.then((res) => {userName = res.name})
-    payUser.then((res) => {userGender = res.gender})
-    const tableElStr = `<tr>
-          <td>${index + 1}</td>
-          <td>${userName} (${pay.userId}) [${pay.gender}]</td>
-          <td>요가 주3회 [1개월] [주 5회권]</td>
-          <td>2024.03.27 ~ 2024.04.27 [만료 7일전]</td>
-        </tr>`
-    console.log(tableElStr);
-  })
-  */
 }
 
 async function getInfo(userId) { //userId로 이름, 성별 불러옴
