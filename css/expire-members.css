@@ -67,6 +67,9 @@
 #table-div table.list-val tr {
   background-color: rgb(223, 223, 223);
 }
+#table-div table.list-val tr.exp {
+  color: red;
+} 
 #table-div table.list-val td {
   padding: 15px 20px;
 }
