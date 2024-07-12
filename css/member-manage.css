@@ -1,3 +1,8 @@
+html {
+  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
 /* main */
 .inner {
   width: 1570px;
@@ -69,6 +74,9 @@ table.info th,td {
 table.info th {
   font-weight: normal;
 }
+table.info tr:last-child {
+  height: 71.33px;
+}
 table.info td {
   width: 375px;
   text-align: center;
@@ -83,6 +91,10 @@ table.info .small-date {
 .alert,
 table.info .alert {
   color: red;
+}
+
+.expire {
+  color: rgb(176, 176, 176);
 }
 
 /*.row > #attend-calender */
@@ -107,6 +119,7 @@ table.info .alert {
   margin: auto;
   border-collapse: collapse;
 }
+
 #payment-list table th {
   padding: 15px 20px;
 }
@@ -139,6 +152,10 @@ table.key th:nth-child(6) {
 #payment-list table.val {
   border-collapse: separate;
   border-spacing: 0px 15px;
+}
+#payment-list table.val span#empty {
+  font-size: 25px;
+  color: rgb(168, 168, 168);
 }
 #payment-list table.val tr {
   /* border: 1px solid black; */

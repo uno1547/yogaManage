@@ -16,19 +16,18 @@ const dateText = document.querySelector("#date-nav h2")
 
 prevBtn.addEventListener('click', function() {
   day.setDate(day.getDate() - 1) 
-  // console.log(day); 
   showDate()
   filterExpireee()
 })
 nextBtn.addEventListener('click', function() {
   day.setDate(day.getDate() + 1)
-  // console.log(day);
   showDate()
   filterExpireee()
 })
+
+
 // 최초의 기준날짜는 현재날짜(금일)
 const day = new Date()
-// console.log(day);
 showDate()
 
 // 일단위 표시에서 Date로 기준날짜(금일) 표시
@@ -62,8 +61,6 @@ const querySnapshot = await getDocs(q)
 querySnapshot.forEach(doc => {
   allPayments.push(doc.data())
 });
-
-// console.log(allPayments);
 filterExpireee()
 console.log('hi');
 
@@ -181,7 +178,7 @@ function getEnd(pay) {
   return endDateArr
   // const end = 
 }
-function getTermToday(pay) {
+function getTermToday(pay) { // 현재 날짜기준 결제만료일이몇일 남았는지 구하기위함
   // const payDate = new Date(pay.pay_year, pay.pay_month - 1, pay.pay_day)
   // console.log('결제날짜객체', payDate);
   // const expDate = new Date(2024, 5, 26) // 결제 일의객체
@@ -210,8 +207,8 @@ function getTermToday(pay) {
 }
 
 // 기준날짜와 pay의 만료일사이의 날짜차이를 계산 > 결제 데이터에 expiredate의 멤버를 넣으면 날짜 비교를 더 편하게 할수있으려나
-function getTerm(pay) {
-  const payDate = new Date(pay.pay_year, pay.pay_month - 1, pay.pay_day)
+function getTerm(pay) { // 기준 날짜와 결제 만료일이 몇일차이나는지 구하기위함
+  // const payDate = new Date(pay.pay_year, pay.pay_month - 1, pay.pay_day)
   // console.log('결제날짜객체', payDate);
   // const expDate = new Date(2024, 5, 26) // 결제 일의객체
   const expDate = new Date(pay.pay_year, pay.pay_month - 1, pay.pay_day) // 결제 일의객체
