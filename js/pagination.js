@@ -9,7 +9,7 @@ element로 인해 생기는 page개수
 ex) elNum = 9, maxNum = 5
     pageNum = maxElNum / elNum
 */
-const els = [1,2,3,4,5,6,7,8,9]
+const els = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 // const els = document.querySelectorAll('tr')
 class Pagination{
   constructor() {
@@ -40,24 +40,110 @@ class Pagination{
       }
     }
 
+    const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
+    pageBtnElements.forEach((btnNode) => {
+      // console.log(btnNode);
+      btnNode.addEventListener('click', () => {
+        this.curPageNum = Number(btnNode.textContent)
+        console.log(`직접이동한 curPageNum ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      })
+    })
+
+
+    this.styleCurpageBtn()
+    this.showCurrentPageItems()
     const prevBtn = document.querySelector('#pagination button#prev')
     const nextBtn = document.querySelector('#pagination button#next')
     // prevBtn.disabled = true
-    prevBtn.addEventListener('click', this.paginationBarController)
-    nextBtn.addEventListener('click', this.paginationBarController)
+    // console.log(this.paginationBarController);
+    prevBtn.addEventListener('click', () => {
+      // this.curPageNum -= 1
+      // console.log(this.curPageNum);
+
+
+      const changedCurPageNum = this.curPageNum - 1  
+      // console.log(changedCurPageNum)
+      if(changedCurPageNum > 0) {
+        this.curPageNum -= 1
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+      // console.log(this.curPageNum);
+    })
+    nextBtn.addEventListener('click', () => {
+      // this.curPageNum += 1
+      // console.log(this.curPageNum);
+
+
+      const changedCurPageNum = this.curPageNum + 1  
+      // console.log(changedCurPageNum);
+      if(changedCurPageNum <= this.pageNum) {
+        this.curPageNum += 1
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+      // console.log(this.curPageNum);
+    })
   }
 
-  showCurrentPage() {
-    
+  
+  // paginationBarController() {
+  //   const changedCurPageNum = this.curPageNum - 1
+  //   if((changedCurPageNum > 0) && (changedCurPageNum < this.pageNum)) {
+  //     console.log();
+  //   }
+  //   console.log('click');
+  //   // this.styleCurpageBtn()
+  // }
+
+  styleCurpageBtn() {
+    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
+    const prevCurBtnEl = pageIndicatorDiv.querySelector(".current")
+    if(!prevCurBtnEl) {
+      const firstPageBtn = document.querySelector(".page-btn:first-child")
+      // console.log(firstPageBtn);
+      firstPageBtn.classList.add("current")
+      return
+    }
+    // 갱신된 curPageNum에 대해 표시 
+    prevCurBtnEl.classList.remove("current")
+    const btnEls = Array.from(pageIndicatorDiv.querySelectorAll("div.page-btn"))
+    const curBtnEl = btnEls.filter((node) => node.textContent == this.curPageNum)[0]  
+    curBtnEl.classList.add("current")
+    // console.log(btnEls);
+    // const curBtnEl = btnEls
+    // console.log(prevCurBtnEl);
+    // prevCurBtnEl.classList.remove("current")
+
+    /*
+    */
+    // btnEls.forEach((node) => console.log(node.textContent))
   }
 
-  paginationBarController() {
-    console.log('click');
+  showCurrentPageItems() {
+    const startIdx = this.maxElNum * (this.curPageNum - 1)
+    const endIdx = this.maxElNum * this.curPageNum
+    const slicedItems = els.slice(startIdx, endIdx)
+    const strOfItems = slicedItems.map((val) => {
+      return `<tr>
+        <th>${val}</th>
+        <th>이름${val}</th>
+        <th>설명${val}</th>
+      </tr>`
+    })
+
+    const tableDiv = document.querySelector("div.inner table")
+    tableDiv.innerHTML = ""
+    strOfItems.forEach((itemStr) => {
+      tableDiv.innerHTML += itemStr
+    })
+    // console.log(slicedItems);
   }
-
-
 }
 const paginationObj = new Pagination()
+paginationObj.initPaginationBar()
 console.log(`원소개수 : ${paginationObj.elNum}`);
 console.log(`최대 원소 개수 : ${paginationObj.maxElNum}`);
 console.log(`페이지 개수 : ${paginationObj.pageNum}`);

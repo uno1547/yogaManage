@@ -60,8 +60,12 @@ div.inner #pagination {
   padding: 10px 15px;
   margin: 0px 2px;
   border-radius: 20px;
-  transition: .5s;
+  transition: .3s;
   cursor: pointer;
+}
+#pagination #page-indicator .page-btn.current {
+  background-color: rgb(31, 31, 31);
+  color: #fff;
 }
 
 #pagination #page-indicator .page-btn:hover {
@@ -69,6 +73,6 @@ div.inner #pagination {
   color: #fff;
 }
 
-#pagination #page-indicator .page-btn #page-num {
+#pagination #page-indicator .page-btn .page-num {
 
 }
