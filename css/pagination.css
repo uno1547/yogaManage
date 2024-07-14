@@ -50,18 +50,26 @@ div.inner #pagination {
 
 #pagination #page-indicator {
   display: flex;
-}
-
-#pagination #page-indicator {
-
+  align-items: center;
 }
 
 #pagination #page-indicator .page-btn {
-  padding: 10px 15px;
+  /* width: 10px; */
+  width: 19px;
+  /* height: 30px; */
   margin: 0px 2px;
+  padding: 5px 5px;
   border-radius: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: .3s;
   cursor: pointer;
+
+}
+#pagination #page-indicator .page-btn span.page-num {
+  /* line-height: 10px; */
 }
 #pagination #page-indicator .page-btn.current {
   background-color: rgb(31, 31, 31);
