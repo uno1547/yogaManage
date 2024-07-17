@@ -13,9 +13,11 @@
     <div class="logo">
       <h2>만기 / 만기예정 회원목록</h2>
     </div>
+    <button id="toggle-view-scale">
+      월별보기
+    </button>
   </div>
   <hr>
-  <!-- <h2>만기 / 만기예정 회원목록</h2> -->
   <div class="inner">
     <div id="date-nav">
       <button id="prev"><</button>
@@ -46,11 +48,27 @@
         </tr> -->
       </table>
     </div>
-    <!-- <div id="pagination">
-      <span id = "prev-page">1</span>
-      <span id = "cur-page">2</span>
-      <span id = "next-page">3</span>
-    </div> -->
+    <div id="pagination">
+      <button id="prev"><</button>
+      <div id="page-indicator">
+        <!-- <div class="page-btn">
+          2
+        </div> -->
+        <!-- <div class="page-btn current">
+          <span id="page-num">1</span>
+        </div>
+        <div class="page-btn">
+          <span id="page-num">3</span>
+        </div>
+        <div class="page-btn">
+          <span id="page-num">4</span>
+        </div>
+        <div class="page-btn">
+          <span id="page-num">5</span>
+        </div> -->
+      </div>
+      <button id="next">></button>
+    </div>
   </div>
   <!-- <script src="/js/expire-members.js" type="module"></script> -->
   <script src="/js/new-expire-window.js" type="module"></script>

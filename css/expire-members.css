@@ -2,6 +2,11 @@
   width: 900px;
   margin: auto;
 }
+.header button#toggle-view-scale {
+  font-weight: bold;
+  height: 35px;
+}
+
 .inner {
   text-align: center;
   width: 1000px;
@@ -86,6 +91,57 @@
   width: 350px;
 }
 
-.inner #pagination {
+div.inner #pagination {
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+  /* width: 150px;
+  margin: auto; */
+}
 
+#pagination button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  transition: .5s;
+  cursor: pointer;
+}
+
+#pagination button:hover {
+  background-color: rgb(146, 146, 146);
+  color: #fff;
+  /* border-radius: 20px; */
+}
+
+#pagination #page-indicator {
+  display: flex;
+  align-items: center;
+}
+
+#pagination #page-indicator .page-btn {
+  /* width: 10px; */
+  width: 19px;
+  /* height: 30px; */
+  margin: 0px 3px;
+  padding: 5px 5px;
+  border-radius: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .3s;
+  cursor: pointer;
+
+}
+#pagination #page-indicator .page-btn span.page-num {
+  /* line-height: 10px; */
+}
+#pagination #page-indicator .page-btn.current {
+  background-color: rgb(31, 31, 31);
+  color: #fff;
+}
+
+#pagination #page-indicator .page-btn:hover {
+  background-color: rgb(146, 146, 146);
+  color: #fff;
 }
