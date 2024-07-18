@@ -10,20 +10,24 @@ const app = initializeApp({
 })
 const db = getFirestore(app)
 
-const prevBtn = document.querySelector("#date-nav #prev")
-const nextBtn = document.querySelector("#date-nav #next")
+const prevDateBtn = document.querySelector("#date-nav #prev")
+const nextDateBtn = document.querySelector("#date-nav #next")
 const dateText = document.querySelector("#date-nav h2")
 
-prevBtn.addEventListener('click', function() {
+prevDateBtn.addEventListener('click', function() {
   day.setDate(day.getDate() - 1) 
   showDate()
   filterExpireee()
 })
-nextBtn.addEventListener('click', function() {
+nextDateBtn.addEventListener('click', function() {
   day.setDate(day.getDate() + 1)
   showDate()
   filterExpireee()
 })
+
+
+// const prevBtn = document.querySelector('#pagination button#prev')
+// const nextBtn = document.querySelector('#pagination button#next')
 /*
 const allPaymentsFirestore = []
 const q1 = query(collection(db, "open_payments"))
@@ -46,7 +50,7 @@ function showDate() {
   month = String(month).padStart(2, '0')
   date = String(date).padStart(2, '0')
   dateText.innerHTML = `${year}년 ${month}월 ${date}일`
-  console.log('현재 날짜는', day.toLocaleDateString());
+  // console.log('현재 날짜는', day.toLocaleDateString());
 }
 
 // 7/9일 
@@ -75,7 +79,7 @@ querySnapshot.forEach(doc => {
   allPayments.push(doc.data())
 });
 filterExpireee()
-console.log('hi');
+// console.log('hi');
 
 // 순서 : 필터링(기준날짜15일) > 정렬 > 결제별 정보(회원) > 
 
@@ -93,9 +97,20 @@ class Pagination {
     console.log(`결제개수 : ${this.elNum} 페이지개수 : ${this.pageNum} 현재페이지번호 : ${this.curPageNum}`);
   }
   initPaginationBar() {
+    // if()
     // 계산된 pageNum을 통해 indicator개수세팅
+    const paginationDiv = document.querySelector("#pagination")
+    paginationDiv.innerHTML = ''
+    if(this.elNum == 0) {
+      const listDiv = document.querySelector("div#table-div table.list-val")
+      listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
+      return
+    }
+    paginationDiv.innerHTML = `<button id="prev"><</button>
+    <div id="page-indicator"></div>
+    <button id = "next">></button>
+    `
     const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
-    pageIndicatorDiv.innerHTML = ''
     for(let i = 0; i < this.pageNum; i++) {
       pageIndicatorDiv.innerHTML += `<div class="page-btn">
         <span class ="page-num">${i + 1}</span>
@@ -105,8 +120,11 @@ class Pagination {
     // 숫자 직접클릭시 페이지 이동 가능하게 리스너 추가
     const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
     pageBtnElements.forEach((btnNode) => {
-      btnNode.addEventListener('click', () => {
+      btnNode.addEventListener('click', (evt) => {
+        console.log('여긴 숫자버튼의 리스너 ', evt.currentTarget, '이벤트 발생지는', evt.target);
+        // console.log('숫자눌러이동');
         this.curPageNum = Number(btnNode.textContent)
+        console.log(`curPageNum : ${this.curPageNum}`);
         this.styleCurpageBtn()
         this.showCurrentPageItems()
       })
@@ -118,22 +136,48 @@ class Pagination {
 
     const prevBtn = document.querySelector('#pagination button#prev')
     const nextBtn = document.querySelector('#pagination button#next')
-    prevBtn.addEventListener('click', () => {
-      const changedCurPageNum = this.curPageNum - 1  
-      if(changedCurPageNum > 0) {
-        this.curPageNum -= 1
-        this.styleCurpageBtn()
-        this.showCurrentPageItems()
+
+    // prevBtn.addEventListener('click', )
+    /*
+    */
+   prevBtn.addEventListener('click', () => {
+      // console.log(`curPageNum : ${this.curPageNum}`);
+     const changedCurPageNum = this.curPageNum - 1  
+     if(changedCurPageNum > 0) {
+       this.curPageNum -= 1
+       console.log(`curPageNum : ${this.curPageNum}`);
+       this.styleCurpageBtn()
+       this.showCurrentPageItems()
+       
       }
     })
+    
     nextBtn.addEventListener('click', () => {
+      // console.log(`curPageNum : ${this.curPageNum}`);
       const changedCurPageNum = this.curPageNum + 1  
       if(changedCurPageNum <= this.pageNum) {
         this.curPageNum += 1
+        console.log(`curPageNum : ${this.curPageNum}`);
         this.styleCurpageBtn()
         this.showCurrentPageItems()
       }
     })
+    
+    // 얘네 무슨차이인지도 알아보자
+    //1. 함수표현식
+    const listener = function() {
+      console.log('clicked');
+    }
+
+    //2. 함수표현식(arrow)
+    const listener2 = () => console.log('clicked');
+
+    //3. 선언함수
+    function listener3() {
+      console.log('clicked');
+    }
+    // const listener = () => console.log('clicked')
+    // nextBtn.addEventListener('click', listener)
   }
   // .current 에 스타일 추가
   styleCurpageBtn() {
@@ -155,6 +199,7 @@ class Pagination {
   // curPageNum에 대해 item추가
   showCurrentPageItems() {
     const startIdx = this.maxElNum * (this.curPageNum - 1)
+    console.log(this.curPageNum);
     const endIdx = this.maxElNum * this.curPageNum
     console.log(startIdx, endIdx);
     const tableDiv = document.querySelector("div.inner table.list-val")
@@ -286,12 +331,13 @@ async function getExpireInfo(expires) {
 }
   
 function showExpires(userArr, expires) {
-  console.log(userArr)
+  // console.log(userArr)
   console.log(expires);
   const tableDiv = document.querySelector("#table-div table.list-val")
   tableDiv.innerHTML = ''
     
-  const paginationObj = new Pagination(userArr, expires)
+  const paginationObj = new Pagination(userArr, expires) // 날짜 이동시마다 showExpire가 호출되는데, 이호출로 인해 initbar가 호출되면서 리스너가 중첩등록 되는듯함
+  // 날짜변경시마다 pagination이 새로 생성되어, #pagination button#prev에 리스너가 중첩으로 등록된다. 이건 익명함수써서 생긴 중첩이 아닌듯,기존에 붙여놓은게 달려있으니깐
   paginationObj.initPaginationBar()
     
     /*
