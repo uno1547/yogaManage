@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
+import { getFirestore, addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js';
 const app = initializeApp({
   apiKey: "AIzaSyBykm-oqoMvIAjLFWHPnVi_OQ86Iis_NVs",
   authDomain: "yoga-663cb.firebaseapp.com",
@@ -9,6 +9,120 @@ const app = initializeApp({
   appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
 const db = getFirestore(app)
+/*
+await addDoc(collection(db, "test_payments"), {
+  user_id : 2212,
+  user_name : '김윤오',
+  pay_date : [2024, 6, 21],
+  expire_date : [2024, 7, 21],
+  pay_fee : 100, 
+  pay_method : "cash", 
+  pay_teacher : "김영원", 
+  pay_class : { 
+    class_type : "group", 
+    times_a_week : 2, 
+    class_term : 1, 
+  }
+});
+*/
+const viewToggleBtn = document.querySelector("button#toggle-view-scale")
+let view = "day"
+
+viewToggleBtn.addEventListener("click", function() {
+  if(view == "day") {
+    prevBtn.removeEventListener("click", prevDateListener)
+    nextBtn.removeEventListener("click", nextDateListener)
+    viewToggleBtn.textContent = "일별보기"
+    view = "month"
+    showMonthView()
+  } else {
+    prevBtn.removeEventListener("click", prevMonthListener)
+    nextBtn.removeEventListener("click", nextMonthListener)
+    viewToggleBtn.textContent = "월별보기"
+    view = "day"
+    showDayView()
+  }
+})
+
+const dateDiv = document.querySelector("#date-nav")
+const dateText = dateDiv.querySelector("h2")
+
+const prevBtn = document.querySelector("#date-nav button#prev")
+const nextBtn = document.querySelector("#date-nav button#next")
+
+const day = new Date()
+showDayView()
+
+function showDayView() {
+ showDay()
+ setDateNavigator()
+}
+
+function showDay() {
+  let [year, month, date] = [day.getFullYear(), day.getMonth() + 1, day.getDate()]
+  // console.log(`${year}년 ${month}월 ${date}일`);
+  month = String(month).padStart(2, '0')
+  date = String(date).padStart(2, '0')
+  dateText.innerHTML = `${year}년 ${month}월 ${date}일`
+}
+
+function setDateNavigator() {
+  prevBtn.addEventListener("click", prevDateListener)
+  nextBtn.addEventListener("click", nextDateListener)
+}
+
+function prevDateListener() {
+  day.setDate(day.getDate() - 1)
+  console.log('prevDay');
+  showDay()
+}
+function nextDateListener() {
+  day.setDate(day.getDate() + 1)
+  console.log('nextDay');
+  showDay()
+}
+
+
+function showMonthView() {
+  showMonth()
+  setMonthNavigator()
+}
+
+function showMonth() {
+  let [year, month] = [day.getFullYear(), day.getMonth() + 1]
+  month = String(month).padStart(2, '0')
+  dateText.innerHTML = `${year}년 ${month}월`
+}
+function setMonthNavigator() {
+  prevBtn.addEventListener("click", prevMonthListener)
+  nextBtn.addEventListener("click", nextMonthListener)
+}
+
+function prevMonthListener() {
+  day.setMonth(day.getMonth() - 1)
+  console.log('prevMonth');
+  showMonth()
+}
+
+function nextMonthListener() {
+  day.setMonth(day.getMonth() + 1)
+  console.log('nextMonth');
+  showMonth()
+}
+
+function getExpireData() {
+
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -27,107 +141,10 @@ const parsedDatas = allPaymentsFirestore.map((pay) => {
 console.log(parsedDatas);
 */
 // 최초의 기준날짜는 현재날짜(금일)
-const viewToggleBtn = document.querySelector("button#toggle-view-scale")
-let view = "day"
-
-const dateDiv = document.querySelector("#date-nav")
-const dateText = dateDiv.querySelector("h2")
-const prevBtn = document.querySelector("#date-nav button#prev")
-const nextBtn = document.querySelector("#date-nav button#next")
-
-viewToggleBtn.addEventListener("click", function() {
-  // console.log('click');
-  // const dateDiv = document.querySelector("div#date-nav")
-  if(view == "day") {
-    prevBtn.removeEventListener("click", prevDateListener)
-    nextBtn.removeEventListener("click", nextDateListener)
-    viewToggleBtn.textContent = "일별보기"
-    view = "month"
-    showMonthView()
-  } else {
-    prevBtn.removeEventListener("click", prevMonthListener)
-    nextBtn.removeEventListener("click", nextMonthListener)
-    viewToggleBtn.textContent = "월별보기"
-    view = "day"
-    showDayView()
-  }
-})
-
-const day = new Date()
-showDayView()
-
-function showDayView() {
-  /*
-  오늘날짜 (년/월/일) 표시
-  datenav의 이전, 이후버튼에 리스너 추가
-  리스너 - 1일단위 추가/삭제 후 filterExpire(데이터조회)
-  */
- showDay()
- setDateNavigator()
-}
-
-function showMonthView() {
-  /*
-  오늘날짜 (년/월) 표시
-  datenav의 이전, 이후버튼에 리스너 추가
-  리스너 - 1달단위 추가/삭제 후 filterExpire(데이터조회)
-  */
-  showMonth()
-  setMonthNavigator()
-}
-function showDay() {
-  let [year, month, date] = [day.getFullYear(), day.getMonth() + 1, day.getDate()]
-  // console.log(`${year}년 ${month}월 ${date}일`);
-  month = String(month).padStart(2, '0')
-  date = String(date).padStart(2, '0')
-  dateText.innerHTML = `${year}년 ${month}월 ${date}일`
-}
-
-function setDateNavigator() {
-  // const prevBtn = document.querySelector("#date-nav button#prev")
-  prevBtn.addEventListener("click", prevDateListener)
-  // const nextBtn = document.querySelector("#date-nav button#next")
-  nextBtn.addEventListener("click", nextDateListener)
-}
-
-function prevDateListener() {
-  day.setDate(day.getDate() - 1)
-  console.log('prevDay');
-  showDay()
-}
-
-function nextDateListener() {
-  day.setDate(day.getDate() + 1)
-  console.log('nextDay');
-  showDay()
-} 
 
 
-function showMonth() {
-  let [year, month] = [day.getFullYear(), day.getMonth() + 1]
-  month = String(month).padStart(2, '0')
-  dateText.innerHTML = `${year}년 ${month}월`
-}
 
 
-function setMonthNavigator() {
-  // const prevBtn = document.querySelector("#date-nav button#prev")
-  prevBtn.addEventListener("click", prevMonthListener)
-  // const nextBtn = document.querySelector("#date-nav button#next")
-  nextBtn.addEventListener("click", nextMonthListener)
-}
-
-function prevMonthListener() {
-  day.setMonth(day.getMonth() - 1)
-  console.log('prevMonth');
-  showMonth()
-}
-
-function nextMonthListener() {
-  day.setMonth(day.getMonth() + 1)
-  console.log('nextMonth');
-  showMonth()
-}
 
 /*
 const prevDateBtn = document.querySelector("#date-nav #prev")
@@ -528,27 +545,3 @@ function getTerm(pay) { // 기준 날짜와 결제 만료일이 몇일차이나�
   // console.log(diffDate,'일');
   return diffDate
 }
-/*
-11 -1일
-12 0일
-13 1
-14 2
-15 3
-16 4
-17 5
-18 6
-19 9
-20 10
-21 11
-22 12
-23 13
-24 14
-25 15
-
-
-
-
-
-
-
-*/
