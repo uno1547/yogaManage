@@ -9,12 +9,12 @@ const app = initializeApp({
   appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
 const db = getFirestore(app)
-/*
+/*테스트 결제 추가하기 위한 코드
 await addDoc(collection(db, "test_payments"), {
-  user_id : 2212,
-  user_name : '김윤오',
-  pay_date : [2024, 6, 21],
-  expire_date : [2024, 7, 21],
+  user_id : 2382,
+  user_name : '양재형',
+  pay_date : [2024, 6, 25],
+  expire_date : [2024, 7, 25],
   pay_fee : 100, 
   pay_method : "cash", 
   pay_teacher : "김영원", 
@@ -22,9 +22,150 @@ await addDoc(collection(db, "test_payments"), {
     class_type : "group", 
     times_a_week : 2, 
     class_term : 1, 
-  }
-});
+    }
+  });
 */
+class Pagination {
+  constructor(expireArr) {
+    // 현재 el개수, 페이지당최대el개수 >> pageNum 계산
+    this.elNum = expireArr.length 
+    this.maxElNum = 5
+    this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
+    this.curPageNum = 1
+    this.expireArr = expireArr
+
+    // console.log(this.expireArr);
+    // console.log(`결제개수 : ${this.elNum} 페이지개수 : ${this.pageNum} 현재페이지번호 : ${this.curPageNum}`);
+  }
+  initPaginationBar() {
+    const paginationDiv = document.querySelector("#pagination")
+    paginationDiv.innerHTML = ''
+    if(this.elNum == 0) {
+      const listDiv = document.querySelector("div#table-div table.list-val")
+      listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
+      return
+    }
+    // pagination div생성
+    paginationDiv.innerHTML = `<button id="prev"><</button>
+    <div id="page-indicator"></div>
+    <button id = "next">></button>
+    `
+    // 계산된 pageNum을 통해 indicator개수세팅
+    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
+    for(let i = 0; i < this.pageNum; i++) {
+      pageIndicatorDiv.innerHTML += `<div class="page-btn">
+        <span class ="page-num">${i + 1}</span>
+      </div>
+      `
+    }
+    // indicator 직접클릭시 페이지 이동 가능하게 리스너 추가
+    const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
+    pageBtnElements.forEach((btnNode) => {
+      btnNode.addEventListener('click', () => {
+        // 이 리스너도 사실 중첩등록의 여지가 있지만, 매번 #pagination을 비우고시작하기에 상관없음
+        this.curPageNum = Number(btnNode.textContent)
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      })
+    })
+
+    // 최초 current 페이지 스타일적용 및 해당 page item 표시
+    this.styleCurpageBtn()
+    this.showCurrentPageItems()
+
+    const prevBtn = document.querySelector('#pagination button#prev')
+    const nextBtn = document.querySelector('#pagination button#next')
+
+    prevBtn.addEventListener('click', () => {
+      const changedCurPageNum = this.curPageNum - 1  
+      if(changedCurPageNum > 0) {
+        this.curPageNum -= 1
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+    })
+    
+    nextBtn.addEventListener('click', () => {
+      const changedCurPageNum = this.curPageNum + 1  
+      // 여기서 이 this는 nextBtn을 가르키지않네??? 
+      if(changedCurPageNum <= this.pageNum) {
+        this.curPageNum += 1
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+    })
+  }
+  // .current 에 스타일 추가
+  styleCurpageBtn() {
+    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
+    const prevCurBtnEl = pageIndicatorDiv.querySelector(".current")
+    // 맨처음에는 선택된 버튼없으므로 초기화
+    if(!prevCurBtnEl) {
+      const firstPageBtn = document.querySelector(".page-btn:first-child")
+      firstPageBtn.classList.add("current")
+      return
+    }
+    // 갱신된 curPageNum에 대해 스타일  
+    prevCurBtnEl.classList.remove("current")
+    const btnEls = Array.from(pageIndicatorDiv.querySelectorAll("div.page-btn"))
+    const curBtnEl = btnEls.filter((node) => node.textContent == this.curPageNum)[0]  
+    curBtnEl.classList.add("current")
+  }
+  // curPageNum에 대해 item추가
+  showCurrentPageItems() {
+    const startIdx = this.maxElNum * (this.curPageNum - 1)
+    const endIdx = this.maxElNum * this.curPageNum
+    console.log(`startIdx : ${startIdx} endIdx : ${endIdx}`)
+    const tableDiv = document.querySelector("div.inner table.list-val")
+    tableDiv.innerHTML = ""
+
+    for(let i = startIdx; i < endIdx; i++) {
+      const curPayment = this.expireArr[i]
+      if(curPayment == undefined) break
+      const classType = (curPayment.pay_class.class_type == 'group') ? "요가" : "개인레슨"
+      const perWeek = curPayment.pay_class.times_a_week
+      const classTerm = curPayment.pay_class.class_term
+
+      const [startYear, startMonth, startDay] = [...curPayment.pay_date].map((val) => String(val).padStart(2, '0'))
+      const [endYear, endMonth, endDay] = [...curPayment.expire_date].map((val) => String(val).padStart(2, '0'))
+
+      const leftDays = getDiffDaysToday(curPayment)
+      let tableElStr
+      if(leftDays < 0) {
+        tableElStr =  `<tr class = 'exp'>
+        <td>${i + 1}</td>
+        <td>${curPayment.user_name} (${curPayment.user_id})</td>
+        <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
+        <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
+      </tr>`
+      } else {
+        tableElStr = `<tr>
+          <td>${i + 1}</td>
+          <td>${curPayment.user_name} (${curPayment.user_id})</td>
+          <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
+          <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
+        </tr>`
+      }
+      tableDiv.innerHTML += tableElStr
+    }
+  }
+}
+
+const allPayments = []
+// 쿼리할때 만기날짜로 필터링은 힘들것같음 일단은 처음에 다불러오고 날짜변경시마다 필터링이랑 표시만 갱신하는방식으로
+const q = query(collection(db, "test_payments"))
+const querySnapshot = await getDocs(q)
+querySnapshot.forEach(doc => {
+  allPayments.push(doc.data())
+});
+// console.log(allPayments);
+// console.log('전체결제목록');
+// allPayments.forEach((pay) => console.log(pay.user_id, pay.user_name, pay.expire_date))
+
+
 const viewToggleBtn = document.querySelector("button#toggle-view-scale")
 let view = "day"
 
@@ -56,6 +197,7 @@ showDayView()
 function showDayView() {
  showDay()
  setDateNavigator()
+ dataManage()
 }
 
 function showDay() {
@@ -75,17 +217,20 @@ function prevDateListener() {
   day.setDate(day.getDate() - 1)
   console.log('prevDay');
   showDay()
+  dataManage()
 }
 function nextDateListener() {
   day.setDate(day.getDate() + 1)
   console.log('nextDay');
   showDay()
+  dataManage()
 }
 
 
 function showMonthView() {
   showMonth()
   setMonthNavigator()
+  dataManage()
 }
 
 function showMonth() {
@@ -102,20 +247,95 @@ function prevMonthListener() {
   day.setMonth(day.getMonth() - 1)
   console.log('prevMonth');
   showMonth()
+  dataManage()
 }
 
 function nextMonthListener() {
   day.setMonth(day.getMonth() + 1)
   console.log('nextMonth');
   showMonth()
-}
-
-function getExpireData() {
-
+  dataManage()
 }
 
 
+function dataManage() {
+  let filteredPayments
+  let sortedPayments
+  if(view == "day") { // 일별보기면 기준날짜 15일범위에 있는 결제들 필터
+    filteredPayments = getDayViewPayments()
+    console.log('일별보기 필터');
+    filteredPayments.forEach((pay) => console.log(pay.user_id, pay.user_name, pay.expire_date))
+  } else { // 월별보기면 기준날짜 있는 월의 모든결제 불러옴
+    filteredPayments = getMonthViewPayments()
+    console.log('월별보기 필터');
+    filteredPayments.forEach((pay) => console.log(pay.user_id, pay.user_name, pay.expire_date))
+  }  
+  // 만료일 오름차순으로 정렬
+  sortedPayments = filteredPayments.sort((prevPay, nextPay) => {
+    const prevDiff = getDiffDays(prevPay)
+    const nextDiff = getDiffDays(nextPay)
+    return prevDiff - nextDiff
+  })
+  console.log('정렬된', view, '결제');
+  sortedPayments.forEach((pay) => console.log(pay.user_id, pay.user_name, pay.expire_date))
+  // 출력함수에 넘겨줌
+  showPayments(sortedPayments)
+}
+// 기준날짜 ~ 기준날짜 + 15일 사이에 만료되는 결제들 불러오기
+function getDayViewPayments() {
+  const filteredPayments = allPayments.filter((payment) => {
+    return (getDiffDays(payment) >= 0) && (getDiffDays(payment) <= 15)
+  })
+  console.log('일별보기로 필터링된 결제들', filteredPayments);
+  return filteredPayments
+}
+// 기준날짜 속한 '월'의 모든결제 불러오기
+function getMonthViewPayments() {
+  const [dayYear, dayMonth] = [day.getFullYear(), day.getMonth() + 1]
+  const monthViewPayments = allPayments.filter((payment) => {
+    return (payment.expire_date[0] == dayYear) && (payment.expire_date[1] == dayMonth)
+  })
+  console.log('월별보기로 필터링된 결제들', monthViewPayments);
+  return monthViewPayments
+}
 
+
+function getDiffDays(pay) { // 기준 날짜와 결제 만료일이 몇일차이나는지 구하기위함
+  // 기준날짜 day는 전역에 있는상태
+  const [expYear, expMonth, expDay] = [pay.expire_date[0], pay.expire_date[1] - 1 , pay.expire_date[2]]
+  const expDate = new Date(expYear, expMonth, expDay) // 결제 일의객체
+  expDate.setHours(23)
+  expDate.setMinutes(59)
+  expDate.setMinutes(59)
+  // console.log('만료날짜객체', expDate.toLocaleDateString());
+  // console.log('현재날짜객체', day.toLocaleDateString());
+  const diffSec = expDate.getTime() - day.getTime()
+  const diffDate = Math.floor(diffSec / (1000 * 60 * 60 * 24))
+  return diffDate
+}
+
+
+
+
+function showPayments(payments) {
+  const tableDiv = document.querySelector("#table-div table.list-val")
+  tableDiv.innerHTML = ''
+
+  const paginationObj = new Pagination(payments)
+  paginationObj.initPaginationBar()
+}
+
+function getDiffDaysToday(pay) { // 현재 날짜기준 결제만료일이몇일 남았는지 구하기위함
+  const today = new Date()
+  const [expYear, expMonth, expDay] = [pay.expire_date[0], pay.expire_date[1] - 1 , pay.expire_date[2]]
+  const expDate = new Date(expYear, expMonth, expDay) //만기일 객체
+  expDate.setHours(23)
+  expDate.setMinutes(59)
+  expDate.setMinutes(59)
+  const diffSec = expDate.getTime() - today.getTime()
+  const diffDate = Math.floor(diffSec / (1000 * 60 * 60 * 24))
+  return diffDate
+}
 
 
 
@@ -172,207 +392,7 @@ filterExpireee()
 
 // 순서 : 필터링(기준날짜15일) > 정렬 > 결제별 정보(회원) > 
 
-class Pagination {
-  constructor(userArr, expireArr) {
-    // 현재 el개수, 페이지당최대el개수 >> pageNum 계산
-    this.elNum = expireArr.length 
-    this.maxElNum = 5
-    this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
-    this.curPageNum = 1
 
-    this.userArr = userArr
-    this.expireArr = expireArr
-    console.log(this.userArr, this.expireArr);
-    console.log(`결제개수 : ${this.elNum} 페이지개수 : ${this.pageNum} 현재페이지번호 : ${this.curPageNum}`);
-  }
-  initPaginationBar() {
-    // if()
-    // 계산된 pageNum을 통해 indicator개수세팅
-    const paginationDiv = document.querySelector("#pagination")
-    paginationDiv.innerHTML = ''
-    if(this.elNum == 0) {
-      const listDiv = document.querySelector("div#table-div table.list-val")
-      listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
-      return
-    }
-    paginationDiv.innerHTML = `<button id="prev"><</button>
-    <div id="page-indicator"></div>
-    <button id = "next">></button>
-    `
-    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
-    for(let i = 0; i < this.pageNum; i++) {
-      pageIndicatorDiv.innerHTML += `<div class="page-btn">
-        <span class ="page-num">${i + 1}</span>
-      </div>
-      `
-    }
-    // 숫자 직접클릭시 페이지 이동 가능하게 리스너 추가
-    const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
-    pageBtnElements.forEach((btnNode) => {
-      btnNode.addEventListener('click', (evt) => {
-        console.log('여긴 숫자버튼의 리스너 ', evt.currentTarget, '이벤트 발생지는', evt.target);
-        // console.log('숫자눌러이동');
-        this.curPageNum = Number(btnNode.textContent)
-        console.log(`curPageNum : ${this.curPageNum}`);
-        this.styleCurpageBtn()
-        this.showCurrentPageItems()
-      })
-    })
-
-    // 최초 current 페이지 스타일적용 및 해당 page item 표시
-    this.styleCurpageBtn()
-    this.showCurrentPageItems()
-
-    const prevBtn = document.querySelector('#pagination button#prev')
-    const nextBtn = document.querySelector('#pagination button#next')
-
-    // prevBtn.addEventListener('click', )
-    /*
-    */
-   prevBtn.addEventListener('click', () => {
-      // console.log(`curPageNum : ${this.curPageNum}`);
-     const changedCurPageNum = this.curPageNum - 1  
-     if(changedCurPageNum > 0) {
-       this.curPageNum -= 1
-       console.log(`curPageNum : ${this.curPageNum}`);
-       this.styleCurpageBtn()
-       this.showCurrentPageItems()
-       
-      }
-    })
-    
-    nextBtn.addEventListener('click', () => {
-      // console.log(`curPageNum : ${this.curPageNum}`);
-      const changedCurPageNum = this.curPageNum + 1  
-      if(changedCurPageNum <= this.pageNum) {
-        this.curPageNum += 1
-        console.log(`curPageNum : ${this.curPageNum}`);
-        this.styleCurpageBtn()
-        this.showCurrentPageItems()
-      }
-    })
-    
-    // 얘네 무슨차이인지도 알아보자
-    //1. 함수표현식
-    const listener = function() {
-      console.log('clicked');
-    }
-
-    //2. 함수표현식(arrow)
-    const listener2 = () => console.log('clicked');
-
-    //3. 선언함수
-    function listener3() {
-      console.log('clicked');
-    }
-    // const listener = () => console.log('clicked')
-    // nextBtn.addEventListener('click', listener)
-  }
-  // .current 에 스타일 추가
-  styleCurpageBtn() {
-    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
-    const prevCurBtnEl = pageIndicatorDiv.querySelector(".current")
-    if(!prevCurBtnEl) {
-      const firstPageBtn = document.querySelector(".page-btn:first-child")
-      firstPageBtn.classList.add("current")
-      return
-    }
-    // 갱신된 curPageNum에 대해 스타일  
-    prevCurBtnEl.classList.remove("current")
-    const btnEls = Array.from(pageIndicatorDiv.querySelectorAll("div.page-btn"))
-    const curBtnEl = btnEls.filter((node) => node.textContent == this.curPageNum)[0]  
-    curBtnEl.classList.add("current")
-    /*
-    */
-  }
-  // curPageNum에 대해 item추가
-  showCurrentPageItems() {
-    const startIdx = this.maxElNum * (this.curPageNum - 1)
-    console.log(this.curPageNum);
-    const endIdx = this.maxElNum * this.curPageNum
-    console.log(startIdx, endIdx);
-    const tableDiv = document.querySelector("div.inner table.list-val")
-    tableDiv.innerHTML = ""
-
-    for(let i = startIdx; i < endIdx; i++) {
-      const curExpire = this.expireArr[i]
-      const curMember = this.userArr[i]
-      if(curExpire == undefined || curMember == undefined) break
-      const classType = (curExpire.pay_class.class_type == 'group') ? "요가" : "개인레슨"
-      const perWeek = curExpire.pay_class.times_a_week
-      const classTerm = curExpire.pay_class.class_term
-
-      const endArr = getEnd(curExpire)
-      const [startYear, startMonth, startDay] = [curExpire.pay_year, String(curExpire.pay_month).padStart(2, '0'), String(curExpire.pay_day).padStart(2, '0')]
-      const [endYear, endMonth, endDay] = [endArr[0], String(endArr[1]).padStart(2, '0'), String(endArr[2]).padStart(2, '0')]
-      const leftDays = getTermToday(curExpire)
-      let tableElStr
-      if(leftDays < 0) {
-        tableElStr =  `<tr class = 'exp'>
-        <td>${i + 1}</td>
-        <td>${curMember.name} (${curMember.user_id}) [${curMember.gender}]</td>
-        <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-        <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
-      </tr>`
-      } else {
-        tableElStr = `<tr>
-          <td>${i + 1}</td>
-          <td>${curMember.name} (${curMember.user_id}) [${curMember.gender}]</td>
-          <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-          <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
-        </tr>`
-      }
-      tableDiv.innerHTML += tableElStr
-    }
-    /*
-    const slicedExpires = this.expireArr.slice(startIdx, endIdx)
-    const slicedUsers = this.userArr.slice(startIdx, endIdx)
-    console.log(`start : ${startIdx} end : ${endIdx}`);
-    console.log(slicedExpires);
-    // map을 할때마다 당연히 슬라이스 된 위치부터 자르므로, idx가 0부터 시작된다
-    const strOfItems = slicedExpires.map((val, idx) => {
-      const curExpire = val
-      const payUser = slicedUsers[idx]
-      const classType = (curExpire.pay_class.class_type == 'group') ? "요가" : "개인레슨"
-      const perWeek = curExpire.pay_class.times_a_week
-      const classTerm = curExpire.pay_class.class_term
-
-      const endArr = getEnd(curExpire)
-      const [startYear, startMonth, startDay] = [curExpire.pay_year, String(curExpire.pay_month).padStart(2, '0'), String(curExpire.pay_day).padStart(2, '0')]
-      const [endYear, endMonth, endDay] = [endArr[0], String(endArr[1]).padStart(2, '0'), String(endArr[2]).padStart(2, '0')]
-      const leftDays = getTermToday(curExpire)
-      let tableElStr
-      if(leftDays < 0) {
-        return `<tr class = 'exp'>
-        <td>${idx + 1}</td>
-        <td>${payUser.name} (${payUser.user_id}) [${payUser.gender}]</td>
-        <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-        <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
-      </tr>`
-      } else {
-        return `<tr>
-          <td>${idx + 1}</td>
-          <td>${payUser.name} (${payUser.user_id}) [${payUser.gender}]</td>
-          <td>${classType} 주${perWeek}회 [${classTerm}개월]</td>
-          <td>${startYear}.${startMonth}.${startDay} ~ ${endYear}.${endMonth}.${endDay} ( ${leftDays}일 )</td>
-        </tr>`
-      }
-
-      // tableDiv.innerHTML += tableElStr
-      // return `<tr>
-      // <th>${val}</th>
-      // <th>이름${val}</th>
-      // <th>설명${val}</th>
-      // </tr>`
-    })
-    const tableDiv = document.querySelector("div.inner table.list-val")
-    tableDiv.innerHTML = ""
-    strOfItems.forEach((itemStr) => {
-      tableDiv.innerHTML += itemStr
-    })
-    */
-  }
-}
 
 
 // 현재 날짜 기준으로 만료일이 15일 이후까지인 결제들 filter
@@ -401,14 +421,6 @@ function sortExpires(expires) {
   getExpireInfo(expires)
   // console.log(expires);
 }
-/*
-이름 불러오는 코드
-const q = query(collection(db, "test_members"), where("user_id", "==", userId))
-const querySnapshot = await getDocs(q)
-querySnapshot.forEach((doc) => {
-  console.log(doc.data())
-  })
-  */
 async function getExpireInfo(expires) {
   const userArr = []
   for(let i = 0; i < expires.length; i++) {
@@ -431,7 +443,7 @@ function showExpires(userArr, expires) {
     
     /*
     for(let i = 0; i < expires.length; i++) {
-      const curExpire = expires[i]
+      const curPayment = expires[i]
       const payUser = userArr[i]
 
       // const payUser = await getInfo(curExpire.user_id) // 이상태면 undefined로 감싸진 프로미스 올듯함
@@ -545,3 +557,4 @@ function getTerm(pay) { // 기준 날짜와 결제 만료일이 몇일차이나�
   // console.log(diffDate,'일');
   return diffDate
 }
+
