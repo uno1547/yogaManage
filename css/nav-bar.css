@@ -1,0 +1,142 @@
+
+html {
+  /* scrollbar-width: none; */
+}
+
+body {
+  margin: 0px;
+  /* height: 3000px; */
+  /* position: sticky;
+  top: 111px;
+  left: 200px; */
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+.inner {
+  width: 1500px;
+  margin: auto;
+}
+
+/*header*/
+header {
+  /* background-color: yellow; */
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  margin-top:10px;
+}
+
+header .inner {
+  /* background-color: green; */
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+header .logo a {
+  padding: 30px 20px;
+}
+
+header nav {
+  display: flex;
+  /* align-items: center; */
+}
+
+header nav ul {
+  display: flex;
+  /* align-items: center; */
+  list-style: none;
+}
+header nav ul li {
+  margin: 0 25px;
+}
+header nav ul li a {
+  padding: 30px 10px;
+}
+
+header nav ul li a,
+header nav ul li span {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+
+header ul li:hover a,
+header ul li:hover span {
+  color: rgb(167, 167, 167);
+}
+/* aside */
+aside {
+  /* background-color: #aeaeae; */
+  /* width: 250px; */
+  /* margin-top: 50px; */
+  position: fixed;
+  z-index: 2;
+  height: 100%;
+  top: 100px;
+  /* left: 0px; */
+  border-right: 0.5px solid rgb(222, 222, 222);
+
+}
+aside ul {
+  list-style-type: none;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}
+
+aside ul li {
+  /* margin: 25px 0px; */
+  border-bottom: 1px solid rgb(214, 214, 214);
+}
+
+aside ul li a {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 20px;
+}
+
+aside ul li:hover a {
+  color: rgb(167, 167, 167);
+}
+
+main {
+  margin-top: 110px;
+
+}
+
+main .inner {
+  /* background-color: rgb(168, 168, 168); */
+  position: relative;
+}
+
+main ul {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  margin-bottom: 10px;
+  background-color: rgb(212, 212, 212);
+  position: fixed;
+  top: 100px;
+
+  /*sticky쓰거나 위의 fixed쓰나 다를바가없는데 ul만큼 부피 차지하는것말고는*/
+  position: sticky;
+  top: 110px;
+}
+
+main ul li {
+  list-style-type: none;
+}
+
+main ul li a {
+  display: inline-block;
+  padding: 10px 25px;
+}
+
