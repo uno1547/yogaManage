@@ -10,10 +10,35 @@ const app = initializeApp({
   appId: "1:256248240983:web:07dcebbcb04debc34b3c12"
 })
 const db = getFirestore(app)
+/*
+await addDoc(collection(db, "new_test_payments"), {
+  user_id : 5040,
+  user_name : '성주휘',
+  phone_number : "010-2475-5837",
+  pay_date : "20240624",
+  expire_date : "20240724",
+  pay_fee : 40000, 
+  pay_method : "card", 
+  pay_teacher : "김예림", 
+  personal_teacher : "김예림",
+  pay_class : { 
+    class_type : "group", 
+    times_a_week : 2, 
+    class_term : 1, 
+    }
+});
+*/
 
-// 현재날짜구하고 얘가 근데 굳이 필요할까?
 let date = new Date()
 
+/* 이런식으로도 가능하다면, 맨처음에 데이터 요청하고시작하면 조금은 단축될지도
+const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
+const promise = getDocs(q)
+console.log('hi');
+promise.then((snapShots) => {
+  snapShots.forEach((doc) => console.log(doc.data()))
+})
+*/
 /*
 1. 현재 날짜세팅
 2. 현재날짜 - 15 ~ 현재날짜의 결제 불러옴
@@ -22,16 +47,36 @@ let date = new Date()
 */
 
 // 2. 오늘부터 15일 이전까지의 pay_date들을 불러온다!
+// const userDic = [] 배열은 showPayment에서 id값으로 조회를못함
+const userDic = {}
 async function getQueries() {
   const queriedPayments = []
   const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
-  const querySnapshot = await getDocs(q)
+  // 여기어딘가에서 똑같이 비동기로 쿼리보내고, 
+  const querySnapshot = await getDocs(q) // 기본 날짜구간에 해당하는 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
+  console.log(querySnapshot);
   querySnapshot.forEach((doc) => {
-    // console.log(doc.data());
-    console.log(doc.data().pay_fee, doc.data().pay_method);
-    queriedPayments.push(doc.data())
+    // user_id로 멤버 쿼리 미리 날려둠
+    // userDic.push(doc.data().user_id) 
+    // 여기서 아이디 조회할때마다 기다리지않고, 아이디로 member컬렉션에 
+    const id = doc.data().user_id
+    console.log(id);
+    /* ?? 왜 promise로 또감싸
+    userDic[id] = new Promise((resolve) => {
+      const q = query(collection(db, "test_members"), where("user_id", "==", id))
+      const querySnapshot = getDocs(q) // promise반환
+    })
+    */
+    const q = query(collection(db, "test_members"), where("user_id", "==", id))
+    userDic[id] = getDocs(q) // {1100 : promise, 2212 : promise}
+    // console.log(doc.data().pay_fee, doc.data().pay_method);
+    queriedPayments.push(doc.data()) // {user_id : , pay_fee 등등이 담김}
   })
-  // console.log(queriedPayments);
+  console.log(userDic);
+  console.log(queriedPayments);
+  // await new Promise((resolve) => {
+  //   setTimeout(() => resolve(), 200)
+  // }) ㅋㅋㅋ 이렇게 딜레이 주는게 말이되나
   showInOverview(queriedPayments)
   initInput()
   showPaymentList(queriedPayments)
@@ -109,7 +154,7 @@ function initInput() {
 //5. 해당 결제의 user_id로 담당강사, 휴대폰번호 불러와야함
 async function getInfo(userId) {
   const q = query(collection(db, "test_members"), where("user_id", "==", userId))
-  const querySnapshot = await getDocs(q)
+  const querySnapshot = await getDocs(q) 
   const info = {}
   querySnapshot.forEach((doc) => {
     info.teacher = doc.data().teacher
@@ -118,12 +163,41 @@ async function getInfo(userId) {
   return info
 }
 //5. 기본 날짜구간 리스트에 표시
-async function showPaymentList(payments) {
+function showPaymentList(payments) {
+  const listValDiv = document.querySelector("div#table-list table#list-val")
+  listValDiv.innerHTML = ''
   for(let i = 0; i < payments.length; i++) {
-    const payUserInfo = await getInfo(payments[i].user_id)
-    payments[i].info = payUserInfo
+    // console.log(payments[i]);
+    // 여기서 user_id로 접근가능한상황임 미리 전역에 담아두었던 프로미스 배열에서 꺼내서 쓰면될듯?
+    payments[i].info = {}
+    const id = payments[i].user_id
+    const promise = userDic[id]
+
+    // promise.then((snapshot) => snapshot.forEach((data) => console.log(data.data())))
+    promise.then((snapshot) => snapshot.forEach((snapshot) => {
+      payments[i].info["teacher"] = snapshot.data().teacher
+      payments[i].info["phoneNum"] = snapshot.data().phone_number
+    }))
+    // const payUserInfo = await getInfo(payments[i].user_id) // 얘로인해 엄청난 시간지연발생
+    // payments[i].info = payUserInfo
+    console.log(payments[i]);
+    console.log(payments[i].info); // 여기 비어있음 말이됨???
+
+    const str = `<tr>
+            <td>${payments[i].pay_date}</td>
+            <td>${payments[i].user_name}</td>
+            <td>${payments[i].info.teacher}</td>
+            <td>${payments[i].pay_teacher}</td>
+            <td>${payments[i].info["phoneNum"]}</td>
+            <td>요가 주${payments[i].pay_class.times_a_week}회 [${payments[i].pay_class.class_term}개월] [주 ${payments[i].pay_class.times_a_week}회권]</td>
+            <td>${payments[i].pay_date}</td>
+            <td>${payments[i].expire_date}</td>
+            <td>${payments[i].pay_fee}</td>
+          </tr>`
+    listValDiv.innerHTML += str
   }
-  console.log(payments);
+  // console.log(payments);
+  /*
   const entire = payments.map((payment) => {
     return `<tr>
             <td>${payment.pay_date}</td>
@@ -142,8 +216,10 @@ async function showPaymentList(payments) {
   entire.forEach((el) => {
     listValDiv.innerHTML += el
   })
+  */
 }
 
+//6. payment데이터필드에 전화번호, 담당강사
 
 
 
