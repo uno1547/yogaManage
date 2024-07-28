@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!-- <link rel="stylesheet" href="/css/common.css"> -->
   <link rel="stylesheet" href="/css/stat.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 </head>
 <body>
   <header>
@@ -54,7 +55,7 @@
   </aside> -->
   <main>
     <div class="inner">
-      <ul>
+      <!-- <ul>
         <li>
           <a href="">전체결제</a>
         </li>
@@ -64,7 +65,7 @@
         <li>
           <a href="">일별결제</a>
         </li>
-      </ul>
+      </ul> -->
       <table id = "short-view-key">
         <tr>
           <th>총 결제건수</th>
@@ -87,6 +88,7 @@
         검색기간
         <input type="date" id="start-date"> ~
         <input type="date" id="end-date">
+        <!-- <input type="button" value="검색"> -->
       </div>
       <div id = table-list>
         <table id="list-key">
@@ -102,6 +104,12 @@
             <th>결제금액</th>
           </tr>
         </table>
+        <!-- <div id = "is-loading">
+          <div class="skeleton-line"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div> -->
         <table id="list-val">
           <!-- <tr>
             <td>2023-07-22</td>

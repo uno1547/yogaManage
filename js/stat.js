@@ -28,65 +28,60 @@ await addDoc(collection(db, "new_test_payments"), {
     }
 });
 */
-
 let date = new Date()
-
-/* 이런식으로도 가능하다면, 맨처음에 데이터 요청하고시작하면 조금은 단축될지도
-const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
-const promise = getDocs(q)
-console.log('hi');
-promise.then((snapShots) => {
-  snapShots.forEach((doc) => console.log(doc.data()))
+const dayInputStart = document.querySelector('#date-input input#start-date')
+const dayInputEnd = document.querySelector('#date-input input#end-date')
+// dayInputStart.addEventListener('input', () => {
+//   console.log('input발생 arrowhandler', this);
+// })
+// dayInputStart.addEventListener('change', () => {
+//   console.log('change발생 arrow', this);
+// })
+dayInputStart.addEventListener('input',function() {
+  console.log('input발생 anonymous', this.value);
 })
-*/
-/*
-1. 현재 날짜세팅
-2. 현재날짜 - 15 ~ 현재날짜의 결제 불러옴
-3. input type date 값 표시하고
-4. 해당 결제 리스트 표시
-*/
+dayInputStart.addEventListener('change',function() {
+  console.log('change발생 anonymous', this.value);
+})
+dayInputStart.addEventListener('blur',function() {
+  console.log('blur발생 anonymous', this.value);
+})
 
-// 2. 오늘부터 15일 이전까지의 pay_date들을 불러온다!
-// const userDic = [] 배열은 showPayment에서 id값으로 조회를못함
-const userDic = {}
+// 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다!
 async function getQueries() {
-  const queriedPayments = []
+  const queriedPayments = [] // 불러온 payments 담을 배열
+  const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를
   const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
-  // 여기어딘가에서 똑같이 비동기로 쿼리보내고, 
-  const querySnapshot = await getDocs(q) // 기본 날짜구간에 해당하는 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
-  console.log(querySnapshot);
+  // const q = query(collection(db, "test_payments_string"))
+  const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
+  // console.log(querySnapshot.size);
   querySnapshot.forEach((doc) => {
-    // user_id로 멤버 쿼리 미리 날려둠
-    // userDic.push(doc.data().user_id) 
-    // 여기서 아이디 조회할때마다 기다리지않고, 아이디로 member컬렉션에 
+    // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
     const id = doc.data().user_id
-    console.log(id);
-    /* ?? 왜 promise로 또감싸
-    userDic[id] = new Promise((resolve) => {
-      const q = query(collection(db, "test_members"), where("user_id", "==", id))
-      const querySnapshot = getDocs(q) // promise반환
-    })
-    */
-    const q = query(collection(db, "test_members"), where("user_id", "==", id))
-    userDic[id] = getDocs(q) // {1100 : promise, 2212 : promise}
-    // console.log(doc.data().pay_fee, doc.data().pay_method);
-    queriedPayments.push(doc.data()) // {user_id : , pay_fee 등등이 담김}
+    const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
+    userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
+    queriedPayments.push(doc.data()) // 받은 결제 담음
   })
   console.log(userDic);
   console.log(queriedPayments);
-  // await new Promise((resolve) => {
-  //   setTimeout(() => resolve(), 200)
-  // }) ㅋㅋㅋ 이렇게 딜레이 주는게 말이되나
+  console.log(queriedPayments.length);
+  showSkeletonLoading(queriedPayments.length)
   showInOverview(queriedPayments)
-  initInput()
-  showPaymentList(queriedPayments)
+  // initInput()
+  /*
+  setTimeout(() => {
+    showPaymentList(queriedPayments, userDic)
+  }, 2000);
+  이렇게 하면 순차적으로 뜨는데, 아래처럼주면 찰나에 안뜨고 무시됨
+  */
+  showPaymentList(queriedPayments, userDic)
 }
 getQueries()
 // 쿼리에쓰이는 문자열반환함수
 function getTodayDateString() {
   const todayDate = new Date()
   const [year, month, date] = [todayDate.getFullYear(), String(todayDate.getMonth() + 1).padStart(2, '0'), String(todayDate.getDate()).padStart(2, '0')]
-  console.log(`${year}${month}${date}`);
+  // console.log(`${year}${month}${date}`);
   return `${year}${month}${date}`
 }
 // 쿼리에쓰이는 문자열반환함수
@@ -94,8 +89,28 @@ function getPrevDateString() {
   const prevDate = new Date()
   prevDate.setDate(prevDate.getDate() - 30)
   const [year, month, date] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
-  console.log(`${year}${month}${date}`);
+  // console.log(`${year}${month}${date}`);
   return `${year}${month}${date}`
+}
+// 개수만큼 틀넣음
+function showSkeletonLoading(num) {
+  const skeletonDiv = document.querySelector("#table-list table#list-val")
+  console.log(skeletonDiv);
+  for(let i = 0; i < num; i++) {
+    console.log(i);
+    skeletonDiv.innerHTML += `<tr class = "skeleton-line">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>`
+  }
+
 }
 
 //3. 불러온 결제를 shortview 에 표시
@@ -163,63 +178,65 @@ async function getInfo(userId) {
   return info
 }
 //5. 기본 날짜구간 리스트에 표시
-function showPaymentList(payments) {
+async function showPaymentList(payments, userInfo) {
   const listValDiv = document.querySelector("div#table-list table#list-val")
   listValDiv.innerHTML = ''
   for(let i = 0; i < payments.length; i++) {
-    // console.log(payments[i]);
-    // 여기서 user_id로 접근가능한상황임 미리 전역에 담아두었던 프로미스 배열에서 꺼내서 쓰면될듯?
-    payments[i].info = {}
+    // 여기서 user_id로 접근가능한상황임 미리 전역에 담아두었던 프로미스 배열에서 꺼내서 프로퍼티 추가해줌
+    payments[i]["info"] = {}
     const id = payments[i].user_id
-    const promise = userDic[id]
-
-    // promise.then((snapshot) => snapshot.forEach((data) => console.log(data.data())))
-    promise.then((snapshot) => snapshot.forEach((snapshot) => {
-      payments[i].info["teacher"] = snapshot.data().teacher
-      payments[i].info["phoneNum"] = snapshot.data().phone_number
+    const promise = userInfo[id]
+    await promise.then((snapshot) => snapshot.forEach((snapshot) => {
+      payments[i]["info"].teacher = snapshot.data().teacher
+      payments[i]["info"].phoneNum = snapshot.data().phone_number
     }))
-    // const payUserInfo = await getInfo(payments[i].user_id) // 얘로인해 엄청난 시간지연발생
-    // payments[i].info = payUserInfo
-    console.log(payments[i]);
-    console.log(payments[i].info); // 여기 비어있음 말이됨???
-
-    const str = `<tr>
-            <td>${payments[i].pay_date}</td>
-            <td>${payments[i].user_name}</td>
-            <td>${payments[i].info.teacher}</td>
-            <td>${payments[i].pay_teacher}</td>
-            <td>${payments[i].info["phoneNum"]}</td>
-            <td>요가 주${payments[i].pay_class.times_a_week}회 [${payments[i].pay_class.class_term}개월] [주 ${payments[i].pay_class.times_a_week}회권]</td>
-            <td>${payments[i].pay_date}</td>
-            <td>${payments[i].expire_date}</td>
-            <td>${payments[i].pay_fee}</td>
-          </tr>`
-    listValDiv.innerHTML += str
+    // console.log(payments[i]);
+    // console.log(payments[i].info);
   }
-  // console.log(payments);
+  // 위에서 추가한 최종payment object들 출력
+  const skelton = document.querySelector("div#is-loading")
+  // skelton.remove()
+
+  // payments.forEach(payment => {
+  //   console.log(payment);
+  // });
   /*
-  const entire = payments.map((payment) => {
+  일반 sort 사전순으로 정렬되기에 1000, 21 과같이 크기순정렬이되지않는다.
+
+  */
+  // 결제일 최신순으로 정렬
+  payments.sort((a, b) => {
+    if(a.pay_date < b.pay_date) { // 2023 2024
+      return 1
+    } else if(a.pay_date > b.pay_date){
+      return -1
+    } else {
+      return 0
+    }
+  })
+  // 정렬완료된걸 형식에 맞게 출력
+  const paymentStrs = payments.map((payment) => {
+    const payDate = payment.pay_date
+    const [payYear, payMonth, payDay] = [payDate.slice(0, 4), payDate.slice(4, 6), payDate.slice(6)]
+    const expireDate = payment.expire_date
+    const [expireYear, expireMonth, expireDay] = [expireDate.slice(0, 4), expireDate.slice(4, 6), expireDate.slice(6)]
     return `<tr>
-            <td>${payment.pay_date}</td>
+            <td>${payYear}-${payMonth}-${payDay}</td>
             <td>${payment.user_name}</td>
             <td>${payment.info.teacher}</td>
             <td>${payment.pay_teacher}</td>
-            <td>${payment.info.phoneNumber}</td>
+            <td>${payment.info.phoneNum}</td>
             <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
-            <td>${payment.pay_date}</td>
-            <td>${payment.expire_date}</td>
-            <td>${payment.pay_fee}</td>
+            <td>${payYear}-${payMonth}-${payDay}</td>
+            <td>${expireYear}-${expireMonth}-${expireDay}</td>
+            <td>${100000}</td>
           </tr>`
   })
-  const listValDiv = document.querySelector("div#table-list table#list-val")
-  listValDiv.innerHTML = ''
-  entire.forEach((el) => {
+  paymentStrs.forEach((el) => {
     listValDiv.innerHTML += el
   })
-  */
 }
 
-//6. payment데이터필드에 전화번호, 담당강사
 
 
 
