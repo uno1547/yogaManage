@@ -19,12 +19,14 @@ function getData() {
     setTimeout(() => {
       console.log('data');
       resolve(4)
-    }, 100);
+    }, 0);
   })
 }
 async function showPayment() {
   const num = await getData()
   console.log(num);
+  showSkel(num)
+  /*
   const table = document.querySelector("table#list-val")
   const skeleton = document.querySelectorAll("table#list-val tr.skeleton-line")
   skeleton.forEach((skeleton) => skeleton.remove())
@@ -44,8 +46,17 @@ async function showPayment() {
       <td></td>
     </tr>`
   }
+  */
 }
-setTimeout(() => {
-  showPayment()
-}, 550);
-// showPayment()
+showPayment()
+
+function showSkel(num) {
+  const trEls = document.querySelectorAll("table#list-val .skeleton-line")
+  for(let i = 0; i < num; i++) {
+    console.log(trEls[i]);
+    const tdEls = trEls[i].querySelectorAll("td")
+    tdEls.forEach(td => {
+      td.innerHTML = '<span></span>'
+    });
+  }
+}
