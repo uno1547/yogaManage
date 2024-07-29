@@ -28,6 +28,14 @@ await addDoc(collection(db, "new_test_payments"), {
     }
 });
 */
+/*
+원하는 순서
+1. 데이터 쿼리요청
+
+
+
+
+*/
 let date = new Date()
 const dayInputStart = document.querySelector('#date-input input#start-date')
 const dayInputEnd = document.querySelector('#date-input input#end-date')
@@ -52,8 +60,11 @@ async function getQueries() {
   const queriedPayments = [] // 불러온 payments 담을 배열
   const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를
   const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
-  // const q = query(collection(db, "test_payments_string"))
+  // const numSnapshot = getDocs(q)
+  // console.log(numSnapshot.size)
   const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
+  console.log(querySnapshot.size); // await을 안하면 size불러올수없음 > 
+  // showSkeletonLoading(querySnapshot.size)
   // console.log(querySnapshot.size);
   querySnapshot.forEach((doc) => {
     // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
@@ -64,17 +75,16 @@ async function getQueries() {
   })
   console.log(userDic);
   console.log(queriedPayments);
-  console.log(queriedPayments.length);
-  showSkeletonLoading(queriedPayments.length)
+  // console.log(queriedPayments.length);
   showInOverview(queriedPayments)
   // initInput()
   /*
-  setTimeout(() => {
-    showPaymentList(queriedPayments, userDic)
-  }, 2000);
   이렇게 하면 순차적으로 뜨는데, 아래처럼주면 찰나에 안뜨고 무시됨
   */
-  showPaymentList(queriedPayments, userDic)
+ setTimeout(() => {
+   showPaymentList(queriedPayments, userDic)
+ }, 200);
+  // showPaymentList(queriedPayments, userDic)
 }
 getQueries()
 // 쿼리에쓰이는 문자열반환함수
@@ -94,10 +104,11 @@ function getPrevDateString() {
 }
 // 개수만큼 틀넣음
 function showSkeletonLoading(num) {
+  // const shortViewSkeletonDiv = document.querySelector()
   const skeletonDiv = document.querySelector("#table-list table#list-val")
   console.log(skeletonDiv);
   for(let i = 0; i < num; i++) {
-    console.log(i);
+    // console.log(i);
     skeletonDiv.innerHTML += `<tr class = "skeleton-line">
             <td></td>
             <td></td>
@@ -221,11 +232,11 @@ async function showPaymentList(payments, userInfo) {
     const expireDate = payment.expire_date
     const [expireYear, expireMonth, expireDay] = [expireDate.slice(0, 4), expireDate.slice(4, 6), expireDate.slice(6)]
     return `<tr>
-            <td>${payYear}-${payMonth}-${payDay}</td>
-            <td>${payment.user_name}</td>
-            <td>${payment.info.teacher}</td>
-            <td>${payment.pay_teacher}</td>
-            <td>${payment.info.phoneNum}</td>
+            <td><span>${payYear}-${payMonth}-${payDay}</span></td>
+            <td><span>${payment.user_name}</span></td>
+            <td><span>${payment.info.teacher}</span></td>
+            <td><span>${payment.pay_teacher}</span></td>
+            <td><span>${payment.info.phoneNum}</span></td>
             <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
             <td>${payYear}-${payMonth}-${payDay}</td>
             <td>${expireYear}-${expireMonth}-${expireDay}</td>
