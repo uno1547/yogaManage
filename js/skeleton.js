@@ -26,10 +26,16 @@ async function showPayment() {
   const num = await getData()
   console.log(num);
   showSkel(num)
-  /*
+  // showPay(num)
+  setTimeout(() => {
+    showPay(num)
+  }, 1000);
+}
+showPayment()
+function showPay(num) {
   const table = document.querySelector("table#list-val")
-  const skeleton = document.querySelectorAll("table#list-val tr.skeleton-line")
-  skeleton.forEach((skeleton) => skeleton.remove())
+  const skeletonLines = document.querySelectorAll("table#list-val tr.skeleton-line")
+  skeletonLines.forEach((skeleton) => skeleton.remove())
   console.log('표시!!');
   console.log(table);
   for(let i = 0; i < num; i++) {
@@ -46,9 +52,7 @@ async function showPayment() {
       <td></td>
     </tr>`
   }
-  */
 }
-showPayment()
 
 function showSkel(num) {
   const trEls = document.querySelectorAll("table#list-val .skeleton-line")

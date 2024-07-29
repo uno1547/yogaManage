@@ -28,14 +28,171 @@ await addDoc(collection(db, "new_test_payments"), {
     }
 });
 */
-/*
-원하는 순서
-1. 데이터 쿼리요청
+
+class Pagination {
+  constructor(paymentArr, userDic) {
+    this.elNum = paymentArr.length
+    this.maxElNum = 10
+    this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
+    this.curPageNum = 1
+    this.paymentArr = paymentArr
+    this.userDic = userDic
+  }
+  // #pagitaion 초기화하고, pageNum만큼 indicator추가
+  initPaginationBar() {
+    const paginationDiv = document.querySelector(".inner div#pagination")
+    paginationDiv.innerHTML = 'hi'
+    if(this.elNum == 0) {
+      const listDiv = document.querySelector("div#table-list table#list-val")
+      listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
+      return
+    }
+    // pagination 컴포넌트 추가
+    paginationDiv.innerHTML = `<button id="prev"><</button>
+    <div id="page-indicator"></div>
+    <button id = "next">></button>
+    `
+    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
+    for(let i = 0; i < this.pageNum; i++) {
+      pageIndicatorDiv.innerHTML += `<div class="page-btn">
+        <span class ="page-num">${i + 1}</span>
+      </div>
+      `
+    }
+
+    // 각indicator에 클릭 리스너추가 (클릭시 해당페이지로이동)
+    const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
+    pageBtnElements.forEach((btnNode) => {
+      btnNode.addEventListener('click', () => {
+        // 이 리스너도 사실 중첩등록의 여지가 있지만, 매번 #pagination을 비우고시작하기에 상관없음
+        this.curPageNum = Number(btnNode.textContent)
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      })
+    })
+    // 맨처음
+    this.styleCurpageBtn()
+    this.showCurrentPageItems()
 
 
+    const prevBtn = document.querySelector('#pagination button#prev')
+    const nextBtn = document.querySelector('#pagination button#next')
+
+    // nextBtn, prevBtn 에 클릭 리스너추가
+    prevBtn.addEventListener('click', () => {
+      const changedCurPageNum = this.curPageNum - 1  
+      if(changedCurPageNum > 0) {
+        this.curPageNum -= 1
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+    })
+    
+    nextBtn.addEventListener('click', () => {
+      const changedCurPageNum = this.curPageNum + 1  
+      // 여기서 이 this는 nextBtn을 가르키지않네??? 
+      if(changedCurPageNum <= this.pageNum) {
+        this.curPageNum += 1
+        console.log(`curPageNum : ${this.curPageNum}`);
+        this.styleCurpageBtn()
+        this.showCurrentPageItems()
+      }
+    })
+  }
+
+  styleCurpageBtn() {
+    const pageIndicatorDiv = document.querySelector("#pagination #page-indicator")
+    const prevCurBtnEl = pageIndicatorDiv.querySelector(".current")
+    // 맨처음에는 선택된 버튼없으므로 초기화
+    if(!prevCurBtnEl) {
+      const firstPageBtn = document.querySelector(".page-btn:first-child")
+      firstPageBtn.classList.add("current")
+      return
+    }
+    // 갱신된 curPageNum에 대해 스타일  
+    prevCurBtnEl.classList.remove("current")
+    const btnEls = Array.from(pageIndicatorDiv.querySelectorAll("div.page-btn"))
+    const curBtnEl = btnEls.filter((node) => node.textContent == this.curPageNum)[0]  
+    curBtnEl.classList.add("current")
+  }
+  // curPageNum에 대해 item추가
+  async showCurrentPageItems() {
+    const startIdx = this.maxElNum * (this.curPageNum - 1)
+    const endIdx = this.maxElNum * this.curPageNum
+    console.log(`startIdx : ${startIdx} endIdx : ${endIdx}`)
+    // 위치!! 여기뭔가 이상할지도 너무빨리 없애서?
+
+    // 위치
+    for(let i = startIdx; i < endIdx; i++) {
+      const payment = this.paymentArr[i]
+      if(!payment) break
+
+      console.log(payment);
+      payment.info = {}
+      const id = payment.user_id
+      const infoPromise = this.userDic[id]
+      await infoPromise.then((response) => response.forEach((snapshot) => {
+        payment.info.teacher = snapshot.data().teacher
+        payment.info.phoneNum = snapshot.data().phone_number
+      }))
+    }
+
+    this.paymentArr.sort((a, b) => {
+      if(a.pay_date < b.pay_date) { // 2023 2024
+        return 1
+      } else if(a.pay_date > b.pay_date){
+        return -1
+      } else {
+        return 0
+      }
+    })
+
+    const paymentsInnerHTML = this.paymentArr.map((payment) => {
+      const payDate = payment.pay_date
+      const [payYear, payMonth, payDay] = [payDate.slice(0, 4), payDate.slice(4, 6), payDate.slice(6)]
+      const expireDate = payment.expire_date
+      const [expireYear, expireMonth, expireDay] = [expireDate.slice(0, 4), expireDate.slice(4, 6), expireDate.slice(6)]
+      return `<tr>
+              <td>${payYear}-${payMonth}-${payDay}</td>
+              <td>${payment.user_name}</td>
+              <td>${payment.info.teacher}</td>
+              <td>${payment.pay_teacher}</td>
+              <td>${payment.info.phoneNum}</td>
+              <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
+              <td>${payYear}-${payMonth}-${payDay}</td>
+              <td>${expireYear}-${expireMonth}-${expireDay}</td>
+              <td>${100000}</td>
+            </tr>`
+    })
+    
+    const tableDiv = document.querySelector("div.inner table#list-val")
+    tableDiv.innerHTML = ""
+    for(let i = 0; i < paymentsInnerHTML.length; i++) {
+      tableDiv.innerHTML += paymentsInnerHTML[i]
+    } 
+    for(let i = paymentsInnerHTML.length; i < 10; i++) {
+      tableDiv.innerHTML += `          <tr class = "skeleton-line">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>`
+    }
+    // paymentsInnerHTML.forEach((el) => {
+    //   tableDiv.innerHTML += el
+    // })
+  }
+
+}
 
 
-*/
 let date = new Date()
 const dayInputStart = document.querySelector('#date-input input#start-date')
 const dayInputEnd = document.querySelector('#date-input input#end-date')
@@ -64,8 +221,6 @@ async function getQueries() {
   // console.log(numSnapshot.size)
   const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
   console.log(querySnapshot.size); // await을 안하면 size불러올수없음 > 
-  // showSkeletonLoading(querySnapshot.size)
-  // console.log(querySnapshot.size);
   querySnapshot.forEach((doc) => {
     // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
     const id = doc.data().user_id
@@ -73,17 +228,20 @@ async function getQueries() {
     userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
     queriedPayments.push(doc.data()) // 받은 결제 담음
   })
+
   console.log(userDic);
   console.log(queriedPayments);
-  // console.log(queriedPayments.length);
   showInOverview(queriedPayments)
   // initInput()
+  const page = new Pagination(queriedPayments, userDic)
+  console.log(`elNum : ${page.elNum} maxNum : ${page.maxElNum} pageNum : ${page.pageNum}`);
+  page.initPaginationBar()
   /*
   이렇게 하면 순차적으로 뜨는데, 아래처럼주면 찰나에 안뜨고 무시됨
   */
- setTimeout(() => {
-   showPaymentList(queriedPayments, userDic)
- }, 200);
+//  setTimeout(() => {
+//    showPaymentList(queriedPayments, userDic)
+//  }, 200);
   // showPaymentList(queriedPayments, userDic)
 }
 getQueries()
@@ -178,6 +336,7 @@ function initInput() {
 }
 
 //5. 해당 결제의 user_id로 담당강사, 휴대폰번호 불러와야함
+/*
 async function getInfo(userId) {
   const q = query(collection(db, "test_members"), where("user_id", "==", userId))
   const querySnapshot = await getDocs(q) 
@@ -188,6 +347,7 @@ async function getInfo(userId) {
   })
   return info
 }
+*/
 //5. 기본 날짜구간 리스트에 표시
 async function showPaymentList(payments, userInfo) {
   const listValDiv = document.querySelector("div#table-list table#list-val")
@@ -247,33 +407,3 @@ async function showPaymentList(payments, userInfo) {
     listValDiv.innerHTML += el
   })
 }
-
-
-
-
-
-// 1. 문자열필드
-/*
-// const expire_date = "20240615"
-// const endDate = "20240809"
-const startDate = "20240720"
-const endDate = "20240726"
-const q = query(collection(db, "test_payments"), where("expire_date", ">=", startDate), where("expire_date", "<=", endDate))
-//가능은함 문자열의 expire_date를 가진다 치면, 필드와 비교할값을 생성하는 코드를 추가해서 그결과랑 비교하면 될듯함(기준날짜 바뀔때마다, 시작문자열, 종료문자열 반환하게)
-const querySnapshot = await getDocs(q)
-querySnapshot.forEach(doc => {
-  // console.log(doc.data());
-});
-*/
-
-// 2. 배열필드
-/*
-const q2 = query(collection(db, "test_payments"), where("pay_date"[0], "==", 7))
-const querySnapshot2 = await getDocs(q2)
-querySnapshot2.forEach(doc => {
-  console.log(doc.data());
-});
-배열필드일땐 쿼리하는방법 모르겠음진짜
-*/
-// 현재날짜에 따라서 15일치의 결제를 보여주자 
-
