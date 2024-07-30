@@ -122,12 +122,14 @@ class Pagination {
     const endIdx = this.maxElNum * this.curPageNum
     console.log(`startIdx : ${startIdx} endIdx : ${endIdx}`)
     // 위치!! 여기뭔가 이상할지도 너무빨리 없애서?
-
+    console.log(this.elNum);
     // 위치
+
+
+    // start 부터 index 까지 info프로퍼티 추가해줌
     for(let i = startIdx; i < endIdx; i++) {
       const payment = this.paymentArr[i]
       if(!payment) break
-
       // console.log(payment);
       payment.info = {}
       const id = payment.user_id
@@ -138,17 +140,20 @@ class Pagination {
       }))
     }
 
-    this.paymentArr.sort((a, b) => {
-      if(a.pay_date < b.pay_date) { // 2023 2024
-        return 1
-      } else if(a.pay_date > b.pay_date){
-        return -1
-      } else {
-        return 0
-      }
-    })
-
-    const paymentsInnerHTML = this.paymentArr.map((payment) => {
+    // 결제일 최신순으로 정렬
+    // this.paymentArr.sort((a, b) => {
+    //   if(a.pay_date < b.pay_date) { // 2023 2024
+    //     return 1
+    //   } else if(a.pay_date > b.pay_date){
+    //     return -1
+    //   } else {
+    //     return 0
+    //   }
+    // })
+    
+    // info프로퍼티 추가된 start부터 index까지 html문자열화 
+    const slicedPayments = this.paymentArr.slice(startIdx, endIdx)
+    const paymentsInnerHTML = slicedPayments.map((payment) => {
       const payDate = payment.pay_date
       const [payYear, payMonth, payDay] = [payDate.slice(0, 4), payDate.slice(4, 6), payDate.slice(6)]
       const expireDate = payment.expire_date
@@ -168,6 +173,7 @@ class Pagination {
     
     const tableDiv = document.querySelector("div.inner table#list-val")
     tableDiv.innerHTML = ""
+
     for(let i = 0; i < paymentsInnerHTML.length; i++) {
       tableDiv.innerHTML += paymentsInnerHTML[i]
     } 
@@ -215,10 +221,10 @@ dayInputStart.addEventListener('blur',function() {
 async function getQueries() {
   const queriedPayments = [] // 불러온 payments 담을 배열
   const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를
-  const q = query(collection(db, "test_payments_string"))
-  // const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
+  // const q = query(collection(db, "test_payments_string"))
+  const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
   // const numSnapshot = getDocs(q)
-  // console.log(numSnapshot.size)
+  // console.log(numSnapshot)
   const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
   console.log(querySnapshot.size); // await을 안하면 size불러올수없음 > 
   querySnapshot.forEach((doc) => {
@@ -227,6 +233,17 @@ async function getQueries() {
     const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
     userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
     queriedPayments.push(doc.data()) // 받은 결제 담음
+  })
+
+  // 결제일 최신순으로 정렬
+  queriedPayments.sort((a, b) => {
+    if(a.pay_date < b.pay_date) { // 2023 2024
+      return 1
+    } else if(a.pay_date > b.pay_date){
+      return -1
+    } else {
+      return 0
+    }
   })
 
   console.log(userDic);
