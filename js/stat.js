@@ -11,16 +11,14 @@ const app = initializeApp({
 })
 const db = getFirestore(app)
 /*
-await addDoc(collection(db, "new_test_payments"), {
-  user_id : 5040,
-  user_name : '성주휘',
-  phone_number : "010-2475-5837",
-  pay_date : "20240624",
-  expire_date : "20240724",
-  pay_fee : 40000, 
-  pay_method : "card", 
+await addDoc(collection(db, "test_payments_string"), {
+  user_id : 9999,
+  user_name : '테스트',
+  pay_date : "20240724",
+  expire_date : "20240824",
+  pay_fee : 10000, 
+  pay_method : "cash", 
   pay_teacher : "김예림", 
-  personal_teacher : "김예림",
   pay_class : { 
     class_type : "group", 
     times_a_week : 2, 
@@ -119,6 +117,7 @@ class Pagination {
   }
   // curPageNum에 대해 item추가
   async showCurrentPageItems() {
+    // 현재 구간에 대해서 slice해서 보여주면됌
     const startIdx = this.maxElNum * (this.curPageNum - 1)
     const endIdx = this.maxElNum * this.curPageNum
     console.log(`startIdx : ${startIdx} endIdx : ${endIdx}`)
@@ -129,7 +128,7 @@ class Pagination {
       const payment = this.paymentArr[i]
       if(!payment) break
 
-      console.log(payment);
+      // console.log(payment);
       payment.info = {}
       const id = payment.user_id
       const infoPromise = this.userDic[id]
@@ -157,9 +156,9 @@ class Pagination {
       return `<tr>
               <td>${payYear}-${payMonth}-${payDay}</td>
               <td>${payment.user_name}</td>
-              <td>${payment.info.teacher}</td>
+              <td>${"미지정"}</td>
               <td>${payment.pay_teacher}</td>
-              <td>${payment.info.phoneNum}</td>
+              <td>${"미지정"}</td>
               <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
               <td>${payYear}-${payMonth}-${payDay}</td>
               <td>${expireYear}-${expireMonth}-${expireDay}</td>
@@ -216,7 +215,8 @@ dayInputStart.addEventListener('blur',function() {
 async function getQueries() {
   const queriedPayments = [] // 불러온 payments 담을 배열
   const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를
-  const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
+  const q = query(collection(db, "test_payments_string"))
+  // const q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
   // const numSnapshot = getDocs(q)
   // console.log(numSnapshot.size)
   const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
