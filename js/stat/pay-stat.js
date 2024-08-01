@@ -24,26 +24,24 @@ await addDoc(collection(db, "test_payments_string"), {
     times_a_week : 2, 
     class_term : 1, 
     }
-});
-*/
-
-
-
-class Pagination {
-  constructor(paymentArr, userDic) {
-    this.elNum = paymentArr.length
-    this.maxElNum = 10
-    this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
-    this.curPageNum = 1
-    this.paymentArr = paymentArr
-    this.userDic = userDic
-  }
-  // #pagitaion 초기화하고, pageNum만큼 indicator추가
-  initPaginationBar() {
-    const paginationDiv = document.querySelector(".inner div#pagination")
-    paginationDiv.innerHTML = 'hi'
-    if(this.elNum == 0) {
-      const listDiv = document.querySelector("div#table-list table#list-val")
+    });
+    */
+   
+   class Pagination {
+     constructor(paymentArr, userDic) {
+       this.elNum = paymentArr.length
+       this.maxElNum = 10
+       this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
+       this.curPageNum = 1
+       this.paymentArr = paymentArr
+       this.userDic = userDic
+      }
+      // #pagitaion 초기화하고, pageNum만큼 indicator추가
+      initPaginationBar() {
+        const paginationDiv = document.querySelector(".inner div#pagination")
+        paginationDiv.innerHTML = 'hi'
+        if(this.elNum == 0) {
+          const listDiv = document.querySelector("div#table-list table#list-val")
       listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
       return
     }
@@ -59,7 +57,7 @@ class Pagination {
       </div>
       `
     }
-
+    
     // 각indicator에 클릭 리스너추가 (클릭시 해당페이지로이동)
     const pageBtnElements = pageIndicatorDiv.querySelectorAll(".page-btn")
     pageBtnElements.forEach((btnNode) => {
@@ -74,11 +72,11 @@ class Pagination {
     // 맨처음
     this.styleCurpageBtn()
     this.showCurrentPageItems()
-
-
+    
+    
     const prevBtn = document.querySelector('#pagination button#prev')
     const nextBtn = document.querySelector('#pagination button#next')
-
+    
     // nextBtn, prevBtn 에 클릭 리스너추가
     prevBtn.addEventListener('click', () => {
       const changedCurPageNum = this.curPageNum - 1  
@@ -126,8 +124,8 @@ class Pagination {
     // 위치!! 여기뭔가 이상할지도 너무빨리 없애서?
     // console.log(this.elNum);
     // 위치
-
-
+    
+    
     // start 부터 index 까지 info프로퍼티 추가해줌
     for(let i = startIdx; i < endIdx; i++) {
       const payment = this.paymentArr[i]
@@ -141,46 +139,46 @@ class Pagination {
         payment.info.phoneNum = snapshot.data().phone_number
       }))
     }
-
+    
     // 결제일 최신순으로 정렬
     // this.paymentArr.sort((a, b) => {
-    //   if(a.pay_date < b.pay_date) { // 2023 2024
-    //     return 1
-    //   } else if(a.pay_date > b.pay_date){
-    //     return -1
-    //   } else {
-    //     return 0
-    //   }
-    // })
-    
-    // info프로퍼티 추가된 start부터 index까지 html문자열화 
-    const slicedPayments = this.paymentArr.slice(startIdx, endIdx)
-    const paymentsInnerHTML = slicedPayments.map((payment) => {
-      const payDate = payment.pay_date
-      const [payYear, payMonth, payDay] = [payDate.slice(0, 4), payDate.slice(4, 6), payDate.slice(6)]
-      const expireDate = payment.expire_date
-      const [expireYear, expireMonth, expireDay] = [expireDate.slice(0, 4), expireDate.slice(4, 6), expireDate.slice(6)]
-      return `<tr>
-              <td>${payYear}-${payMonth}-${payDay}</td>
-              <td>${payment.user_name}</td>
-              <td>${payment.info.teacher}</td>
-              <td>${payment.pay_teacher}</td>
-              <td>${payment.info.phoneNum}</td>
-              <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
-              <td>${payYear}-${payMonth}-${payDay}</td>
-              <td>${expireYear}-${expireMonth}-${expireDay}</td>
-              <td>${getFormattedNum(payment.pay_fee)}</td>
+      //   if(a.pay_date < b.pay_date) { // 2023 2024
+      //     return 1
+      //   } else if(a.pay_date > b.pay_date){
+        //     return -1
+        //   } else {
+          //     return 0
+          //   }
+          // })
+          
+          // info프로퍼티 추가된 start부터 index까지 html문자열화 
+          const slicedPayments = this.paymentArr.slice(startIdx, endIdx)
+          const paymentsInnerHTML = slicedPayments.map((payment) => {
+            const payDate = payment.pay_date
+            const [payYear, payMonth, payDay] = [payDate.slice(0, 4), payDate.slice(4, 6), payDate.slice(6)]
+            const expireDate = payment.expire_date
+            const [expireYear, expireMonth, expireDay] = [expireDate.slice(0, 4), expireDate.slice(4, 6), expireDate.slice(6)]
+            return `<tr>
+            <td>${payYear}-${payMonth}-${payDay}</td>
+            <td>${payment.user_name}</td>
+            <td>${payment.info.teacher}</td>
+            <td>${payment.pay_teacher}</td>
+            <td>${payment.info.phoneNum}</td>
+            <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
+            <td>${payYear}-${payMonth}-${payDay}</td>
+            <td>${expireYear}-${expireMonth}-${expireDay}</td>
+            <td>${getFormattedNum(payment.pay_fee)}</td>
             </tr>`
-    })
-    
-    const tableDiv = document.querySelector("div.inner table#list-val")
-    tableDiv.innerHTML = ""
-
-    for(let i = 0; i < paymentsInnerHTML.length; i++) {
-      tableDiv.innerHTML += paymentsInnerHTML[i]
-    } 
-    for(let i = paymentsInnerHTML.length; i < 10; i++) {
-      tableDiv.innerHTML += `          <tr class = "skeleton-line">
+          })
+          
+          const tableDiv = document.querySelector("div.inner table#list-val")
+          tableDiv.innerHTML = ""
+          
+          for(let i = 0; i < paymentsInnerHTML.length; i++) {
+            tableDiv.innerHTML += paymentsInnerHTML[i]
+          } 
+          for(let i = paymentsInnerHTML.length; i < 10; i++) {
+            tableDiv.innerHTML += `          <tr class = "skeleton-line">
             <td></td>
             <td></td>
             <td></td>
@@ -190,8 +188,8 @@ class Pagination {
             <td></td>
             <td></td>
             <td></td>
-          </tr>`
-    }
+            </tr>`
+          }
     // paymentsInnerHTML.forEach((el) => {
     //   tableDiv.innerHTML += el
     // })
@@ -199,18 +197,66 @@ class Pagination {
 
 }
 
+// 전체결제, 월별결제, 일별결제에 리스너 추가
+
+const entirePayBtn = document.querySelector("main ul#term-select li:nth-child(1)")
+const monthPayBtn = document.querySelector("main ul#term-select li:nth-child(2)")
+const dayPayBtn = document.querySelector("main ul#term-select li:nth-child(3)")
+
+// console.log(entirePayBtn);
+// console.log(monthPayBtn);
+// console.log(dayPayBtn);
+
+entirePayBtn.addEventListener("click", function() {
+  styleCurPayBtn(this)
+  console.log('전체 view');
+  getAllQueries()
+})
+// entirePayBtn.addEventListener("click", styleCurPayBtn)
+monthPayBtn.addEventListener("click", function() {
+  styleCurPayBtn(this)
+  console.log('월별 view');
+  getMonthQueries()
+})
+dayPayBtn.addEventListener("click", function() {
+  styleCurPayBtn(this)
+  console.log('일별 view');
+})
+
+// 1. 처음로딩시 쿼리
+styleCurPayBtn(entirePayBtn)
+getAllQueries() // 전체결제 view
+
+// 현재 결제(전체, 월별, 일별) 스타일추가 by classList
+function styleCurPayBtn(el) {
+  // 기존의 span.current의 .current제거후
+  // 매개변수로 받은 el에 cur추가
+  const prevBtn = document.querySelector("main ul#term-select span.current")
+  if(prevBtn) { // 처음아닐때
+    prevBtn.classList.remove("current")
+    const cur = el.querySelector("span")
+    cur.classList.add("current")
+  } else { // 처음일때
+    const firstSpan = document.querySelector("main ul#term-select li:nth-child(1) span")
+    firstSpan.classList.add("current")
+  }
+}
+
 // 검색버튼클릭시 날짜 구간에 대해 새로운 쿼리 데이터 요청
+// 얘 함수안에 넣어야할지도 getAllQueries 안에 showonOverview 처럼
 const submitDateBtn = document.querySelector("#date-input input#search")
 submitDateBtn.addEventListener("click", () => {
   console.log('click');
   const startDate = document.querySelector('#date-input input#start-date').value
   const endDate = document.querySelector('#date-input input#end-date').value
   console.log(startDate, endDate);
-  getQueries(startDate, endDate)
+  getAllQueries(startDate, endDate)
 })
 
-// 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다!
-async function getQueries(start, end) {                                                                                                                                                                                                                                                              
+// 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다! ('전체결제' 에 대한 쿼리)
+async function getAllQueries(start, end) {    
+  console.log('전체결제 쿼리!!');  
+                                                                                                                                                                                                                                                         
   const queriedPayments = [] // 불러온 payments 담을 배열
   const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를 
 
@@ -239,7 +285,7 @@ async function getQueries(start, end) {
 
   /*확인용반복코드*/
   queriedPayments.forEach((pay) => {
-    console.log(pay);
+    // console.log(pay);
   })
 
   // 결제일 최신순으로 정렬
@@ -261,9 +307,201 @@ async function getQueries(start, end) {
   page.initPaginationBar()
 }
 
-// 1. 쿼리하면서 시작
-getQueries()
+// 월별결제를 위한 년간결제 불러오기 시간이 꽤걸릴듯
+function getMonthQueries() {
+  
+  console.log('월별 결제 쿼리!!');
+  resetToMonthView()
+  // 1. DOM 갱신먼저하고, 
+  // 1. 데이터 쿼리 (promise or await)
+  // 2. DOM 갱신 # short-view-val
+  // 3. #short-view-val 갱신
+}
 
+// 월별결제를 위해 DOM 수정
+function resetToMonthView() {
+  // short-view에 스켈레톤추가
+  const shortViewValEl = document.querySelector("main table#short-view-val")
+  shortViewValEl.innerHTML = `<tr class = "skeleton-line">
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+        </tr>`
+  // 검색창 변경
+  const dateInputEl = document.querySelector("main #date-input")
+  dateInputEl.innerHTML = ""
+  dateInputEl.innerHTML = `검색년도 <input type = "" id = "input-year">
+  <input type = "button" id = "search" value = "검색">`
+  // 리스트 키 table-key el > tr#month-list-key로 변경
+  const tableListKey = document.querySelector("main #table-list table#list-key")
+  tableListKey.innerHTML = ""
+  tableListKey.innerHTML = `<tr id = "month-list-key">
+            <th>결제월</th>
+            <th>구분</th>
+            <th>합계</th>
+          </tr>`
+  // 리스트 값 table-val에 스켈레톤 추가
+  const tableListVal = document.querySelector("main #table-list table#list-val")
+  tableListVal.innerHTML = ""
+  tableListVal.innerHTML = `<tr>
+      <td rowspan="3">1월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">2월</td>
+      <td>카드</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>40,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">3월</td>
+      <td>카드</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>50,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">4월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">5월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">6월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">7월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">8월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">9월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">10월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">11월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>
+    <tr>
+      <td rowspan="3">12월</td>
+      <td>카드</td>
+      <td>10,000원</td>
+    </tr>
+    <tr>
+      <td>현금</td>
+      <td>20,000원</td>
+    </tr>
+    <tr>
+      <td>총계</td>
+      <td>30,000원</td>
+    </tr>`
+}
 
 // 쿼리에쓰이는 문자열반환함수
 function getTodayDateString() {
@@ -356,20 +594,6 @@ function initInput() {
   endInput.value = `${startYear}-${startMonth}-${startDay}`
   startInput.value = `${endYear}-${endMonth}-${endDay}`
 }
-
-//5. 해당 결제의 user_id로 담당강사, 휴대폰번호 불러와야함
-/*
-async function getInfo(userId) {
-  const q = query(collection(db, "test_members"), where("user_id", "==", userId))
-  const querySnapshot = await getDocs(q) 
-  const info = {}
-  querySnapshot.forEach((doc) => {
-    info.teacher = doc.data().teacher
-    info.phoneNumber = doc.data().phone_number
-  })
-  return info
-}
-*/
 //5. 기본 날짜구간 리스트에 표시
 async function showPaymentList(payments, userInfo) {
   const listValDiv = document.querySelector("div#table-list table#list-val")

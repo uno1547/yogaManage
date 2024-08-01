@@ -30,7 +30,7 @@ header {
   position: fixed;
   top: 0px;
   width: 100%;
-  margin-top:10px;
+  padding-top:10px;
 }
 
 header .inner {
@@ -132,19 +132,30 @@ main ul {
   background-color: rgb(255, 255, 255);
   position: fixed;
   top: 109px;
+  border-bottom: 5px groove #b2b2b2;
 
   /*sticky쓰거나 위의 fixed쓰나 다를바가없는데 ul만큼 부피 차지하는것말고는*/
   position: sticky;
-  top: 100px;
+  top: 109px;
 }
 
 main ul li {
   list-style-type: none;
 }
 
-main ul li a {
+main ul li span {
   display: inline-block;
-  padding: 10px 25px;
+  /* border-radius: 10px; */
+  padding: 20px 25px;
+  cursor: pointer;
+}
+
+main ul li:hover span {
+  color: #979797;
+}
+
+main ul li span.current {
+  background-color: #b6b6b6;
 }
 
 /* main #short-view-key */
@@ -198,20 +209,42 @@ main table#short-view-val tr {
 main table#short-view-val tr td {
   padding: 15px 40px;
 }
+main table#short-view-val tr td span {
+  background-color: #afafaf;
+  border-radius: 5px;
+  display: inline-block;
+  height: 10px;
+}
+
 main table#short-view-val tr td:nth-child(1) {
   width: 100px;
+}
+main table#short-view-val tr td:nth-child(1) span {
+  width: 20px;
 }
 main table#short-view-val tr td:nth-child(2) {
   width: 150px;
 }
+main table#short-view-val tr td:nth-child(2) span {
+  width: 100px;
+}
 main table#short-view-val tr td:nth-child(3) {
   width: 150px;
+}
+main table#short-view-val tr td:nth-child(3) span {
+  width: 100px;
 }
 main table#short-view-val tr td:nth-child(4) {
   width: 150px;
 }
+main table#short-view-val tr td:nth-child(4) span {
+  width: 100px;
+}
 main table#short-view-val tr td:nth-child(5) {
   width: 150px;
+}
+main table#short-view-val tr td:nth-child(5) span{
+  width: 100px;
 }
 
 /*main #date-input*/
@@ -241,47 +274,56 @@ main div#table-list table#list-key {
   background-color: #b2b2b2;
 }
 
-main div#table-list table#list-key tr {
+/* table#list-key tr#all-view */
 
-}
-
-main div#table-list table#list-key tr th:nth-child(1) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(1) {
   width: 80px;
 }
-main div#table-list table#list-key tr th:nth-child(2) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(2) {
   /* 회원이름 */
   width: 50px;
 }
-main div#table-list table#list-key tr th:nth-child(3) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(3) {
   /* 담당강사 */
   width: 50px;
 }
-main div#table-list table#list-key tr th:nth-child(4) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(4) {
   /* 결제강사 */
   width: 50px;
 }
-main div#table-list table#list-key tr th:nth-child(5) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(5) {
   /* 휴대폰번호 */
   width: 120px;
 }
-main div#table-list table#list-key tr th:nth-child(6) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(6) {
   /* 결제항목 */
   width: 220px;
 }
-main div#table-list table#list-key tr th:nth-child(7) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(7) {
   /* 시작일 */
   width: 85px;
 }
-main div#table-list table#list-key tr th:nth-child(8) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(8) {
   /* 만료일 */
   width: 85px;
 }
-main div#table-list table#list-key tr th:nth-child(9) {
+main div#table-list table#list-key tr#all-list-key th:nth-child(9) {
   /* 결제금액 */
   width: 120px;
 }
 
-/* list-val */
+/* table#list-key tr#month-view */
+main div#table-list table#list-key tr#month-list-key th:nth-child(1) {
+  width: 10px;
+}
+main div#table-list table#list-key tr#month-list-key th:nth-child(2) {
+  width: 10px;
+}
+main div#table-list table#list-key tr#month-list-key th:nth-child(3) {
+  width: 20px;
+}
+
+/* table#list-val tr#all-view */
 
 main div#table-list table#list-val {
   font-weight: 500;
@@ -295,16 +337,7 @@ main div#table-list table#list-val tr {
   background-color: rgb(223, 223, 223);
   height: 50px;
 }
-/* main div#table-list table#list-val tr.skeleton-line {
-  background-color: rgb(223, 223, 223);
-  height: 50px;
-} */
 
-main div#table-list table#list-val tr td {
-  /* background-color: #656565; */
-  /* display: inline; */
-  /* display: inline; */
-}
 main div#table-list table#list-val tr td span {
   background-color: #afafaf;
   border-radius: 5px;

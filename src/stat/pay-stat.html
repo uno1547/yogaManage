@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>통계</title>
+  <title>결제통계</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <!-- <link rel="stylesheet" href="/css/common.css"> -->
   <link rel="stylesheet" href="/css/stat.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 </head>
 <body>
   <header>
@@ -40,32 +39,20 @@
     </div>
     <hr>
   </header>
-  <!-- <aside>
-    <ul>
-      <li>
-        <a href="">결제 통계</a>
-      </li>
-      <li>
-        <a href="">회원/수강만료 통계</a>
-      </li>
-      <li>
-        <a href="">방문 통계</a>
-      </li>
-    </ul>
-  </aside> -->
   <main>
     <div class="inner">
-      <!-- <ul>
+      <ul id="term-select">
         <li>
-          <a href="">전체결제</a>
+          <span>전체결제</span>
         </li>
         <li>
-          <a href="">월별결제</a>
+          <span>월별결제</span>
         </li>
         <li>
-          <a href="">일별결제</a>
+          <span>일별결제</span>
         </li>
-      </ul> -->
+      </ul>
+      <!-- table#short-view-key -->
       <table id = "short-view-key">
         <tr>
           <th>총 결제건수</th>
@@ -75,6 +62,7 @@
           <th>최종 결제(매출)금액</th>
         </tr>
       </table>
+      <!-- table#short-view-val -->
       <table id = "short-view-val">
         <tr class = "skeleton-line">
           <td><span></span></td>
@@ -84,15 +72,18 @@
           <td><span></span></td>
         </tr>
       </table>
+      <!-- div#date-input -->
       <div id = "date-input">
         검색기간
         <input type="date" id="start-date"> ~
         <input type="date" id="end-date">
         <input type="button" id='search' value="검색">
       </div>
+      <!-- div#table-list -->
       <div id = table-list>
+        <!-- div#table-list table#list-key -->
         <table id="list-key">
-          <tr>
+          <tr id="all-list-key">
             <th>결제일</th>
             <th>회원이름</th>
             <th>담당강사</th>
@@ -104,13 +95,8 @@
             <th>결제금액</th>
           </tr>
         </table>
-        <!-- <div id = "is-loading">
-          <div class="skeleton-line"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div> -->
-        <table id="list-val">
+        <!-- div#table-list table#list-val -->
+        <table id="list-val" class="all-list-val">
           <tr class = "skeleton-line">
             <td><span></span></td>
             <td><span></span></td>
@@ -258,6 +244,7 @@ Etiam porttitor ante at lorem tincidunt vehicula. Curabitur ornare eleifend diam
       </p> -->
     </div>
   </main>
-  <script src="/js/stat.js" type="module"></script>
+  <!-- <script src="/js/stat.js" type="module"></script> -->
+  <script src="/js/stat/pay-stat.js" type="module"></script>
 </body>
 </html>
