@@ -52,7 +52,7 @@
           <span>일별결제</span>
         </li>
       </ul>
-      <!-- table#short-view-key -->
+      <!-- 요약 테이블 키 -->
       <table id = "short-view-key">
         <tr>
           <th>총 결제건수</th>
@@ -62,7 +62,7 @@
           <th>최종 결제(매출)금액</th>
         </tr>
       </table>
-      <!-- table#short-view-val -->
+      <!-- 요약 테이블 값 -->
       <table id = "short-view-val">
         <tr class = "skeleton-line">
           <td><span></span></td>
@@ -72,18 +72,19 @@
           <td><span></span></td>
         </tr>
       </table>
-      <!-- div#date-input -->
+      <!-- 위까진 id, class로 구분할필요없음 -->
+      <!-- 날짜변경 input -->
       <div id = "date-input">
         검색기간
         <input type="date" id="start-date"> ~
         <input type="date" id="end-date">
         <input type="button" id='search' value="검색">
       </div>
-      <!-- div#table-list -->
+      <!-- 리스트 table키 값 -->
       <div id = table-list>
-        <!-- div#table-list table#list-key -->
-        <table id="list-key">
-          <tr id="all-list-key">
+        <!-- 리스트 table값 -->
+        <table id="list-key" class="all-list">
+          <tr>
             <th>결제일</th>
             <th>회원이름</th>
             <th>담당강사</th>
@@ -96,7 +97,7 @@
           </tr>
         </table>
         <!-- div#table-list table#list-val -->
-        <table id="list-val" class="all-list-val">
+        <table id="list-val" class="all-list">
           <tr class = "skeleton-line">
             <td><span></span></td>
             <td><span></span></td>

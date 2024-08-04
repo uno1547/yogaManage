@@ -216,7 +216,7 @@ entirePayBtn.addEventListener("click", function() {
 monthPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
   console.log('월별 view');
-  getMonthQueries()
+  showMonthView()
 })
 dayPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
@@ -243,7 +243,7 @@ function styleCurPayBtn(el) {
 }
 
 // 검색버튼클릭시 날짜 구간에 대해 새로운 쿼리 데이터 요청
-// 얘 함수안에 넣어야할지도 getAllQueries 안에 showonOverview 처럼
+// 얘 함수안에 넣어야할지도 getAllQueries 안에 showonOverview 처럼 다시 전체결제로 돌아갈경우에도 DOM#date-input 이 수정되고나서 호출하도록
 const submitDateBtn = document.querySelector("#date-input input#search")
 submitDateBtn.addEventListener("click", () => {
   console.log('click');
@@ -307,18 +307,19 @@ async function getAllQueries(start, end) {
   page.initPaginationBar()
 }
 
-// 월별결제를 위한 년간결제 불러오기 시간이 꽤걸릴듯
-function getMonthQueries() {
-  
+// 월별결제보여주는 함수
+function showMonthView() {
+  // 1. 데이터 쿼리 (promise or await) 여기서는 추가정보를 불러오는게 아니라서 굳이 promise를 쓸필요는없을것같기도
+  // 근데 promise를 미리 담아두면 나중에 then으로 하는게 확실히 시간이 단축될것같긴함 ㄴㄴ resetToMonthView 가 즉시실행이라서,
+  // promise로 하나 가서 await하나 기다리는 시간은 똑같음 
   console.log('월별 결제 쿼리!!');
   resetToMonthView()
-  // 1. DOM 갱신먼저하고, 
-  // 1. 데이터 쿼리 (promise or await)
-  // 2. DOM 갱신 # short-view-val
-  // 3. #short-view-val 갱신
+  // reset이후에 아무때나 리스너 달면될듯함
+  // 1. DOM 갱신먼저하고 #short-
+  getMonthQueries()
 }
 
-// 월별결제를 위해 DOM 수정
+// 월별결제를 위해 DOM 수정 이거 의미가 없음 왜 표시가 안되는거지 await시간이 짧아서 그런가
 function resetToMonthView() {
   // short-view에 스켈레톤추가
   const shortViewValEl = document.querySelector("main table#short-view-val")
@@ -336,172 +337,321 @@ function resetToMonthView() {
   <input type = "button" id = "search" value = "검색">`
   // 리스트 키 table-key el > tr#month-list-key로 변경
   const tableListKey = document.querySelector("main #table-list table#list-key")
+  const tableKeyClass = tableListKey.classList[0]
+  tableListKey.classList.remove(tableKeyClass)
+
+  tableListKey.classList.add("month-list")
   tableListKey.innerHTML = ""
-  tableListKey.innerHTML = `<tr id = "month-list-key">
+  tableListKey.innerHTML = `<tr>
             <th>결제월</th>
             <th>구분</th>
             <th>합계</th>
           </tr>`
   // 리스트 값 table-val에 스켈레톤 추가
   const tableListVal = document.querySelector("main #table-list table#list-val")
+  const tableValClass = tableListVal.classList[0]
+  tableListVal.classList.remove(tableValClass)
+
+  tableListVal.classList.add("month-list")
   tableListVal.innerHTML = ""
-  tableListVal.innerHTML = `<tr>
-      <td rowspan="3">1월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+  tableListVal.innerHTML = `<tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">2월</td>
-      <td>카드</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>40,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">3월</td>
-      <td>카드</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>50,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">4월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">5월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">6월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">7월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">8월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">9월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">10월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">11월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
     </tr>
-    <tr>
-      <td rowspan="3">12월</td>
-      <td>카드</td>
-      <td>10,000원</td>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
     </tr>
-    <tr>
-      <td>현금</td>
-      <td>20,000원</td>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
     </tr>
-    <tr>
-      <td>총계</td>
-      <td>30,000원</td>
-    </tr>`
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    `
 }
+
+/*
+q = query(collection(db, "test_payments_string"), where("pay_date", "<=", endStr), where("pay_date", ">=", startStr))
+const querySnapshot = await getDocs(q)
+querySnapshot.forEach((doc) => {
+  const id = doc.data().user_id
+  const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
+  userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
+  queriedPayments.push(doc.data()) // 받은 결제 담음
+})
+*/
+
+async function getMonthQueries(year = 2024) {
+  const queriedPayments = [] // 불러온 payments 담을 배열
+  const q = query(collection(db, "test_payments_string"), where("pay_date", ">=", "20240101"), where("pay_date", "<=", "20241231"))
+  // 1. 데이터 쿼리 (promise or await)
+  const querySnapshot = await getDocs(q)
+  querySnapshot.forEach((snapshot) => {
+    queriedPayments.push(snapshot.data())
+  })
+  queriedPayments.sort((a, b) => {
+    if(a.pay_date < b.pay_date) { // 2023 2024
+      return 1
+    } else if(a.pay_date > b.pay_date){
+      return -1
+    } else {
+      return 0
+    }
+  })
+  // 2. DOM 갱신 # short-view-val
+  showInOverview(queriedPayments)
+  queriedPayments.forEach((pay) => {
+    console.log(pay);
+    console.log(pay.pay_date);
+  })
+
+  const monthlySumArr = filterMonthList(queriedPayments)
+  // 3. DOM 갱신 #list-val 갱신
+  showMonthList(monthlySumArr)
+}
+
+function filterMonthList(payments) {
+  /*
+  pay_date : "20240723",
+  pay_fee : 10000, 
+  pay_method : "card", 
+
+  pay_date : "20240723",
+  pay_fee : 20000, 
+  pay_method : "cash", 
+
+  나와야하는 배열, dictionary
+  * payments를 순회하면서 알맞게초기화한뒤
+  자료를 순회하면서list-val을 채우는 과정이 효율적인것을 선택해야함 > 1월 카드 : x, 현금 : y, 합계 : x + y
+
+  1. [{card : 0, cash : 0}, {card : 0, cash : 0}, {card : 0, cash : 0}, {card : 0, cash : 0}, {}, {}, {}, {}, {}, {}, {}, {}] 
+  얘는 처음부터 0 ~ 11까지 다 차있어야하긴함
+
+  2. {1 : {card : 0, cash : 0}, 2 : {card : 0, cash : 0}, 3 : {card : 0, cash : 0}}
+
+  3. {}
+  출현한 결제에 대해서만 추가할수도있을듯
+
+  자료가 초기화가 완료됐다고 생각하면
+  이제 순회하면서 DOM초기화도 해야함 배열이면 for 문쓰고, 2,3번의 경우면 for in 쓰면 될듯
+  정말 거기서 거기인것같은디 배열 메소드 reduce를 쓰기위해서 1번 방법으로 배열에 담겠다.
+  */
+  const initDicArr = new Array(12).fill(0).map(() => ({card : 0, cash : 0, total : 0}))
+  const monthlySumArr = payments.reduce((dic, payment) => {
+    const month = Number(payment.pay_date.slice(4, 6)) - 1
+    console.log(month);
+    const method = payment.pay_method
+    dic[month][method] += payment.pay_fee
+    dic[month].total += payment.pay_fee
+    return dic
+  }, initDicArr)
+  console.log(monthlySumArr);
+  return monthlySumArr
+}
+
+function showMonthList(monthlySumArr) {
+  // 받은 자료를 가지고
+  /*
+  0:{card: 0, cash: 0, total: 0}
+  1:{card: 0, cash: 0, total: 0}
+  2:{card: 0, cash: 0, total: 0}
+  3:{card: 0, cash: 0, total: 0}
+  4:{card: 0, cash: 0, total: 0}
+  5:{card: 0, cash: 10100, total: 10100}
+  6:{card: 90000, cash: 40000, total: 130000}
+  7:{card: 0, cash: 0, total: 0}
+  8:{card: 0, cash: 0, total: 0}
+  9:{card: 0, cash: 0, total: 0}
+  10:{card: 0, cash: 0, total: 0}
+  11:{card: 0, cash: 0, total: 0}
+  */
+  /*
+  아래가 1달치의 합계
+  <tr class = "skeleton-line">
+    <td rowspan="3" class = "th"><span></span></td>
+    <td class = "key card"><span></span></td>
+    <td class = "val card"><span></span></td>
+  </tr>
+    <tr class = "skeleton-line">
+    <td class = "key cash"><span></span></td>
+    <td class = "val cash"><span></span></td>
+  </tr>
+    <tr class = "skeleton-line">
+    <td class = "key total"><span></span></td>
+    <td class = "val total"><span></span></td>
+  </tr>
+*/
+  for(let i = 0; i < monthlySumArr.length; i++) {
+    const monthSpan = document.querySelectorAll(".th")[i]
+    const cardKeySpan = document.querySelectorAll(".card.key")[i]
+    const cashKeySpan = document.querySelectorAll(".cash.key")[i]
+    const totalKeySpan = document.querySelectorAll(".total.key")[i]
+
+    const cardValSpan = document.querySelectorAll(".card.val")[i]
+    const cashValSpan = document.querySelectorAll(".cash.val")[i]
+    const totalValSpan = document.querySelectorAll(".total.val")[i]
+    // 결제가 존재하지않는경우
+    monthSpan.innerHTML = `${i+1}월`
+    cardKeySpan.innerHTML = `카드`
+    cashKeySpan.innerHTML = `현금`
+    totalKeySpan.innerHTML = `총계`
+    if(monthlySumArr[i].total == 0) {
+      cardValSpan.innerHTML = '0 원'
+      cashValSpan.innerHTML = '0 원'
+      totalValSpan.innerHTML = '0 원'
+      continue
+    } else {
+      cardValSpan.innerHTML = `${getFormattedNum(monthlySumArr[i].card)} 원`
+      cashValSpan.innerHTML = `${getFormattedNum(monthlySumArr[i].cash)} 원`
+      totalValSpan.innerHTML = `${getFormattedNum(monthlySumArr[i].total)} 원`
+    }
+  }
+}
+
+
 
 // 쿼리에쓰이는 문자열반환함수
 function getTodayDateString() {
