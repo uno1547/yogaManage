@@ -39,7 +39,7 @@ await addDoc(collection(db, "test_payments_string"), {
       // #pagitaion 초기화하고, pageNum만큼 indicator추가
       initPaginationBar() {
         const paginationDiv = document.querySelector(".inner div#pagination")
-        paginationDiv.innerHTML = 'hi'
+        // paginationDiv.innerHTML = 'hi'
         if(this.elNum == 0) {
           const listDiv = document.querySelector("div#table-list table#list-val")
       listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
@@ -197,35 +197,32 @@ await addDoc(collection(db, "test_payments_string"), {
 
 }
 
-// 전체결제, 월별결제, 일별결제에 리스너 추가
+// 전체결제, 월별결제, 일별결제 버튼에 각 리스너 추가
 
 const entirePayBtn = document.querySelector("main ul#term-select li:nth-child(1)")
 const monthPayBtn = document.querySelector("main ul#term-select li:nth-child(2)")
 const dayPayBtn = document.querySelector("main ul#term-select li:nth-child(3)")
 
-// console.log(entirePayBtn);
-// console.log(monthPayBtn);
-// console.log(dayPayBtn);
-
 entirePayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  console.log('전체 view');
-  getAllQueries()
+  // console.log('전체 view');
+  showAllView2()
 })
-// entirePayBtn.addEventListener("click", styleCurPayBtn)
+
 monthPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  console.log('월별 view');
-  showMonthView()
+  // console.log('월별 view');
+  showMonthView() //1.
 })
 dayPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  console.log('일별 view');
+  // console.log('일별 view');
+  showDayView()
 })
 
-// 1. 처음로딩시 쿼리
+// 1. 처음로딩시 전체결제 보기
 styleCurPayBtn(entirePayBtn)
-getAllQueries() // 전체결제 view
+showAllView2() // 전체결제 view
 
 // 현재 결제(전체, 월별, 일별) 스타일추가 by classList
 function styleCurPayBtn(el) {
@@ -241,20 +238,30 @@ function styleCurPayBtn(el) {
     firstSpan.classList.add("current")
   }
 }
-
+// ***********************************************************
 // 검색버튼클릭시 날짜 구간에 대해 새로운 쿼리 데이터 요청
-// 얘 함수안에 넣어야할지도 getAllQueries 안에 showonOverview 처럼 다시 전체결제로 돌아갈경우에도 DOM#date-input 이 수정되고나서 호출하도록
+// 얘 함수안에 넣어야할지도 나중에 다시 부를수도있으니까 showAllView 안에 showonOverview 처럼 다시 전체결제로 돌아갈경우에도 DOM#date-input 이 수정되고나서 호출하도록
+
+
+
+
+
+
+/*
 const submitDateBtn = document.querySelector("#date-input input#search")
 submitDateBtn.addEventListener("click", () => {
   console.log('click');
   const startDate = document.querySelector('#date-input input#start-date').value
   const endDate = document.querySelector('#date-input input#end-date').value
   console.log(startDate, endDate);
-  getAllQueries(startDate, endDate)
+  showAllView(startDate, endDate)
 })
-
+*/
 // 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다! ('전체결제' 에 대한 쿼리)
-async function getAllQueries(start, end) {    
+
+
+/*
+async function showAllView(start, end) {    
   console.log('전체결제 쿼리!!');  
                                                                                                                                                                                                                                                          
   const queriedPayments = [] // 불러온 payments 담을 배열
@@ -283,11 +290,6 @@ async function getAllQueries(start, end) {
   console.log(userDic);
   console.log(queriedPayments);
 
-  /*확인용반복코드*/
-  queriedPayments.forEach((pay) => {
-    // console.log(pay);
-  })
-
   // 결제일 최신순으로 정렬
   queriedPayments.sort((a, b) => {
     if(a.pay_date < b.pay_date) { // 2023 2024
@@ -306,17 +308,236 @@ async function getAllQueries(start, end) {
   // 6. 불러온 데이터로 표시
   page.initPaginationBar()
 }
+*/
+
+
+
+// 전체결제 view보여주는 함수
+function showAllView2() {
+  console.log('전체결제 view!!');
+  resetToAllView()
+  getAllQueries()
+}
+// 전체결제 DOM 초기화 
+function resetToAllView() {
+  console.log('전체결제 view로 reset');
+  // short-view에 스켈레톤추가
+  const shortViewValEl = document.querySelector("main table#short-view-val")
+  shortViewValEl.innerHTML = `<tr class = "skeleton-line">
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+        </tr>`
+
+  // 검색창 초기화
+  const dateInputEl = document.querySelector("main div#date-input")
+  dateInputEl.innerHTML = ""
+  dateInputEl.innerHTML = `검색기간
+        <input type="date" id="start-date"> ~
+        <input type="date" id="end-date">
+        <input type="button" id='search' value="검색">`
+  initInput()
+  
+  const searchBtn = dateInputEl.querySelector("input#search")
+  searchBtn.addEventListener("click", () => {
+    const startDate = dateInputEl.querySelector("input#start-date").value
+    const endDate = dateInputEl.querySelector("input#end-date").value
+    console.log(startDate, endDate);
+    getAllQueries(startDate, endDate)
+  })
+
+  // 리스트 table 키 값
+  const tableListKey = document.querySelector("main #table-list table#list-key")
+  const tableKeyClass = tableListKey.classList[0]
+  tableListKey.classList.remove(tableKeyClass)
+
+  tableListKey.classList.add("all-list")
+  tableListKey.innerHTML = ""
+  tableListKey.innerHTML = `<tr>
+            <th>결제일</th>
+            <th>회원이름</th>
+            <th>담당강사</th>
+            <th>결제강사</th>
+            <th>휴대폰번호</th>
+            <th>결제항목</th>
+            <th>시작일</th>
+            <th>만료일</th>
+            <th>결제금액</th>
+          </tr>`
+  // 리스트 table-val 에 스켈레톤 추가
+  // 추가가필요해
+  const tableListVal = document.querySelector("main #table-list table#list-val")
+  const tableValClass = tableListVal.classList[0]
+  tableListVal.classList.remove(tableValClass)
+
+  tableListVal.classList.add("all-list")
+  tableListVal.innerHTML = ""
+  tableListVal.innerHTML += `          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>
+          <tr class = "skeleton-line">
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+          </tr>`
+}
+// 전체결제 데이터 쿼리
+async function getAllQueries(start, end) {
+  const queriedPayments = [] // 불러온 payments 담을 배열
+  const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를 
+
+  let q
+  if(start && end) { // 매개변수로 날짜 구간들어왔을때
+    console.log('날짜들어옴');
+    const startStr = start.split('-').join('')
+    const endStr = end.split('-').join('')
+    console.log(startStr, endStr);
+    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", endStr), where("pay_date", ">=", startStr))
+  } else { // 맨처음 입력 날짜가 없을때 한달치의 결제 불러옴
+    console.log('처음!!');
+    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
+  }
+
+  const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
+  querySnapshot.forEach((doc) => {
+    // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
+    const id = doc.data().user_id
+    const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
+    userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
+    queriedPayments.push(doc.data()) // 받은 결제 담음
+  })
+
+  queriedPayments.sort((a, b) => {
+    if(a.pay_date < b.pay_date) { // 2023 2024
+      return 1
+    } else if(a.pay_date > b.pay_date){
+      return -1
+    } else {
+      return 0
+    }
+  })
+  showInOverview(queriedPayments)
+  const page = new Pagination(queriedPayments, userDic)
+  // 6. 불러온 데이터로 표시
+  page.initPaginationBar()
+}
 
 // 월별결제보여주는 함수
 function showMonthView() {
   // 1. 데이터 쿼리 (promise or await) 여기서는 추가정보를 불러오는게 아니라서 굳이 promise를 쓸필요는없을것같기도
-  // 근데 promise를 미리 담아두면 나중에 then으로 하는게 확실히 시간이 단축될것같긴함 ㄴㄴ resetToMonthView 가 즉시실행이라서,
+  // 근데 promise를 미리 담아두면 나중에 then으로 하는게 확실히 시간이 단축될것같긴함 ㄴㄴ resetMonthView 가 즉시실행이라서,
   // promise로 하나 가서 await하나 기다리는 시간은 똑같음 
   console.log('월별 결제 쿼리!!');
-  resetToMonthView()
+  resetToMonthView() //2.
   // reset이후에 아무때나 리스너 달면될듯함
+  // 여기에 리스너 추가하는 코드가 필요!!!!!
+
   // 1. DOM 갱신먼저하고 #short-
-  getMonthQueries()
+  getMonthQueries() //3.
 }
 
 // 월별결제를 위해 DOM 수정 이거 의미가 없음 왜 표시가 안되는거지 await시간이 짧아서 그런가
@@ -333,8 +554,16 @@ function resetToMonthView() {
   // 검색창 변경
   const dateInputEl = document.querySelector("main #date-input")
   dateInputEl.innerHTML = ""
-  dateInputEl.innerHTML = `검색년도 <input type = "" id = "input-year">
+  const today = new Date()
+  const year = today.getFullYear()
+  dateInputEl.innerHTML = `검색년도 <input type = "" id = "input-year" value ="${year}">
   <input type = "button" id = "search" value = "검색">`
+  const searchBtn = document.querySelector("#date-input input#search")
+  searchBtn.addEventListener("click", () => {
+    const inputYear = document.querySelector("input#input-year").value
+    console.log(inputYear);
+    getMonthQueries(inputYear)
+  })
   // 리스트 키 table-key el > tr#month-list-key로 변경
   const tableListKey = document.querySelector("main #table-list table#list-key")
   const tableKeyClass = tableListKey.classList[0]
@@ -509,24 +738,15 @@ function resetToMonthView() {
     <tr class = "skeleton-line">
       <td class = "key total"><span></span></td>
       <td class = "val total"><span></span></td>
-    </tr>
-    `
+    </tr>`
+  const paginationEl = document.querySelector("div#pagination")
+  paginationEl.innerHTML = ""
 }
 
-/*
-q = query(collection(db, "test_payments_string"), where("pay_date", "<=", endStr), where("pay_date", ">=", startStr))
-const querySnapshot = await getDocs(q)
-querySnapshot.forEach((doc) => {
-  const id = doc.data().user_id
-  const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
-  userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
-  queriedPayments.push(doc.data()) // 받은 결제 담음
-})
-*/
-
+// 데이터요청
 async function getMonthQueries(year = 2024) {
   const queriedPayments = [] // 불러온 payments 담을 배열
-  const q = query(collection(db, "test_payments_string"), where("pay_date", ">=", "20240101"), where("pay_date", "<=", "20241231"))
+  const q = query(collection(db, "test_payments_string"), where("pay_date", ">=", `${year}0101`), where("pay_date", "<=", `${year}1231`))
   // 1. 데이터 쿼리 (promise or await)
   const querySnapshot = await getDocs(q)
   querySnapshot.forEach((snapshot) => {
@@ -544,8 +764,8 @@ async function getMonthQueries(year = 2024) {
   // 2. DOM 갱신 # short-view-val
   showInOverview(queriedPayments)
   queriedPayments.forEach((pay) => {
-    console.log(pay);
-    console.log(pay.pay_date);
+    // console.log(pay);
+    // console.log(pay.pay_date);
   })
 
   const monthlySumArr = filterMonthList(queriedPayments)
@@ -582,7 +802,7 @@ function filterMonthList(payments) {
   const initDicArr = new Array(12).fill(0).map(() => ({card : 0, cash : 0, total : 0}))
   const monthlySumArr = payments.reduce((dic, payment) => {
     const month = Number(payment.pay_date.slice(4, 6)) - 1
-    console.log(month);
+    // console.log(month);
     const method = payment.pay_method
     dic[month][method] += payment.pay_fee
     dic[month].total += payment.pay_fee
@@ -651,8 +871,6 @@ function showMonthList(monthlySumArr) {
   }
 }
 
-
-
 // 쿼리에쓰이는 문자열반환함수
 function getTodayDateString() {
   const todayDate = new Date()
@@ -668,27 +886,6 @@ function getPrevDateString() {
   const [year, month, date] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
   // console.log(`${year}${month}${date}`);
   return `${year}${month}${date}`
-}
-// 개수만큼 틀넣음
-function showSkeletonLoading(num) {
-  // const shortViewSkeletonDiv = document.querySelector()
-  const skeletonDiv = document.querySelector("#table-list table#list-val")
-  console.log(skeletonDiv);
-  for(let i = 0; i < num; i++) {
-    // console.log(i);
-    skeletonDiv.innerHTML += `<tr class = "skeleton-line">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>`
-  }
-
 }
 
 //3. 불러온 결제를 shortview 에 표시
@@ -743,7 +940,12 @@ function initInput() {
   const [endYear, endMonth, endDay] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
   endInput.value = `${startYear}-${startMonth}-${startDay}`
   startInput.value = `${endYear}-${endMonth}-${endDay}`
+  console.log('초기값설정완료');
 }
+
+
+
+/*
 //5. 기본 날짜구간 리스트에 표시
 async function showPaymentList(payments, userInfo) {
   const listValDiv = document.querySelector("div#table-list table#list-val")
@@ -767,10 +969,6 @@ async function showPaymentList(payments, userInfo) {
   // payments.forEach(payment => {
   //   console.log(payment);
   // });
-  /*
-  일반 sort 사전순으로 정렬되기에 1000, 21 과같이 크기순정렬이되지않는다.
-
-  */
   // 결제일 최신순으로 정렬
   payments.sort((a, b) => {
     if(a.pay_date < b.pay_date) { // 2023 2024
@@ -803,3 +1001,25 @@ async function showPaymentList(payments, userInfo) {
     listValDiv.innerHTML += el
   })
 }
+
+// 개수만큼 틀넣음
+function showSkeletonLoading(num) {
+  // const shortViewSkeletonDiv = document.querySelector()
+  const skeletonDiv = document.querySelector("#table-list table#list-val")
+  console.log(skeletonDiv);
+  for(let i = 0; i < num; i++) {
+    // console.log(i);
+    skeletonDiv.innerHTML += `<tr class = "skeleton-line">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>`
+  }
+
+}*/
