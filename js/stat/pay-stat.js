@@ -199,30 +199,27 @@ await addDoc(collection(db, "test_payments_string"), {
 
 // 전체결제, 월별결제, 일별결제 버튼에 각 리스너 추가
 
-const entirePayBtn = document.querySelector("main ul#term-select li:nth-child(1)")
+const allPayBtn = document.querySelector("main ul#term-select li:nth-child(1)")
 const monthPayBtn = document.querySelector("main ul#term-select li:nth-child(2)")
 const dayPayBtn = document.querySelector("main ul#term-select li:nth-child(3)")
 
-entirePayBtn.addEventListener("click", function() {
+allPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  // console.log('전체 view');
-  showAllView2()
+  showAllView()
 })
 
 monthPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  // console.log('월별 view');
-  showMonthView() //1.
+  showMonthView() 
 })
 dayPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
-  // console.log('일별 view');
   showDayView()
 })
 
 // 1. 처음로딩시 전체결제 보기
-styleCurPayBtn(entirePayBtn)
-showAllView2() // 전체결제 view
+styleCurPayBtn(allPayBtn)
+showAllView() 
 
 // 현재 결제(전체, 월별, 일별) 스타일추가 by classList
 function styleCurPayBtn(el) {
@@ -238,89 +235,15 @@ function styleCurPayBtn(el) {
     firstSpan.classList.add("current")
   }
 }
-// ***********************************************************
-// 검색버튼클릭시 날짜 구간에 대해 새로운 쿼리 데이터 요청
-// 얘 함수안에 넣어야할지도 나중에 다시 부를수도있으니까 showAllView 안에 showonOverview 처럼 다시 전체결제로 돌아갈경우에도 DOM#date-input 이 수정되고나서 호출하도록
-
-
-
-
-
-
-/*
-const submitDateBtn = document.querySelector("#date-input input#search")
-submitDateBtn.addEventListener("click", () => {
-  console.log('click');
-  const startDate = document.querySelector('#date-input input#start-date').value
-  const endDate = document.querySelector('#date-input input#end-date').value
-  console.log(startDate, endDate);
-  showAllView(startDate, endDate)
-})
-*/
-// 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다! ('전체결제' 에 대한 쿼리)
-
-
-/*
-async function showAllView(start, end) {    
-  console.log('전체결제 쿼리!!');  
-                                                                                                                                                                                                                                                         
-  const queriedPayments = [] // 불러온 payments 담을 배열
-  const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를 
-
-  let q
-  if(start && end) { // 매개변수로 날짜 구간들어왔을때
-    console.log('날짜들어옴');
-    const startStr = start.split('-').join('')
-    const endStr = end.split('-').join('')
-    console.log(startStr, endStr);
-    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", endStr), where("pay_date", ">=", startStr))
-  } else { // 맨처음 입력 날짜가 없을때 한달치의 결제 불러옴
-    console.log('처음!!');
-    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
-  }
-
-  const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
-  querySnapshot.forEach((doc) => {
-    // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
-    const id = doc.data().user_id
-    const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
-    userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
-    queriedPayments.push(doc.data()) // 받은 결제 담음
-  })
-  console.log(userDic);
-  console.log(queriedPayments);
-
-  // 결제일 최신순으로 정렬
-  queriedPayments.sort((a, b) => {
-    if(a.pay_date < b.pay_date) { // 2023 2024
-      return 1
-    } else if(a.pay_date > b.pay_date){
-      return -1
-    } else {
-      return 0
-    }
-  })
-  showInOverview(queriedPayments)
-  if(start == undefined && end == undefined) { // 처음에만 기본값초기화하면됌
-    initInput()
-  }
-  const page = new Pagination(queriedPayments, userDic)
-  // 6. 불러온 데이터로 표시
-  page.initPaginationBar()
-}
-*/
-
-
 
 // 전체결제 view보여주는 함수
-function showAllView2() {
-  console.log('전체결제 view!!');
+function showAllView() {
   resetToAllView()
   getAllQueries()
 }
+
 // 전체결제 DOM 초기화 
 function resetToAllView() {
-  console.log('전체결제 view로 reset');
   // short-view에 스켈레톤추가
   const shortViewValEl = document.querySelector("main table#short-view-val")
   shortViewValEl.innerHTML = `<tr class = "skeleton-line">
@@ -338,13 +261,13 @@ function resetToAllView() {
         <input type="date" id="start-date"> ~
         <input type="date" id="end-date">
         <input type="button" id='search' value="검색">`
-  initInput()
-  
+  initInput() // 초기값 설정
+
+  // 리스너 추가
   const searchBtn = dateInputEl.querySelector("input#search")
   searchBtn.addEventListener("click", () => {
     const startDate = dateInputEl.querySelector("input#start-date").value
     const endDate = dateInputEl.querySelector("input#end-date").value
-    console.log(startDate, endDate);
     getAllQueries(startDate, endDate)
   })
 
@@ -367,7 +290,6 @@ function resetToAllView() {
             <th>결제금액</th>
           </tr>`
   // 리스트 table-val 에 스켈레톤 추가
-  // 추가가필요해
   const tableListVal = document.querySelector("main #table-list table#list-val")
   const tableValClass = tableListVal.classList[0]
   tableListVal.classList.remove(tableValClass)
@@ -492,7 +414,6 @@ async function getAllQueries(start, end) {
 
   let q
   if(start && end) { // 매개변수로 날짜 구간들어왔을때
-    console.log('날짜들어옴');
     const startStr = start.split('-').join('')
     const endStr = end.split('-').join('')
     console.log(startStr, endStr);
@@ -522,22 +443,13 @@ async function getAllQueries(start, end) {
   })
   showInOverview(queriedPayments)
   const page = new Pagination(queriedPayments, userDic)
-  // 6. 불러온 데이터로 표시
   page.initPaginationBar()
 }
 
-// 월별결제보여주는 함수
+// 월별결제 view보여주는 함수
 function showMonthView() {
-  // 1. 데이터 쿼리 (promise or await) 여기서는 추가정보를 불러오는게 아니라서 굳이 promise를 쓸필요는없을것같기도
-  // 근데 promise를 미리 담아두면 나중에 then으로 하는게 확실히 시간이 단축될것같긴함 ㄴㄴ resetMonthView 가 즉시실행이라서,
-  // promise로 하나 가서 await하나 기다리는 시간은 똑같음 
-  console.log('월별 결제 쿼리!!');
-  resetToMonthView() //2.
-  // reset이후에 아무때나 리스너 달면될듯함
-  // 여기에 리스너 추가하는 코드가 필요!!!!!
-
-  // 1. DOM 갱신먼저하고 #short-
-  getMonthQueries() //3.
+  resetToMonthView() 
+  getMonthQueries()
 }
 
 // 월별결제를 위해 DOM 수정 이거 의미가 없음 왜 표시가 안되는거지 await시간이 짧아서 그런가
@@ -556,7 +468,7 @@ function resetToMonthView() {
   dateInputEl.innerHTML = ""
   const today = new Date()
   const year = today.getFullYear()
-  dateInputEl.innerHTML = `검색년도 <input type = "" id = "input-year" value ="${year}">
+  dateInputEl.innerHTML = `결제년도 <input type = "" id = "input-year" value ="${year}">
   <input type = "button" id = "search" value = "검색">`
   const searchBtn = document.querySelector("#date-input input#search")
   searchBtn.addEventListener("click", () => {
@@ -743,7 +655,7 @@ function resetToMonthView() {
   paginationEl.innerHTML = ""
 }
 
-// 데이터요청
+// 월별결제 데이터 쿼리
 async function getMonthQueries(year = 2024) {
   const queriedPayments = [] // 불러온 payments 담을 배열
   const q = query(collection(db, "test_payments_string"), where("pay_date", ">=", `${year}0101`), where("pay_date", "<=", `${year}1231`))
@@ -763,10 +675,6 @@ async function getMonthQueries(year = 2024) {
   })
   // 2. DOM 갱신 # short-view-val
   showInOverview(queriedPayments)
-  queriedPayments.forEach((pay) => {
-    // console.log(pay);
-    // console.log(pay.pay_date);
-  })
 
   const monthlySumArr = filterMonthList(queriedPayments)
   // 3. DOM 갱신 #list-val 갱신
@@ -871,24 +779,84 @@ function showMonthList(monthlySumArr) {
   }
 }
 
-// 쿼리에쓰이는 문자열반환함수
-function getTodayDateString() {
-  const todayDate = new Date()
-  // console.log(date);
-  const [year, month, date] = [todayDate.getFullYear(), String(todayDate.getMonth() + 1).padStart(2, '0'), String(todayDate.getDate()).padStart(2, '0')]
-  // console.log(`${year}${month}${date}`);
-  return `${year}${month}${date}`
+// 일별결제 view보여주는 함수
+function showDayView() {
+  resetToDayView()
+  getDayQueries()
 }
-// 쿼리에쓰이는 문자열반환함수
-function getPrevDateString() {
-  const prevDate = new Date()
-  prevDate.setDate(prevDate.getDate() - 30)
-  const [year, month, date] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
-  // console.log(`${year}${month}${date}`);
-  return `${year}${month}${date}`
+// 일별결제 DOM 초기화
+function resetToDayView() {
+  // short-view-val 에 스켈레톤추가
+  const shortViewValEl = document.querySelector("main table#short-view-val")
+  shortViewValEl.innerHTML = `<tr class = "skeleton-line">
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+          <td><span></span></td>
+        </tr>`
+  // 검색창 초기화
+  const dateInputEl = document.querySelector("main #date-input")
+  dateInputEl.innerHTML = ""
+  /*
+  결제월 < --- > 검색 추가하고 
+  각 < > 버튼에 클릭리스너로 날짜값 변경하면서 input값안의 value도 바꿔저야할듯
+  */
+  // dateInputEl.innerHTML = `결제월 <input type = "" id = "input-year-month">
+  // <input type = "button" id = "search" value = "검색">`
+
+  dateInputEl.innerHTML = `결제월 <span id = "prev-month" class = "control"><</span>
+  <input type = "" id = "input-year-month">
+  <span id = "next-month" class = "control">></span>
+  <input type = "button" id = "search" value = "검색">`
+
+  const prevBtn = document.querySelector("#date-input span.control#prev-month")
+  const nextBtn = document.querySelector("#date-input span.control#next-month")
+  const inputEl = document.querySelector("#date-input input#input-year-month")
+  // 초기값표시및 설정
+  const date = new Date()
+  const [year, month] = [String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, '0')]
+  console.log(year, month);
+  inputEl.value = `${year}-${month}`
+  // 리스너추가
+  prevBtn.addEventListener("click", () => {
+    date.setMonth(date.getMonth() - 1)
+    const [year, month] = [String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, '0')]
+    inputEl.value = `${year}-${month}`
+  })
+  nextBtn.addEventListener("click", () => {
+    date.setMonth(date.getMonth() + 1)
+    const [year, month] = [String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, '0')]
+    inputEl.value = `${year}-${month}`
+  })
+  const searchBtn = document.querySelector("#date-input input#search")
+  searchBtn.addEventListener("click", () => {
+    const inputYear = document.querySelector("input#input-year-month").value
+    console.log(inputYear);
+    getDayQueries(inputYear)
+  })
+
+}
+// 일별결제 데이터 쿼리
+async function getDayQueries() {
+
 }
 
-//3. 불러온 결제를 shortview 에 표시
+// 기본날짜구간 (오늘 - 15일 ~ 오늘) input에 표시
+function initInput() {
+  const startInput = document.querySelector("input#start-date")
+  const endInput = document.querySelector("input#end-date")
+  const startDate = new Date()
+  const [startYear, startMonth, startDay] = [startDate.getFullYear(), String(startDate.getMonth() + 1).padStart(2, '0'), String(startDate.getDate()).padStart(2, '0')]
+  const prevDate = new Date()
+  prevDate.setDate(prevDate.getDate() - 30)
+  const [endYear, endMonth, endDay] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
+  endInput.value = `${startYear}-${startMonth}-${startDay}`
+  startInput.value = `${endYear}-${endMonth}-${endDay}`
+  console.log('초기값설정완료');
+}
+
+// 불러온 결제를 shortview 에 표시(전체, 월, 일 동일)
 function showInOverview(payments) {
   const overViewDiv = document.querySelector('table#short-view-val')
   overViewDiv.innerHTML = ''
@@ -917,6 +885,23 @@ function showInOverview(payments) {
         </tr>`
 }
 
+// 쿼리에쓰이는 문자열반환함수
+function getTodayDateString() {
+  const todayDate = new Date()
+  // console.log(date);
+  const [year, month, date] = [todayDate.getFullYear(), String(todayDate.getMonth() + 1).padStart(2, '0'), String(todayDate.getDate()).padStart(2, '0')]
+  // console.log(`${year}${month}${date}`);
+  return `${year}${month}${date}`
+}
+// 쿼리에쓰이는 문자열반환함수
+function getPrevDateString() {
+  const prevDate = new Date()
+  prevDate.setDate(prevDate.getDate() - 30)
+  const [year, month, date] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
+  // console.log(`${year}${month}${date}`);
+  return `${year}${month}${date}`
+}
+// 숫자 세자리단위 포맷문자열로볂환
 function getFormattedNum(number) {
   const strNum = String(number)
   let result = ''
@@ -929,19 +914,6 @@ function getFormattedNum(number) {
   return result
 }
 
-//4. 기본날짜구간 (오늘 - 15일 ~ 오늘) input에 표시
-function initInput() {
-  const startInput = document.querySelector("input#start-date")
-  const endInput = document.querySelector("input#end-date")
-  const startDate = new Date()
-  const [startYear, startMonth, startDay] = [startDate.getFullYear(), String(startDate.getMonth() + 1).padStart(2, '0'), String(startDate.getDate()).padStart(2, '0')]
-  const prevDate = new Date()
-  prevDate.setDate(prevDate.getDate() - 30)
-  const [endYear, endMonth, endDay] = [prevDate.getFullYear(), String(prevDate.getMonth() + 1).padStart(2, '0'), String(prevDate.getDate()).padStart(2, '0')]
-  endInput.value = `${startYear}-${startMonth}-${startDay}`
-  startInput.value = `${endYear}-${endMonth}-${endDay}`
-  console.log('초기값설정완료');
-}
 
 
 
@@ -1023,3 +995,71 @@ function showSkeletonLoading(num) {
   }
 
 }*/
+
+
+// ***********************************************************
+// 검색버튼클릭시 날짜 구간에 대해 새로운 쿼리 데이터 요청
+// 얘 함수안에 넣어야할지도 나중에 다시 부를수도있으니까 showAllView 안에 showonOverview 처럼 다시 전체결제로 돌아갈경우에도 DOM#date-input 이 수정되고나서 호출하도록
+
+/*
+const submitDateBtn = document.querySelector("#date-input input#search")
+submitDateBtn.addEventListener("click", () => {
+  console.log('click');
+  const startDate = document.querySelector('#date-input input#start-date').value
+  const endDate = document.querySelector('#date-input input#end-date').value
+  console.log(startDate, endDate);
+  showAllView(startDate, endDate)
+})
+*/
+// 1. 오늘부터 15일 이전까지의 pay_date들을 불러온다! ('전체결제' 에 대한 쿼리)
+
+
+/*
+async function showAllView(start, end) {    
+  console.log('전체결제 쿼리!!');  
+                                                                                                                                                                                                                                                         
+  const queriedPayments = [] // 불러온 payments 담을 배열
+  const userDic = {} // 해당구간의 날짜에 속하는 pay_date의 userinfo를 
+
+  let q
+  if(start && end) { // 매개변수로 날짜 구간들어왔을때
+    console.log('날짜들어옴');
+    const startStr = start.split('-').join('')
+    const endStr = end.split('-').join('')
+    console.log(startStr, endStr);
+    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", endStr), where("pay_date", ">=", startStr))
+  } else { // 맨처음 입력 날짜가 없을때 한달치의 결제 불러옴
+    console.log('처음!!');
+    q = query(collection(db, "test_payments_string"), where("pay_date", "<=", getTodayDateString()), where("pay_date", ">=", getPrevDateString()))
+  }
+
+  const querySnapshot = await getDocs(q) // payments 컬랙션에 결제를 요청 (id로 쿼리날리는건 최소한 이라인 이후부터 실행해야할듯)
+  querySnapshot.forEach((doc) => {
+    // 받은 결제데이터들을 받음과 동시에, 결제의 user_id로 member컬렉션에 미리 요청날려놓음 await는 안함. promise로 받아서 아래가서쓸거임
+    const id = doc.data().user_id
+    const idQuery = query(collection(db, "test_members"), where("user_id", "==", id))
+    userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
+    queriedPayments.push(doc.data()) // 받은 결제 담음
+  })
+  console.log(userDic);
+  console.log(queriedPayments);
+
+  // 결제일 최신순으로 정렬
+  queriedPayments.sort((a, b) => {
+    if(a.pay_date < b.pay_date) { // 2023 2024
+      return 1
+    } else if(a.pay_date > b.pay_date){
+      return -1
+    } else {
+      return 0
+    }
+  })
+  showInOverview(queriedPayments)
+  if(start == undefined && end == undefined) { // 처음에만 기본값초기화하면됌
+    initInput()
+  }
+  const page = new Pagination(queriedPayments, userDic)
+  // 6. 불러온 데이터로 표시
+  page.initPaginationBar()
+}
+*/
