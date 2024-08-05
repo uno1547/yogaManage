@@ -257,6 +257,24 @@ main div#date-input input {
   height: 30px;
   width: 150px;
 }
+/* 일별결제의 조절버튼 */
+main div#date-input span.control {
+  background-color:rgb(239, 239, 239);
+  border-radius: 3px;
+  padding: 5px 10px;
+  transition: .5s;
+  cursor: pointer;
+}
+
+main div#date-input span.control:hover {
+  background-color: #979797;
+}
+/* (전체, 월별, 일별)결제의 검색버튼 */
+main div#date-input input#search {
+  width: 50px;
+}
+
+
 /*main #table-list COMMON (table 리스트 common)*/
 
 main div#table-list {
