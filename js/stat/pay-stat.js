@@ -854,7 +854,7 @@ function resetToDayView() {
   const tableValClass = tableListVal.classList[0]
   tableListVal.classList.remove(tableValClass)
 
-  tableListVal.classList.add("month-list")
+  tableListVal.classList.add("day-list")
   tableListVal.innerHTML = ""
   tableListVal.innerHTML = `<tr class = "skeleton-line">
       <td rowspan="3" class = "th"><span></span></td>

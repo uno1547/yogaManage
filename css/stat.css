@@ -277,8 +277,10 @@ main div#date-input input#search {
 
 /*main #table-list COMMON (table 리스트 common)*/
 
-main div#table-list {
-
+main div#table-list table#list-key,
+main div#table-list table#list-val {
+  table-layout: fixed;
+  width: 1700px;
 }
 
 main div#table-list th,
@@ -294,7 +296,6 @@ main div#table-list table#list-key {
 
 /* table#list-key.all-list 전체결제의 table key */
 table#list-key.all-list {
-  border: 1px solid red;
 }
 
 table#list-key.all-list tr th:nth-child(1) {
@@ -473,47 +474,78 @@ table#list-val.all-list tr td:nth-child(9) span {
 /* table#list-val.month-list 월별결제의 table value */
 
 table#list-val.month-list tr td:nth-child(1) { /*병합된 월 셀*/
-  /* 결제월 */
-  width: 825px;
-}
-table#list-val.month-list tr.skeleton-line td:nth-child(1) span { /*병합된 월 셀*/
-  /* 결제월 */
-  width: 150px;
+  /* 결제월 td 너비*/
+  width: 470px;
 }
 
 table#list-val.month-list tr.skeleton-line td.th span { /*병합된 월 셀*/
-  /* 결제일 span*/
-  width: 80px;
+  /* 결제월 span 너비*/
+  width: 100px;
+}
+
+table#list-val.month-list tr.skeleton-line td:nth-child(1) span { /*병합된 월 셀*/
+  /* 결제수단 td 너비*/
+  width: 100px;
 }
 
 table#list-val.month-list tr td:nth-child(2) {
-  /* 결제수단 */
-  width: 825px;
+  /* 결제수단 td 너비*/
+  width: 495px;
 }
 table#list-val.month-list tr.skeleton-line td:nth-child(2) span{
-  /* 결제수단 */
-  width: 150px;
+  /* 결제수단 span 너비*/
+  width: 100px;
 }
 
 table#list-val.month-list tr td:nth-child(3) {
-  /* 결제금액 */
-  width: 825px;
+  /* 결제금액 td 너비*/
+  width: 495px;
 }
 table#list-val.month-list tr.skeleton-line td:nth-child(3) span {
-  /* 결제금액 */
-  width: 150px;
+  /* 결제금액 span 너비*/
+  width: 100px;
 }
 
 table#list-val.month-list td {
-  border: 1px solid black;
   /* border-collapse: separate; */
 }
-table#list-val.month-list tr td.total {
+table#list-val.month-list tr td.total,
+table#list-val.day-list tr td.total {
   background-color: #9c9c9c;
 }
 /* table#list-val.day-list 일별결제의 table value */
 
+table#list-val.day-list tr td:nth-child(1) {
+  /* 결제일 td 너비 */
+  width: 470px;
+}
+table#list-val.day-list tr.skeleton-line td:nth-child(1) span {
+  /* 결제일 span 너비 */
+  width: 100px;
+}
 
+table#list-val.day-list tr.skeleton-line td.th span { 
+  /* 결제일 span*/
+  width: 100px;
+}
+
+table#list-val.day-list tr td:nth-child(2) {
+  /* 결제수단 */
+  width: 495px;
+}
+table#list-val.day-list tr.skeleton-line td:nth-child(2) span{
+  /* 결제수단 span 너비 */
+  width: 100px;
+}
+
+table#list-val.day-list tr td:nth-child(3) {
+  /* 결제금액 */
+  width: 495px;
+}
+table#list-val.day-list tr.skeleton-line td:nth-child(3) span {
+  /* 결제금액 span 너비*/
+  width: 100px;
+}
 
 
 
