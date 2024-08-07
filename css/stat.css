@@ -346,13 +346,13 @@ table#list-key.month-list tr th:nth-child(3) {
 
 /* table#list-key.day-list 일별결제의 table key */
 table#list-key.day-list tr th:nth-child(1) {
-  width: 10px;
+  width: 380px;
 }
 table#list-key.day-list tr th:nth-child(2) {
-  width: 10px;
+  width: 400px;
 }
 table#list-key.day-list tr th:nth-child(3) {
-  width: 20px;
+  width: 400px;
 }
 
 

@@ -816,7 +816,7 @@ function resetToDayView() {
   // 초기값표시및 설정
   const date = new Date()
   const [year, month] = [String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, '0')]
-  console.log(year, month);
+  // console.log(year, month);
   inputEl.value = `${year}-${month}`
   // 리스너추가
   prevBtn.addEventListener("click", () => {
@@ -831,15 +831,504 @@ function resetToDayView() {
   })
   const searchBtn = document.querySelector("#date-input input#search")
   searchBtn.addEventListener("click", () => {
-    const inputYear = document.querySelector("input#input-year-month").value
-    console.log(inputYear);
-    getDayQueries(inputYear)
+    // 1. 이전월의 데이터 쿼리
+    // 2. inputEl에 표시 변경
+    const inputYearMonth = document.querySelector("input#input-year-month").value
+    // console.log(inputYearMonth)
+    getDayQueries(inputYearMonth)
   })
+  // 일별결제 table key 초기화
+  const tableListKey = document.querySelector("main div#table-list table#list-key")
+  const tableKeyClass = tableListKey.classList[0]
+  tableListKey.classList.remove(tableKeyClass)
 
+  tableListKey.classList.add("day-list")
+  tableListKey.innerHTML = ""
+  tableListKey.innerHTML = `<tr>
+            <th>결제일</th>
+            <th>구분</th>
+            <th>합계</th>
+          </tr>`
+  // 일별결제 table val 스켈레톤 추가
+  const tableListVal = document.querySelector("main #table-list table#list-val")
+  const tableValClass = tableListVal.classList[0]
+  tableListVal.classList.remove(tableValClass)
+
+  tableListVal.classList.add("month-list")
+  tableListVal.innerHTML = ""
+  tableListVal.innerHTML = `<tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td rowspan="3" class = "th"><span></span></td>
+      <td class = "key card"><span></span></td>
+      <td class = "val card"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key cash"><span></span></td>
+      <td class = "val cash"><span></span></td>
+    </tr>
+    <tr class = "skeleton-line">
+      <td class = "key total"><span></span></td>
+      <td class = "val total"><span></span></td>
+    </tr>
+    `
+  const paginationEl = document.querySelector("div#pagination")
+  paginationEl.innerHTML = ""
 }
 // 일별결제 데이터 쿼리
-async function getDayQueries() {
+async function getDayQueries(value) {
+  const queriedPayments = []
 
+  let year, month
+  if(value == undefined) { //최초쿼리의 경우 현재 날짜로 ㄱ
+    const date = new Date()
+    year = String(date.getFullYear()).padStart(2, '0')
+    month = String(date.getMonth() + 1).padStart(2, '0')
+  } else { // 이후에 추가적인 쿼리(클릭시)  
+    [year, month] = value.split('-')
+  }
+  console.log(year, month);
+  const q = query(collection(db, "test_payments_string"), where("pay_date", ">=", `${year}${month}01`), where("pay_date", "<=", `${year}${month}31`)) //2월같은 경우도 29일이 최대긴하지만 31보다 작은건맞으니깐 괜찮을듯
+  const querySnapshot = await getDocs(q)
+  querySnapshot.forEach((doc) => {
+    queriedPayments.push(doc.data())
+  })
+
+  showInOverview(queriedPayments)
+  const dailySumArr = filterDayList(queriedPayments)
+  showDayList(dailySumArr)
+}
+
+function filterDayList(payments) {
+  const initDicArr = new Array(31).fill(0).map(() => ({card : 0, cash : 0, total : 0}))
+  console.log(initDicArr);
+  const dailySumArr = payments.reduce((dic, payment) => {
+    const day = Number(payment.pay_date.slice(6)) - 1
+    console.log(day);
+    const method = payment.pay_method
+    dic[day][method] += payment.pay_fee
+    dic[day].total += payment.pay_fee
+    return dic
+  }, initDicArr)
+  console.log(dailySumArr);
+  return dailySumArr
+
+}
+
+function showDayList(dailySumArr) {
+  for(let i = 0; i < dailySumArr.length; i++) {
+    const daySpan = document.querySelectorAll(".th")[i]
+    const cardKeySpan = document.querySelectorAll(".card.key")[i]
+    const cashKeySpan = document.querySelectorAll(".cash.key")[i]
+    const totalKeySpan = document.querySelectorAll(".total.key")[i]
+
+    const cardValSpan = document.querySelectorAll(".card.val")[i]
+    const cashValSpan = document.querySelectorAll(".cash.val")[i]
+    const totalValSpan = document.querySelectorAll(".total.val")[i]
+    // 결제가 존재하지않는경우
+    daySpan.innerHTML = `${i+1}일`
+    cardKeySpan.innerHTML = `카드`
+    cashKeySpan.innerHTML = `현금`
+    totalKeySpan.innerHTML = `총계`
+    if(dailySumArr[i].total == 0) {
+      cardValSpan.innerHTML = '0 원'
+      cashValSpan.innerHTML = '0 원'
+      totalValSpan.innerHTML = '0 원'
+      continue
+    } else {
+      cardValSpan.innerHTML = `${getFormattedNum(dailySumArr[i].card)} 원`
+      cashValSpan.innerHTML = `${getFormattedNum(dailySumArr[i].cash)} 원`
+      totalValSpan.innerHTML = `${getFormattedNum(dailySumArr[i].total)} 원`
+    }
+  }
 }
 
 // 기본날짜구간 (오늘 - 15일 ~ 오늘) input에 표시
