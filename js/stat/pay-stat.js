@@ -167,7 +167,7 @@ await addDoc(collection(db, "test_payments_string"), {
             <td>요가 주${payment.pay_class.times_a_week}회 [${payment.pay_class.class_term}개월] [주 ${payment.pay_class.times_a_week}회권]</td>
             <td>${payYear}-${payMonth}-${payDay}</td>
             <td>${expireYear}-${expireMonth}-${expireDay}</td>
-            <td>${getFormattedNum(payment.pay_fee)}</td>
+            <td>${getFormattedNum(payment.pay_fee)}원</td>
             </tr>`
           })
           
@@ -206,20 +206,24 @@ const dayPayBtn = document.querySelector("main ul#term-select li:nth-child(3)")
 allPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
   showAllView()
+  window.scrollTo(0, 0)
 })
 
 monthPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
   showMonthView() 
+  window.scrollTo(0, 0)
 })
 dayPayBtn.addEventListener("click", function() {
   styleCurPayBtn(this)
   showDayView()
+  window.scrollTo(0, 0)
 })
 
 // 1. 처음로딩시 전체결제 보기
-styleCurPayBtn(allPayBtn)
+// styleCurPayBtn(allPayBtn)
 showAllView() 
+// window.scrollTo(0, 0)
 
 // 현재 결제(전체, 월별, 일별) 스타일추가 by classList
 function styleCurPayBtn(el) {
@@ -1367,10 +1371,10 @@ function showInOverview(payments) {
   const totalPrice = getFormattedNum(result.total)
   overViewDiv.innerHTML = `<tr>
           <td>${payNum}</td>
-          <td>${cardPrice}</td>
-          <td>${cashPrice}</td>
-          <td>0</td>
-          <td>${totalPrice}</td>
+          <td>${cardPrice}원</td>
+          <td>${cashPrice}원</td>
+          <td>0원</td>
+          <td>${totalPrice}원</td>
         </tr>`
 }
 

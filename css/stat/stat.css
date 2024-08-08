@@ -5,6 +5,10 @@ html {
 #none {
   color: transparent;
 }
+h2 {
+  margin: 0;
+  padding: 20px;
+}
 body {
   margin: 0px;
   /* height: 3000px; */
@@ -146,7 +150,7 @@ main ul li {
 main ul li span {
   display: inline-block;
   /* border-radius: 10px; */
-  padding: 20px 25px;
+  padding: 10px 25px;
   cursor: pointer;
 }
 
@@ -296,6 +300,7 @@ main div#table-list table#list-key {
 
 /* table#list-key.all-list 전체결제의 table key */
 table#list-key.all-list {
+  
 }
 
 table#list-key.all-list tr th:nth-child(1) {
