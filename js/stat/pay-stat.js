@@ -27,25 +27,26 @@ await addDoc(collection(db, "test_payments_string"), {
     });
     */
    
-   class Pagination {
-     constructor(paymentArr, userDic) {
-       this.elNum = paymentArr.length
-       this.maxElNum = 10
-       this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
-       this.curPageNum = 1
-       this.paymentArr = paymentArr
-       this.userDic = userDic
-      }
-      // #pagitaion 초기화하고, pageNum만큼 indicator추가
-      initPaginationBar() {
-        const paginationDiv = document.querySelector(".inner div#pagination")
-        // paginationDiv.innerHTML = 'hi'
-        if(this.elNum == 0) {
-          const listDiv = document.querySelector("div#table-list table#list-val")
+class Pagination {
+  constructor(paymentArr, userDic) {
+    this.elNum = paymentArr.length
+    this.maxElNum = 10
+    this.pageNum = (this.elNum % this.maxElNum == 0) ? Math.floor(this.elNum / this.maxElNum) : Math.floor(this.elNum / this.maxElNum) + 1
+    this.curPageNum = 1
+    this.paymentArr = paymentArr
+    this.userDic = userDic
+  }
+  // #pagitaion 초기화하고, pageNum만큼 indicator추가
+  initPaginationBar() {
+    const paginationDiv = document.querySelector(".inner div#pagination")
+    // paginationDiv.innerHTML = 'hi'
+    if(this.elNum == 0) {
+      const listDiv = document.querySelector("div#table-list table#list-val")
       listDiv.innerHTML = "해당날짜에 만료예정 결제가 없습니다."
       return
     }
     // pagination 컴포넌트 추가
+    console.log('hi');
     paginationDiv.innerHTML = `<button id="prev"><</button>
     <div id="page-indicator"></div>
     <button id = "next">></button>
@@ -170,13 +171,14 @@ await addDoc(collection(db, "test_payments_string"), {
             <td>${getFormattedNum(payment.pay_fee)}원</td>
             </tr>`
           })
-          
+          // 기존 10개 다비움
           const tableDiv = document.querySelector("div.inner table#list-val")
           tableDiv.innerHTML = ""
-          
+          // 받은 데이터 개수만큼 채움
           for(let i = 0; i < paymentsInnerHTML.length; i++) {
             tableDiv.innerHTML += paymentsInnerHTML[i]
           } 
+          // 나머지 개수는 빈줄로 채움
           for(let i = paymentsInnerHTML.length; i < 10; i++) {
             tableDiv.innerHTML += `          <tr class = "skeleton-line">
             <td></td>
@@ -410,6 +412,9 @@ function resetToAllView() {
             <td><span></span></td>
             <td><span></span></td>
           </tr>`
+
+  // const paginationEl = document.querySelector("div#pagination")
+  // paginationEl.innerHTML = ""
 }
 // 전체결제 데이터 쿼리
 async function getAllQueries(start, end) {
@@ -435,7 +440,7 @@ async function getAllQueries(start, end) {
     userDic[id] = getDocs(idQuery) // {1100 : promise, 2212 : promise}
     queriedPayments.push(doc.data()) // 받은 결제 담음
   })
-
+  console.log(queriedPayments);
   queriedPayments.sort((a, b) => {
     if(a.pay_date < b.pay_date) { // 2023 2024
       return 1
@@ -447,7 +452,7 @@ async function getAllQueries(start, end) {
   })
   showInOverview(queriedPayments)
   const page = new Pagination(queriedPayments, userDic)
-  page.initPaginationBar()
+  page.initPaginationBar() // 새 데이터에 대해 갱신되어야함
 }
 
 // 월별결제 view보여주는 함수
