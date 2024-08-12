@@ -198,20 +198,21 @@ table#list-table.day-list tr#table-key th:nth-child(8) {
 /* 일일방문현황 table값 */
 
 table#list-table.day-list tr.table-val {
-
+  height: 60px;
 }
 
 table#list-table.day-list tr.table-val td {
   padding: 10px 40px;
 }
 
-table#list-table.day-list tr.table-val td span {
+table#list-table.day-list tr.table-val td:nth-child(7) span,
+table#list-table.day-list tr.table-val td:nth-child(8) span{
   display: block; /*텍스트 줄바꿈을 위해서*/
 }
 
 /* 일일방문현황 table값 skeleton */
 table#list-table.day-list tr.table-val.skeleton-line td {
-  height: 38.89px; /*span의 높이를 40을줄순없음 높이채우기위해40 */
+  /* height: 38.89px; span의 높이를 40을줄순없음 높이채우기위해40 */
 }
 table#list-table.day-list tr.table-val.skeleton-line td span {
   display: inline-block; /*텍스트 줄바꿈을 위해서*/
@@ -261,6 +262,7 @@ table#list-table.month-list tr .day-cell {
   padding: 10px;
   font-size: 14px;
 }
+
 /* 월별방문현황 table 키*/
 table#list-table.month-list tr#table-key th:nth-child(1) {
   width: 60px;
@@ -280,6 +282,9 @@ table#list-table.month-list tr#table-key th:last-child {
 
 
 /* 월별방문현황 table값 skeleton */
+table#list-table.month-list tr.table-val {
+  height: 49.33px;
+}
 table#list-table.month-list tr.table-val td {
   /* width: 60px; */
   /* height: 40px; */
@@ -340,7 +345,9 @@ div.inner #pagination {
   /* width: 150px;
   margin: auto; */
 }
-
+div.inner #pagination span{
+  font-weight: bold;
+}
 #pagination button {
   padding: 10px 15px;
   border: none;
