@@ -65,7 +65,7 @@ header nav ul li span {
   vertical-align: middle;
 }
 
-header ul li:hover a,
+header ul li:hover > a,
 header ul li:hover span {
   color: rgb(167, 167, 167);
 }
