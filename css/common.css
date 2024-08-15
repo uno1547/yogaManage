@@ -11,7 +11,6 @@ a {
   padding: 30px 10px;
 }
 .header {
-  width: 900px;
   width: 1700px;
   margin: auto;
   margin-top: 10px;
@@ -25,7 +24,6 @@ a {
 }
 
 .header ul li {
-  /* padding: 0 30px; */
   margin: 0 25px;
 }
 .header ul li a,
@@ -40,10 +38,6 @@ a {
 .header ul li:hover > a,
 .header ul li:hover span {
   color: rgb(167, 167, 167);
-}
-
-li.dropdown {
-  /* background-color: blue; */
 }
 
 li.dropdown div.dropdown-content {
