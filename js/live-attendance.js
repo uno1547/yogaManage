@@ -57,16 +57,21 @@ setTimeout(() => {
 showTodayVisits()
 async function showTodayVisits() {
   const todayVisits = await getTodayVisits()
+  // console.log(todayVisits);
   const sortedVisits = sortVisits(todayVisits)
+  // console.log(sortedVisits);
   const visitsArr = await getVisitInfo(sortedVisits)
+  // console.log(visitsArr);
   showVisits(visitsArr)
 }
 async function getTodayVisits() {
   const todayDate = new Date()
-  const [todayYear, todayMonth, todayDay] = [todayDate.getFullYear(), todayDate.getMonth() + 1, todayDate.getDate()]
-  console.log(todayYear, todayMonth, todayDay);
+  const [todayYear, todayMonth, todayDay] = [String(todayDate.getFullYear()), String(todayDate.getMonth() + 1).padStart(2, '0'), String(todayDate.getDate()).padStart(2, '0')]
+  // console.log(todayYear, todayMonth, todayDay);
+  const todayString = `${todayYear}${todayMonth}${todayDay}`
   // const q1 = query(citiesRef, where("state", ">=", "CA"), where("state", "<=", "IN"));
-  const todayQueries = query(collection(db, "open_attendances"), where("attend_year", "==", todayYear), where("attend_month", "==", todayMonth), where("attend_date", "==", todayDay)) 
+  // const todayQueries = query(collection(db, "open_attendances"), where("attend_year", "==", todayYear), where("attend_month", "==", todayMonth), where("attend_date", "==", todayDay)) 
+  const todayQueries = query(collection(db, "new1-attendances"), where("attend_date", "==", todayString)) 
   const querySnapshot = await getDocs(todayQueries);
   const todayVisits = []
   querySnapshot.forEach((doc) => {
@@ -80,6 +85,7 @@ showCurrentTime()
 // setInterval(waitForVisit, 2000)
 
 // 오늘날짜에 대한 전체 쿼리에 스냅샷 핸들러 추가 (아마도 변화 있을때 마다 콘솔에 찍혀야함)
+/*
 const unsubscribe = onSnapshot(query(collection(db, "open_attendances"), where("attend_day", "==", new Date().getDate())), (querySnapshot) => { //이게 핸들러? 같은데 맨처음 불러올때 호출되고, 그이후에는 문서에 변화가 생길때마다 추가되는듯함
   let changes = querySnapshot.docChanges()
   console.log(changes);
@@ -89,11 +95,15 @@ const unsubscribe = onSnapshot(query(collection(db, "open_attendances"), where("
     // 변화있을때마다 push, sort, visitInfo ,showVisit까지 이어져야함
   })
 })
+*/
+// const unsubscribe = onSnapshot(query(collection(db, "new1-attendances"), where("attend_date".slice(6), "==", new Date().getDate())), (querySnapshot) => { //이게 핸들러? 같은데 맨처음 불러올때 호출되고, 그이후에는 문서에 변화가 생길때마다 추가되는듯함
+
 // 불러온 출석들에 대해 시간순으로 정렬
 function sortVisits(visits) {
   // console.log(visits)
   // const visitTime = visits.attend_time
   // const [time, minute, second] = [visitTime[0], visitTime[1], visitTime[2]]
+  /*
   visits.sort(function(a, b) {
     // a : 18시 b : 20시
     if (a.attend_time[0] < b.attend_time[0]) { //a의 시간이 b의 시간보다 작으면 
@@ -116,15 +126,25 @@ function sortVisits(visits) {
       return 1
     }
   })
+  */
+  visits.sort((a, b) => {
+    if(a.attend_time > b.attend_time) {
+      return -1
+    } else if(a.attend_time < b.attend_time) {
+      return 1
+    } else {
+      return 0 
+    }
+  })
   return visits
   // getVisitInfo(visits)
 }
 // 출석배열 받아서 각 출석의 user_id, user_name, vist_time 담은 객체배열 생성
 async function getVisitInfo(sortedVisits) {
   // console.log(sortedVisits)
-  const infos = []
+  // const infos = [] // 필요한지 모르겠음
   for (let visit of sortedVisits) { //sortedVisits는 출석객체배열
-    const info = {}
+    // const info = {} // 얘도
     /*
     // const visit_member = getName(visit.user_id) 
     // 이렇게 하고 싶은데 getName이 비동기 처리라서 그런가 아래 45번에 undefined들어간뒤에, 
@@ -136,7 +156,7 @@ async function getVisitInfo(sortedVisits) {
     */
     let visitMemberName = await getName(visit.user_id)
     // console.log(visitMemberName)
-    info.visit_name = visitMemberName
+    visit.visit_name = visitMemberName
     /*
     // console.log(getName(visit.user_id).then((res) => visitMemberName = res));
     // .then(() => info.visit_name = visitMemberName) //이과정자체도 비동기면 
@@ -144,11 +164,9 @@ async function getVisitInfo(sortedVisits) {
     // 프로퍼티가 할당되고나서 배열 infos에 push가 될지 할당안된채로 배열에 push가 될지 말지 확실하지않은건가
     // info.visit_name = visitMemberName
     */
-    const visitTimeArr = visit.attend_time.map((el) => String(el).padStart(2, "0"))
-    const visitTimeStr = visitTimeArr.join(' : ')
-    info.visit_time = visitTimeStr
-    info.visit_user_id = visit.user_id
-    infos.push(info)
+    // info.visit_time = visitTimeStr
+    // info.visit_user_id = visit.user_id
+    // infos.push(info)
     // info = {visit_time : "10:35:00", visit_user_id : 2212} 일단 여기까지는 만들어지고
     /*
     */
@@ -158,8 +176,10 @@ async function getVisitInfo(sortedVisits) {
     // then안에 가둬둬야하나
     */
   }
+  // console.log(sortedVisits);
+  return sortedVisits
   // console.log(infos);
-  return infos
+  // return infos
 }
 //userid로 조회한 name반환
 async function getName(userId) {
@@ -172,6 +192,7 @@ async function getName(userId) {
 }
 //visitInfoArr배열 받아서 html추가 card 및 방문자수
 function showVisits(arr) {
+  console.log(arr);
   const container = document.querySelector('#attend-pallette')
   container.innerHTML = ``
   for (let visit of arr) {
@@ -183,11 +204,11 @@ function showVisits(arr) {
       </div>
       <div id="visit-user-id" class="row">
         <div class="text" id="user-id">회원번호</div>
-        <div class="content" id="user-id">${visit.visit_user_id}</div>
+        <div class="content" id="user-id">${visit.user_id}</div>
       </div>
       <div id="visit-time" class="row">
         <div class="text" id="time">방문시각</div>
-        <div class="content" id="time">${visit.visit_time}</div>
+        <div class="content" id="time">${visit.attend_time}</div>
       </div>
     </div>`
     container.innerHTML += attendCardEl
@@ -252,3 +273,20 @@ async function checkVisit() {
 /*
 실시간 출석이 20을 초과할경우 다음페이지추가 , 20을 초과할경우
 */ 
+
+const todayDate = new Date()
+const [todayYear, todayMonth, todayDay] = [String(todayDate.getFullYear()), String(todayDate.getMonth() + 1).padStart(2, '0'), String(todayDate.getDate()).padStart(2, '0')]
+// console.log(todayYear, todayMonth, todayDay);
+const todayString = `${todayYear}${todayMonth}${todayDay}`
+const unsubscribe = onSnapshot(query(collection(db, "new1-attendances"), where("attend_date", "==", todayString)), (querySnapshot) => { //이게 핸들러? 같은데 맨처음 불러올때 호출되고, 그이후에는 문서에 변화가 생길때마다 추가되는듯함
+// const unsubscribe = onSnapshot(query(collection(db, "new1-attendances")), (querySnapshot) => { //이게 핸들러? 같은데 맨처음 불러올때 호출되고, 그이후에는 문서에 변화가 생길때마다 추가되는듯함
+  let changes = querySnapshot.docChanges()
+  // console.log(changes);
+  querySnapshot.forEach((doc) => {
+    console.log(doc.data());
+    showTodayVisits()
+    // 변화있을때마다 push, sort, visitInfo ,showVisit까지 이어져야함
+  })
+})
+/*
+*/

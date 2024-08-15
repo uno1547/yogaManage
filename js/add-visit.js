@@ -36,12 +36,13 @@ formEl.addEventListener("submit", async function(e) {
 async function addVisit(userId) {
   console.log(userId);
   const today = new Date()
-  await addDoc(collection(db, "open_attendances"), {
+  console.log(today.getMonth());
+  const [year, month, day] = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, '0') , String(today.getDate()).padStart(2, '0')]
+  const [hour, minute, second] = [String(today.getHours()).padStart(2, '0'), String(today.getMinutes()).padStart(2, '0') , String(today.getSeconds()).padStart(2, '0')]
+  await addDoc(collection(db, "new1-attendances"), {
     user_id : userId,
-    attend_year : today.getFullYear(), 
-    attend_month : today.getMonth() + 1, 
-    attend_day : today.getDate(),
-    attend_time : [today.getHours(), today.getMinutes(), today.getSeconds()],
+    attend_date : `${year}${month}${day}`,
+    attend_time : `${hour}:${minute}:${second}`
   });
   /*
   */
