@@ -72,11 +72,11 @@ async function getMemInfo(id) {
   console.log(currentMember)
   showLastInfo(currentMember)
 }
-function showLastInfo(info) { //해당회원의 지난 입력을 보여줌
+function showLastInfo(info) { //해당회원의 지난 입력을 표시
   for(let key in info) {
     // console.log(key, info[key]);
     const keyInfoWrap = document.querySelectorAll(`[name = ${key}]`)
-    // console.log(keyInfoWrap);
+    console.log(keyInfoWrap);
     if (!keyInfoWrap) { // sign-in-date, user-id 등등
       continue
     } else {
@@ -118,11 +118,11 @@ async function deleteMember(id) {
   await deleteDocs("payments", id)
   // await deleteMemberAttendence(id)
   // await deleteMemberPayments(id)
-  //해당멤버의 결제, 출석 정보도 모두 삭제해야할듯
+  //해당멤버의 결제, 출석 정보도 모두 삭제해야할듯 그러네???
   location.href = "/src/member-manage.html"
 }
 async function deleteDocs(type, id) {
-  const collectionRef = collection(db, `test_${type}`)
+  const collectionRef = (type == "payments") ? collection(db, `test_payments_string`) : collection(db, `new1-attendances`)
   const q = query(collectionRef, where("user_id", "==", Number(id)))
   const batch = writeBatch(db)
   const querySnapshots = await getDocs(q)

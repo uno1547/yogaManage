@@ -12,20 +12,20 @@ const db = getFirestore(app)
 
 //임의날짜의 결제를 추가하기 위한 코드
 /* 무작위 id로 생성이기 때문에 아마도 로딩될때마다 중복결제 생길듯 ㅋ
-await addDoc(collection(db, "open_payments"), {
-  user_id : 2212,
-  pay_year : 2023, 
-  pay_month : 12, 
-  pay_day : 25, 
-  pay_fee : 300000, 
+await addDoc(collection(db, "test_payments_string"), {
+  user_id : 5040,
+  user_name : '성주휘',
+  pay_date : "20240625",
+  expire_date : "20240725",
+  pay_fee : 100, 
   pay_method : "cash", 
   pay_teacher : "김영원", 
   pay_class : { 
     class_type : "group", 
     times_a_week : 2, 
     class_term : 1, 
-  }
-});
+    }
+  });
 */
 const searchParams = new URLSearchParams(window.location.search)
 const receivedId = Number(searchParams.get('user_id'))
@@ -76,7 +76,9 @@ table.addEventListener("click", function(evt) {
     return
   }
   radio.checked = "true" //이건 change이벤트 발생안하는듯 
-  const event = new Event("change", {bubbles : true}) //bubbles : true를 줘야 동작하는건 
+  const event = new Event("change", {bubbles : true}) 
+  // 'click'이벤트를 form에서 'change'로 인식되게 하기위함인듯
+  //bubbles : true를 줘야 동작하는건 
   // 아마도 radio(input) 이 "change" 이벤트를 발생한거라서 form에달린 change 이벤트를 트리거하려면 버블시켜야함
   radio.dispatchEvent(event)
 })
@@ -126,7 +128,7 @@ function showPaymentDiv() {
   // // { class : 'group', method : 'credit' , teacher : '김영원' }
   let [classKey, payMethod, payTeacher] = [memberObj.class, memberObj.method, memberObj.teacher]
   let [type, timesaweek, term] = [classDic[classKey].class_type, classDic[classKey].times_a_week, classDic[classKey].class_term]
-  type = (type == 'group') ? '그룹레슨' : '개인레슨'
+  type = (type == 'group') ? '요가' : '개인레슨'
   let payDate = new Date()
   let expireDate = payDate
   payDate = payDate.toLocaleDateString().slice(0, -1)
@@ -200,6 +202,7 @@ function setPaymentObj(obj) {
   payment.pay_year = payDate.getFullYear()
   payment.pay_month = payDate.getMonth() + 1
   payment.pay_day = payDate.getDate()
+  //// 결제날짜와 현재결제의 회원(user_id)로 찾아서 제일 최근 결제인지 여부 표시할 is_recent = true 필드 추가 > expire표시, 결제에대해 [신규, 재등록]
   payment.pay_teacher = obj.teacher
   payment.pay_method = obj.method
   const payKey = obj.class
@@ -220,7 +223,7 @@ function setPaymentClassInfo(obj, key) { //이거 원본 수정될수도있는�
 // setpaymentclassinfo에서 넘어온 obj를 firestore에 등록
 
 async function uploadPayment(obj) {
-  const docRef = await addDoc(collection(db, "open_payments"), obj)
+  const docRef = await addDoc(collection(db, "test_payments_string"), obj)
   console.log('upload!!')
   alert("새결제가 등록되었습니다")
   location.href = "/src/member-manage.html"

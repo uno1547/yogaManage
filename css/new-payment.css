@@ -46,6 +46,7 @@ form .radio-input label {
   height: 113px; /*얘됨1*/
   height: 115px; /*얘됨2*/
   overflow-y: scroll;  /*유력한 문제의 원인*/
+  scrollbar-width: none;
   /* position: absolute; */
 }
 .class.wrap table#drop-down:hover {
