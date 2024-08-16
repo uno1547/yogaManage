@@ -129,8 +129,13 @@ class Pagination {
       const perWeek = curPayment.pay_class.times_a_week
       const classTerm = curPayment.pay_class.class_term
 
-      const [startYear, startMonth, startDay] = [...curPayment.pay_date].map((val) => String(val).padStart(2, '0'))
-      const [endYear, endMonth, endDay] = [...curPayment.expire_date].map((val) => String(val).padStart(2, '0'))
+      // const [startYear, startMonth, startDay] = [...curPayment.pay_date].map((val) => String(val).padStart(2, '0'))
+      const startDateStr = curPayment.pay_date
+      const [startYear, startMonth, startDay] = [startDateStr.slice(0, 4), startDateStr.slice(4, 6), startDateStr.slice(6)]
+      // const [endYear, endMonth, endDay] = [...curPayment.expire_date].map((val) => String(val).padStart(2, '0'))
+      const expireDateStr = curPayment.expire_date
+      const [endYear, endMonth, endDay] = [expireDateStr.slice(0, 4), expireDateStr.slice(4, 6), expireDateStr.slice(6)]
+
 
       const leftDays = getDiffDaysToday(curPayment)
       let tableElStr
@@ -156,12 +161,14 @@ class Pagination {
 
 const allPayments = []
 // 쿼리할때 만기날짜로 필터링은 힘들것같음 일단은 처음에 다불러오고 날짜변경시마다 필터링이랑 표시만 갱신하는방식으로
-const q = query(collection(db, "test_payments"))
+// 음 이젠 가능할지도??
+// const q = query(collection(db, "test_payments"))
+const q = query(collection(db, "test_payments_string"))
 const querySnapshot = await getDocs(q)
 querySnapshot.forEach(doc => {
   allPayments.push(doc.data())
 });
-// console.log(allPayments);
+console.log(allPayments);
 // console.log('전체결제목록');
 // allPayments.forEach((pay) => console.log(pay.user_id, pay.user_name, pay.expire_date))
 
@@ -291,9 +298,9 @@ function getDayViewPayments() {
 }
 // 기준날짜 속한 '월'의 모든결제 불러오기
 function getMonthViewPayments() {
-  const [dayYear, dayMonth] = [day.getFullYear(), day.getMonth() + 1]
+  const [dayYear, dayMonth] = [String(day.getFullYear()), String(day.getMonth() + 1).padStart(2, '0')]
   const monthViewPayments = allPayments.filter((payment) => {
-    return (payment.expire_date[0] == dayYear) && (payment.expire_date[1] == dayMonth)
+    return (payment.expire_date.slice(0, 4) == dayYear) && (payment.expire_date.slice(4, 6) == dayMonth)
   })
   console.log('월별보기로 필터링된 결제들', monthViewPayments);
   return monthViewPayments
@@ -302,7 +309,8 @@ function getMonthViewPayments() {
 
 function getDiffDays(pay) { // 기준 날짜와 결제 만료일이 몇일차이나는지 구하기위함
   // 기준날짜 day는 전역에 있는상태
-  const [expYear, expMonth, expDay] = [pay.expire_date[0], pay.expire_date[1] - 1 , pay.expire_date[2]]
+  // console.log(pay.expire_date);
+  const [expYear, expMonth, expDay] = [Number(pay.expire_date.slice(0, 4)), Number(pay.expire_date.slice(4, 6)) - 1 , Number(pay.expire_date.slice(6))]
   const expDate = new Date(expYear, expMonth, expDay) // 결제 일의객체
   expDate.setHours(23)
   expDate.setMinutes(59)
@@ -311,6 +319,7 @@ function getDiffDays(pay) { // 기준 날짜와 결제 만료일이 몇일차이
   // console.log('현재날짜객체', day.toLocaleDateString());
   const diffSec = expDate.getTime() - day.getTime()
   const diffDate = Math.floor(diffSec / (1000 * 60 * 60 * 24))
+  // console.log('오늘과 만료날짜 차이기간', diffDate);
   return diffDate
 }
 
@@ -327,7 +336,8 @@ function showPayments(payments) {
 
 function getDiffDaysToday(pay) { // 현재 날짜기준 결제만료일이몇일 남았는지 구하기위함
   const today = new Date()
-  const [expYear, expMonth, expDay] = [pay.expire_date[0], pay.expire_date[1] - 1 , pay.expire_date[2]]
+  // const [expYear, expMonth, expDay] = [pay.expire_date[0], pay.expire_date[1] - 1 , pay.expire_date[2]]
+  const [expYear, expMonth, expDay] = [Number(pay.expire_date.slice(0, 4)), Number(pay.expire_date.slice(4, 6)) - 1 , Number(pay.expire_date.slice(6))]
   const expDate = new Date(expYear, expMonth, expDay) //만기일 객체
   expDate.setHours(23)
   expDate.setMinutes(59)
